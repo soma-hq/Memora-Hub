@@ -1,0 +1,9 @@
+{
+	"host": "localhost",
+	"port": 1025,
+	"secure": false,
+	"from": "noreply@memora-dev.local",
+	"fromName": "Memora Hub (Dev)",
+	"templateDir": "core/configurations/default/mail-templates",
+	"previewEnabled": true
+}

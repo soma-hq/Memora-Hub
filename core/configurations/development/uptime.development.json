@@ -1,0 +1,8 @@
+{
+	"enabled": false,
+	"intervalSeconds": 60,
+	"endpoints": [],
+	"alertOnFailure": false,
+	"retries": 1,
+	"timeoutMs": 5000
+}

@@ -1,0 +1,14 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"provider": "local",
+	"basePath": "",
+	"bucket": "",
+	"region": "",
+	"accessKeyId": "",
+	"secretAccessKey": "",
+	"cdnUrl": "",
+	"maxFileSizeMb": 10,
+	"allowedMimeTypes": ["image/png", "image/jpeg", "image/webp", "application/pdf"],
+	"avatarMaxSizeKb": 512,
+	"bannerMaxSizeKb": 2048
+}

@@ -1,0 +1,457 @@
+// Memora Hub — Prisma Schema
+// PostgreSQL database schema for multi-group management platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───
+
+enum Role {
+  Owner
+  Admin
+  Manager
+  Collaborator
+  Guest
+}
+
+enum UserStatus {
+  active
+  inactive
+}
+
+enum GroupStatus {
+  active
+  inactive
+}
+
+enum ProjectStatus {
+  todo
+  in_progress
+  paused
+  done
+}
+
+enum TaskStatus {
+  todo
+  in_progress
+  done
+}
+
+enum TaskPriority {
+  high
+  medium
+  low
+}
+
+enum MeetingType {
+  reunion
+  standup
+  revue
+  retrospective
+  entretien
+}
+
+enum AbsenceType {
+  conge_paye
+  rtt
+  maladie
+  autre
+}
+
+enum AbsenceStatus {
+  pending
+  approved
+  rejected
+}
+
+enum OfferStatus {
+  open
+  paused
+  closed
+}
+
+enum CandidateStatus {
+  new
+  interview
+  finalist
+  hired
+  rejected
+}
+
+enum ContractType {
+  cdi
+  cdd
+  stage
+  alternance
+  freelance
+}
+
+enum TrainingCategory {
+  technique
+  management
+  securite
+  soft_skills
+  onboarding
+}
+
+enum TrainingStatus {
+  upcoming
+  in_progress
+  done
+}
+
+enum NotificationType {
+  task
+  meeting
+  absence
+  project
+  system
+}
+
+enum LogAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  APPROVE
+  REJECT
+}
+
+// ─── Models ───
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  firstName String
+  lastName  String
+  avatar    String?
+  role      Role       @default(Collaborator)
+  status    UserStatus @default(active)
+
+  // A2F
+  a2fSecret  String?
+  a2fEnabled Boolean @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  sessions           Session[]
+  groupMemberships   GroupMember[]
+  assignedTasks      Task[]           @relation("TaskAssignee")
+  createdTasks       Task[]           @relation("TaskCreator")
+  meetingAttendances MeetingAttendee[]
+  absences           Absence[]        @relation("UserAbsences")
+  approvedAbsences   Absence[]        @relation("AbsenceApprover")
+  notifications      Notification[]
+  logs               Log[]
+  candidates         Candidate[]
+  trainingEnrollments TrainingParticipant[]
+  createdProjects    Project[]        @relation("ProjectCreator")
+
+  @@map("users")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@map("sessions")
+}
+
+model Group {
+  id          String      @id @default(cuid())
+  name        String
+  description String?
+  logoUrl     String?
+  status      GroupStatus @default(active)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  // Relations
+  members      GroupMember[]
+  projects     Project[]
+  meetings     Meeting[]
+  jobOffers    JobOffer[]
+  trainings    Training[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id      String @id @default(cuid())
+  userId  String
+  groupId String
+  role    Role   @default(Collaborator)
+
+  joinedAt DateTime @default(now())
+
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, groupId])
+  @@index([userId])
+  @@index([groupId])
+  @@map("group_members")
+}
+
+model Project {
+  id          String        @id @default(cuid())
+  name        String
+  description String?
+  groupId     String
+  createdById String
+  status      ProjectStatus @default(todo)
+  startDate   DateTime?
+  endDate     DateTime?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  // Relations
+  group     Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy User           @relation("ProjectCreator", fields: [createdById], references: [id])
+  tasks     Task[]
+  members   ProjectMember[]
+
+  @@index([groupId])
+  @@map("projects")
+}
+
+model ProjectMember {
+  id        String @id @default(cuid())
+  projectId String
+  userId    String
+  role      String @default("member")
+
+  project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, userId])
+  @@index([projectId])
+  @@map("project_members")
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  projectId   String
+  assigneeId  String?
+  createdById String
+  status      TaskStatus   @default(todo)
+  priority    TaskPriority @default(medium)
+  dueDate     DateTime?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  // Relations
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee  User?     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  createdBy User      @relation("TaskCreator", fields: [createdById], references: [id])
+  subtasks  Subtask[]
+
+  @@index([projectId])
+  @@index([assigneeId])
+  @@map("tasks")
+}
+
+model Subtask {
+  id     String  @id @default(cuid())
+  taskId String
+  title  String
+  done   Boolean @default(false)
+
+  task Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@map("subtasks")
+}
+
+model Meeting {
+  id        String      @id @default(cuid())
+  title     String
+  groupId   String
+  date      DateTime
+  startTime String
+  endTime   String
+  location  String?
+  type      MeetingType @default(reunion)
+  notes     String?
+  isOnline  Boolean     @default(false)
+  link      String?
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  // Relations
+  group       Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  attendees   MeetingAttendee[]
+
+  @@index([groupId])
+  @@index([date])
+  @@map("meetings")
+}
+
+model MeetingAttendee {
+  id        String @id @default(cuid())
+  meetingId String
+  userId    String
+
+  meeting Meeting @relation(fields: [meetingId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([meetingId, userId])
+  @@map("meeting_attendees")
+}
+
+model Absence {
+  id         String        @id @default(cuid())
+  userId     String
+  type       AbsenceType
+  startDate  DateTime
+  endDate    DateTime
+  reason     String?
+  status     AbsenceStatus @default(pending)
+  approvedBy String?
+  approvedAt DateTime?
+  createdAt  DateTime      @default(now())
+  updatedAt  DateTime      @updatedAt
+
+  // Relations
+  user     User  @relation("UserAbsences", fields: [userId], references: [id], onDelete: Cascade)
+  approver User? @relation("AbsenceApprover", fields: [approvedBy], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@map("absences")
+}
+
+model Notification {
+  id        String           @id @default(cuid())
+  userId    String
+  title     String
+  message   String
+  type      NotificationType
+  relatedId String?
+  isRead    Boolean          @default(false)
+  createdAt DateTime         @default(now())
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@map("notifications")
+}
+
+model Log {
+  id         String    @id @default(cuid())
+  userId     String?
+  action     LogAction
+  entityType String
+  entityId   String?
+  details    String?
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([action])
+  @@index([createdAt])
+  @@map("logs")
+}
+
+model JobOffer {
+  id           String       @id @default(cuid())
+  groupId      String
+  title        String
+  description  String
+  department   String
+  location     String
+  contractType ContractType
+  status       OfferStatus  @default(open)
+  requirements String[]
+  publishedAt  DateTime     @default(now())
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  // Relations
+  group      Group       @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  candidates Candidate[]
+
+  @@index([groupId])
+  @@index([status])
+  @@map("job_offers")
+}
+
+model Candidate {
+  id        String          @id @default(cuid())
+  offerId   String
+  userId    String?
+  name      String
+  email     String
+  avatar    String?
+  status    CandidateStatus @default(new)
+  notes     String?
+  appliedAt DateTime        @default(now())
+
+  // Relations
+  offer JobOffer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  user  User?    @relation(fields: [userId], references: [id])
+
+  @@index([offerId])
+  @@map("candidates")
+}
+
+model Training {
+  id              String           @id @default(cuid())
+  groupId         String
+  title           String
+  description     String
+  category        TrainingCategory
+  status          TrainingStatus   @default(upcoming)
+  instructorName  String
+  startDate       DateTime
+  endDate         DateTime
+  maxParticipants Int              @default(20)
+  materials       String[]
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  group        Group                @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  participants TrainingParticipant[]
+
+  @@index([groupId])
+  @@map("trainings")
+}
+
+model TrainingParticipant {
+  id         String @id @default(cuid())
+  trainingId String
+  userId     String
+
+  enrolledAt DateTime @default(now())
+
+  training Training @relation(fields: [trainingId], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([trainingId, userId])
+  @@map("training_participants")
+}

@@ -1,0 +1,12 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"host": "",
+	"port": 6379,
+	"password": "",
+	"database": 0,
+	"keyPrefix": "memora:",
+	"ttl": 3600,
+	"maxRetries": 3,
+	"retryDelay": 1000,
+	"tls": false
+}

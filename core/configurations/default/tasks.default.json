@@ -1,0 +1,7 @@
+{
+	"defaultStatus": "todo",
+	"defaultPriority": "medium",
+	"maxSubtasks": 20,
+	"enableTimeTracking": false,
+	"dueDateWarningDays": 3
+}

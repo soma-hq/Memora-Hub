@@ -1,0 +1,84 @@
+@import "./fonts.css";
+@import "./tailwind.css";
+@import "./discord.css";
+
+/* ReCAPTCHA */
+.grecaptcha-badge {
+	display: none !important;
+}
+
+/* Global scrollbar management - single scrollbar */
+html {
+	overflow-x: hidden;
+	overflow-y: hidden;
+}
+
+body {
+	overflow-x: hidden;
+	overflow-y: visible;
+	margin: 0;
+	padding: 0;
+}
+
+/* Hide scrollbar but keep scroll functionality */
+.scrollbar-hide {
+	-ms-overflow-style: none; /* IE and Edge */
+	scrollbar-width: none; /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+	display: none; /* Chrome, Safari and Opera */
+}
+
+/* Prevent automatic zoom on mobile for inputs only */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="tel"],
+input[type="url"],
+input[type="search"],
+input[type="date"],
+input[type="time"],
+input[type="datetime-local"],
+input[type="month"],
+input[type="week"],
+textarea,
+select {
+	font-size: 16px !important;
+	transform: none !important;
+	-webkit-transform: none !important;
+	-webkit-appearance: none !important;
+	appearance: none !important;
+	touch-action: manipulation !important;
+}
+
+/* Prevent zoom on contenteditable elements */
+[contenteditable="true"] {
+	font-size: 16px !important;
+}
+
+/* Specific rules for iOS Safari - inputs only */
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+	input[type="text"],
+	input[type="email"],
+	input[type="password"],
+	input[type="number"],
+	input[type="tel"],
+	input[type="url"],
+	input[type="search"],
+	input[type="date"],
+	input[type="time"],
+	input[type="datetime-local"],
+	input[type="month"],
+	input[type="week"],
+	textarea,
+	select {
+		font-size: 16px !important;
+	}
+}
+
+/* Prevent zoom on all clickable elements */
+* {
+	touch-action: manipulation !important;
+}

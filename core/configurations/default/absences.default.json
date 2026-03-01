@@ -1,0 +1,5 @@
+{
+	"requireApproval": true,
+	"minNoticeDays": 2,
+	"maxDaysPerRequest": 30
+}

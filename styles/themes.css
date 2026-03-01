@@ -1,0 +1,128 @@
+/* Memora Hub — Semantic Design Tokens (Dark / Light) */
+
+:root {
+	/* Surface */
+	--surface-primary: #ffffff;
+	--surface-secondary: #f9fafb;
+	--surface-elevated: #ffffff;
+	--surface-sunken: #f3f4f6;
+	--surface-overlay: rgba(0, 0, 0, 0.4);
+
+	/* Text */
+	--text-primary: #111827;
+	--text-secondary: #6b7280;
+	--text-tertiary: #9ca3af;
+	--text-inverse: #ffffff;
+	--text-link: #db2777;
+
+	/* Border */
+	--border-default: #e5e7eb;
+	--border-subtle: #f3f4f6;
+	--border-strong: #d1d5db;
+
+	/* Interactive */
+	--interactive-hover: #f3f4f6;
+	--interactive-active: #e5e7eb;
+	--interactive-focus-ring: rgba(236, 72, 153, 0.4);
+
+	/* Divider */
+	--divider-default: #e5e7eb;
+	--divider-subtle: #f3f4f6;
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+
+	/* Input */
+	--input-bg: #ffffff;
+	--input-border: #d1d5db;
+	--input-text: #111827;
+	--input-placeholder: #9ca3af;
+}
+
+.dark {
+	/* Surface */
+	--surface-primary: #1f2937;
+	--surface-secondary: #111827;
+	--surface-elevated: #1f2937;
+	--surface-sunken: #111827;
+	--surface-overlay: rgba(0, 0, 0, 0.6);
+
+	/* Text */
+	--text-primary: #ffffff;
+	--text-secondary: #9ca3af;
+	--text-tertiary: #6b7280;
+	--text-inverse: #111827;
+	--text-link: #f472b6;
+
+	/* Border */
+	--border-default: #374151;
+	--border-subtle: rgba(55, 65, 81, 0.5);
+	--border-strong: #4b5563;
+
+	/* Interactive */
+	--interactive-hover: #374151;
+	--interactive-active: #4b5563;
+	--interactive-focus-ring: rgba(244, 114, 182, 0.4);
+
+	/* Divider */
+	--divider-default: #374151;
+	--divider-subtle: rgba(55, 65, 81, 0.5);
+
+	/* Shadows */
+	--shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+	--shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -2px rgba(0, 0, 0, 0.3);
+	--shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -4px rgba(0, 0, 0, 0.4);
+
+	/* Input */
+	--input-bg: #1f2937;
+	--input-border: #4b5563;
+	--input-text: #ffffff;
+	--input-placeholder: #6b7280;
+}
+
+/* Semantic Utility Classes */
+
+/* Surfaces */
+.surface-primary {
+	background-color: var(--surface-primary);
+}
+.surface-secondary {
+	background-color: var(--surface-secondary);
+}
+.surface-elevated {
+	background-color: var(--surface-elevated);
+}
+
+/* Text */
+.text-heading {
+	color: var(--text-primary);
+}
+.text-body {
+	color: var(--text-secondary);
+}
+.text-muted {
+	color: var(--text-tertiary);
+}
+
+/* Borders */
+.border-default {
+	border-color: var(--border-default);
+}
+.border-subtle {
+	border-color: var(--border-subtle);
+}
+.divider-line {
+	border-color: var(--divider-default);
+}
+
+/* Inputs */
+.input-base {
+	background-color: var(--input-bg);
+	border-color: var(--input-border);
+	color: var(--input-text);
+}
+.input-base::placeholder {
+	color: var(--input-placeholder);
+}

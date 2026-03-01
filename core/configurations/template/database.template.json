@@ -1,0 +1,12 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"host": "",
+	"port": 5432,
+	"username": "",
+	"password": "",
+	"database": "",
+	"ssl": false,
+	"poolSize": 10,
+	"logging": false,
+	"synchronize": false
+}

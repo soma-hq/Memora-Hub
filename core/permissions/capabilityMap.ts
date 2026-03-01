@@ -1,0 +1,125 @@
+import type { Role } from "@/core/config/roles";
+import type { Capability } from "@/core/config/capabilities";
+import { CAPABILITIES } from "@/core/config/capabilities";
+
+const C = CAPABILITIES;
+
+const ALL_CAPABILITIES = Object.values(CAPABILITIES);
+
+export const CAPABILITY_MAP: Record<Role, Capability[]> = {
+	Owner: ALL_CAPABILITIES,
+
+	Admin: [
+		C.USERS_VIEW,
+		C.USERS_CREATE,
+		C.USERS_EDIT,
+		C.USERS_DELETE,
+		C.GROUPS_VIEW,
+		C.GROUPS_EDIT,
+		C.PROJECTS_VIEW,
+		C.PROJECTS_CREATE,
+		C.PROJECTS_EDIT,
+		C.PROJECTS_DELETE,
+		C.PROJECTS_ARCHIVE,
+		C.PROJECTS_MANAGE_MEMBERS,
+		C.PROJECTS_VIEW_STATS,
+		C.PROJECTS_EXPORT,
+		C.TASKS_VIEW,
+		C.TASKS_CREATE,
+		C.TASKS_EDIT,
+		C.TASKS_DELETE,
+		C.TASKS_ASSIGN,
+		C.TASKS_MANAGE_SUBTASKS,
+		C.TASKS_CHANGE_STATUS,
+		C.TASKS_CHANGE_PRIORITY,
+		C.TASKS_VIEW_ALL,
+		C.TASKS_EXPORT,
+		C.MEETINGS_VIEW,
+		C.MEETINGS_CREATE,
+		C.MEETINGS_EDIT,
+		C.MEETINGS_DELETE,
+		C.MEETINGS_MANAGE_ATTENDEES,
+		C.MEETINGS_VIEW_NOTES,
+		C.MEETINGS_EDIT_NOTES,
+		C.MEETINGS_EXPORT,
+		C.ABSENCES_VIEW,
+		C.ABSENCES_CREATE,
+		C.ABSENCES_APPROVE,
+		C.RECRUITMENT_VIEW,
+		C.RECRUITMENT_CREATE,
+		C.RECRUITMENT_EDIT,
+		C.TRAINING_VIEW,
+		C.TRAINING_CREATE,
+		C.TRAINING_EDIT,
+		C.STATS_VIEW,
+		C.SETTINGS_VIEW,
+		C.SETTINGS_EDIT,
+	],
+
+	Manager: [
+		C.PROJECTS_VIEW,
+		C.PROJECTS_CREATE,
+		C.PROJECTS_EDIT,
+		C.PROJECTS_MANAGE_MEMBERS,
+		C.PROJECTS_VIEW_STATS,
+		C.PROJECTS_EXPORT,
+		C.TASKS_VIEW,
+		C.TASKS_CREATE,
+		C.TASKS_EDIT,
+		C.TASKS_ASSIGN,
+		C.TASKS_MANAGE_SUBTASKS,
+		C.TASKS_CHANGE_STATUS,
+		C.TASKS_CHANGE_PRIORITY,
+		C.TASKS_VIEW_ALL,
+		C.TASKS_EXPORT,
+		C.MEETINGS_VIEW,
+		C.MEETINGS_CREATE,
+		C.MEETINGS_EDIT,
+		C.MEETINGS_MANAGE_ATTENDEES,
+		C.MEETINGS_VIEW_NOTES,
+		C.MEETINGS_EDIT_NOTES,
+		C.MEETINGS_EXPORT,
+		C.ABSENCES_VIEW,
+		C.ABSENCES_CREATE,
+		C.ABSENCES_APPROVE,
+		C.RECRUITMENT_VIEW,
+		C.TRAINING_VIEW,
+		C.SETTINGS_VIEW,
+	],
+
+	Collaborator: [
+		C.PROJECTS_VIEW,
+		C.TASKS_VIEW,
+		C.TASKS_CREATE,
+		C.TASKS_EDIT,
+		C.TASKS_MANAGE_SUBTASKS,
+		C.TASKS_CHANGE_STATUS,
+		C.MEETINGS_VIEW,
+		C.MEETINGS_VIEW_NOTES,
+		C.ABSENCES_VIEW,
+		C.ABSENCES_CREATE,
+		C.TRAINING_VIEW,
+		C.SETTINGS_VIEW,
+	],
+
+	Guest: [C.TASKS_VIEW, C.MEETINGS_VIEW, C.SETTINGS_VIEW],
+};
+
+/**
+ * Check if a role includes a specific capability
+ * @param role - Role to check
+ * @param capability - Capability to look for
+ * @returns True if role has the capability
+ */
+export function roleHasCapability(role: Role, capability: Capability): boolean {
+	return CAPABILITY_MAP[role]?.includes(capability) ?? false;
+}
+
+/**
+ * Get all capabilities granted to a role
+ * @param role - Role to query
+ * @returns Array of capabilities for the role
+ */
+export function getCapabilitiesForRole(role: Role): Capability[] {
+	return CAPABILITY_MAP[role] ?? [];
+}

@@ -1,0 +1,9 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"algorithm": "aes-256-gcm",
+	"keyLength": 32,
+	"ivLength": 16,
+	"saltRounds": 12,
+	"secretKey": "",
+	"tokenSecret": ""
+}

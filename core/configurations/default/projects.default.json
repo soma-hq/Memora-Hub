@@ -1,0 +1,7 @@
+{
+	"defaultStatus": "todo",
+	"defaultPriority": "P2",
+	"maxMembersPerProject": 50,
+	"enableTimeline": true,
+	"enableRelations": true
+}

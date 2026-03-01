@@ -1,0 +1,5 @@
+{
+	"defaultFormat": "pdf",
+	"maxRowsPerExport": 1000,
+	"includeHeaders": true
+}

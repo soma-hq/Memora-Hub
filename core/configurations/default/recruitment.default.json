@@ -1,0 +1,6 @@
+{
+	"maxCandidatesPerOffer": 100,
+	"defaultOfferStatus": "open",
+	"enableQuestionnaire": true,
+	"interviewReminderHours": 24
+}

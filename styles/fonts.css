@@ -1,0 +1,518 @@
+/* Inter */
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-Black.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-Bold.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-ExtraBold.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-ExtraLight.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-Light.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-Medium.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-Regular.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-SemiBold.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Inter";
+	src: url("/fonts/inter/Inter-Thin.ttf") format("truetype");
+	font-weight: 100; /* Thin */
+	font-style: normal;
+}
+
+/* Open Sans */
+@font-face {
+	font-family: "OpenSans";
+	src: url("/fonts/opensans/OpenSans-VariableFont_wdth,wght.ttf") format("truetype");
+	font-weight: 100 900; /* Range from Thin to Black */
+	font-style: normal;
+	font-stretch: 25% 151%; /* Range from condensed (75%) to expanded (151%) */
+}
+
+@font-face {
+	font-family: "OpenSans";
+	src: url("/fonts/opensans/OpenSans-Italic-VariableFont_wdth,wght.ttf") format("truetype");
+	font-weight: 100 900; /* Range from Thin to Black */
+	font-style: italic;
+	font-stretch: 25% 151%; /* Range from condensed (75%) to expanded (151%) */
+}
+
+/* Mona Sans */
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-Black.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-BlackItalic.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-Bold.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-BoldItalic.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-ExtraBold.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-ExtraBoldItalic.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-ExtraLight.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-ExtraLightItalic.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-Italic.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-Light.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-LightItalic.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-Medium.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-MediumItalic.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-Regular.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-SemiBold.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans";
+	src: url("/fonts/monasans/MonaSans-SemiBoldItalic.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: italic;
+}
+
+/* Mona Sans Condensed */
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-Black.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-BlackItalic.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-Bold.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-BoldItalic.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-ExtraBold.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-ExtraBoldItalic.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-ExtraLight.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-ExtraLightItalic.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-Italic.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-Light.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-LightItalic.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-Medium.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-MediumItalic.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-Regular.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-SemiBold.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Condensed";
+	src: url("/fonts/monasans/MonaSansCondensed-SemiBoldItalic.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: italic;
+}
+
+/* Mona Sans Expanded */
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-Black.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-BlackItalic.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-Bold.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-BoldItalic.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-ExtraBold.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-ExtraBoldItalic.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-ExtraLight.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-ExtraLightItalic.ttf") format("truetype");
+	font-weight: 200; /* Extra Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-Italic.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-Light.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-LightItalic.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-Medium.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-MediumItalic.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-Regular.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-SemiBold.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Mona Sans Expanded";
+	src: url("/fonts/monasans/MonaSansExpanded-SemiBoldItalic.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: italic;
+}
+
+/* Red Hat Display */
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-Black.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-BlackItalic.ttf") format("truetype");
+	font-weight: 900; /* Black */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-Bold.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-BoldItalic.ttf") format("truetype");
+	font-weight: bold; /* Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-ExtraBold.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-ExtraBoldItalic.ttf") format("truetype");
+	font-weight: 800; /* Extra Bold */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-Italic.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-Light.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-LightItalic.ttf") format("truetype");
+	font-weight: 300; /* Light */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-Medium.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-MediumItalic.ttf") format("truetype");
+	font-weight: 500; /* Medium */
+	font-style: italic;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-Regular.ttf") format("truetype");
+	font-weight: normal; /* Regular */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-SemiBold.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: normal;
+}
+
+@font-face {
+	font-family: "Red Hat Display";
+	src: url("/fonts/redhatdisplay/RedHatDisplay-SemiBoldItalic.ttf") format("truetype");
+	font-weight: 600; /* Semi Bold */
+	font-style: italic;
+}

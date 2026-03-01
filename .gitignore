@@ -40,7 +40,3 @@ next-env.d.ts
 
 # Instructions
 *.md
-
-# Sensitive configuration files (use template/ for safe defaults)
-core/configurations/production/
-core/configurations/development/

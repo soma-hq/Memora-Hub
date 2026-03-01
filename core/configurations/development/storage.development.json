@@ -1,0 +1,8 @@
+{
+	"provider": "local",
+	"basePath": "uploads",
+	"maxFileSizeMb": 10,
+	"allowedMimeTypes": ["image/png", "image/jpeg", "image/webp", "application/pdf"],
+	"avatarMaxSizeKb": 512,
+	"bannerMaxSizeKb": 2048
+}

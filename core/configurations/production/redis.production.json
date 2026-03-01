@@ -1,0 +1,11 @@
+{
+	"host": "${REDIS_HOST}",
+	"port": 6379,
+	"password": "${REDIS_PASSWORD}",
+	"database": 0,
+	"keyPrefix": "memora:prod:",
+	"ttl": 7200,
+	"maxRetries": 5,
+	"retryDelay": 2000,
+	"tls": true
+}

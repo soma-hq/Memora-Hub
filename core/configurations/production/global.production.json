@@ -1,0 +1,12 @@
+{
+	"appName": "Memora Hub",
+	"appVersion": "1.0.0",
+	"environment": "production",
+	"debug": false,
+	"logLevel": "warn",
+	"baseUrl": "${APP_BASE_URL}",
+	"apiPrefix": "/api",
+	"corsOrigins": ["${APP_BASE_URL}"],
+	"timezone": "Europe/Paris",
+	"locale": "fr-FR"
+}

@@ -1,0 +1,11 @@
+{
+	"host": "localhost",
+	"port": 5432,
+	"username": "memora_dev",
+	"password": "dev_password",
+	"database": "memora_dev",
+	"ssl": false,
+	"poolSize": 5,
+	"logging": true,
+	"synchronize": true
+}

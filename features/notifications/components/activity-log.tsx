@@ -8,7 +8,6 @@ import type { ActivityLevel } from "@/store/activity.store";
 import type { IconName } from "@/core/design/icons";
 import type { BadgeVariant } from "@/core/design/states";
 
-
 /** UI configuration per activity level */
 const levelConfig: Record<ActivityLevel, { icon: IconName; color: string; badge: BadgeVariant; label: string }> = {
 	success: {
@@ -52,10 +51,10 @@ function formatRelativeTime(timestamp: string): string {
 	const diffD = Math.floor(diffH / 24);
 
 	if (diffMin < 1) return "A l'instant";
-	if (diffMin < 60) return `Il y a ${diffMin} min`;
-	if (diffH < 24) return `Il y a ${diffH}h`;
+	if (diffMin < 60) return `Il y à ${diffMin} min`;
+	if (diffH < 24) return `Il y à ${diffH}h`;
 	if (diffD === 1) return "Hier";
-	if (diffD < 7) return `Il y a ${diffD}j`;
+	if (diffD < 7) return `Il y à ${diffD}j`;
 	return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
@@ -117,9 +116,9 @@ export function ActivityLog({ className, maxItems }: ActivityLogProps) {
 				<div className="flex h-14 w-14 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
 					<Icon name="clock" size="lg" className="text-gray-400" />
 				</div>
-				<p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">Aucune activite recente</p>
+				<p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">Aucune activité récente</p>
 				<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-					Les actions effectuees dans l&apos;application apparaitront ici.
+					Les actions effectuées dans l&apos;application apparaîtront ici.
 				</p>
 			</div>
 		);

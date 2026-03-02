@@ -8,7 +8,6 @@ import { useUIStore } from "@/store/ui.store";
 import type { AlertType, SystemAlert } from "../types";
 import type { IconName } from "@/core/design/icons";
 
-
 /** Demo admin alerts for development */
 const ADMIN_ALERTS: SystemAlert[] = [
 	{
@@ -23,8 +22,8 @@ const ADMIN_ALERTS: SystemAlert[] = [
 	{
 		id: "adm-002",
 		type: "access_denied",
-		title: "Acces refuse — Zone admin",
-		description: "Un utilisateur non-autorise a tente d'acceder au panneau d'administration.",
+		title: "Accès refuse — Zone admin",
+		description: "Un utilisateur non-autorise à tente d'acceder au panneau d'administration.",
 		timestamp: "2025-02-27T14:20:00Z",
 		dismissed: false,
 		metadata: { page: "/admin/settings", utilisateur: "Marie" },
@@ -34,7 +33,7 @@ const ADMIN_ALERTS: SystemAlert[] = [
 		type: "update",
 		title: "Maintenance planifiee",
 		description:
-			"Une mise a jour du serveur est planifiee ce soir a 23h00. Les services seront indisponibles pendant 15 minutes.",
+			"Une mise à jour du serveur est planifiee ce soir à 23h00. Les services seront indisponibles pendant 15 minutes.",
 		timestamp: "2025-02-27T12:00:00Z",
 		dismissed: false,
 		metadata: { duree: "15 min", heure: "23h00" },
@@ -43,7 +42,7 @@ const ADMIN_ALERTS: SystemAlert[] = [
 		id: "adm-004",
 		type: "access_granted",
 		title: "Nouveau moderateur valide",
-		description: "Le compte de Lucas a ete approuve en tant que moderateur Discord.",
+		description: "Le compte de Lucas à ete approuve en tant que moderateur Discord.",
 		timestamp: "2025-02-27T10:30:00Z",
 		dismissed: false,
 		metadata: { plateforme: "Discord", approuve_par: "Jeremy" },
@@ -53,7 +52,7 @@ const ADMIN_ALERTS: SystemAlert[] = [
 		type: "access_denied",
 		title: "Rate-limit atteint",
 		description:
-			"L'API de moderation a atteint sa limite de requetes. Les actions automatiques sont temporairement suspendues.",
+			"L'API de moderation à atteint sa limite de requetes. Les actions automatiques sont temporairement suspendues.",
 		timestamp: "2025-02-26T22:15:00Z",
 		dismissed: false,
 		metadata: { api: "moderation/v2", limite: "1000/h" },
@@ -92,8 +91,8 @@ function formatAlertTime(iso: string): string {
 	const diffH = Math.floor(diffMin / 60);
 
 	if (diffMin < 1) return "A l'instant";
-	if (diffMin < 60) return `Il y a ${diffMin}min`;
-	if (diffH < 24) return `Il y a ${diffH}h`;
+	if (diffMin < 60) return `Il y à ${diffMin}min`;
+	if (diffH < 24) return `Il y à ${diffH}h`;
 	return date.toLocaleDateString("fr-FR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
 }
 

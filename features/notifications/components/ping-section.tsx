@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Icon, Button } from "@/components/ui";
+import { Icon, Button, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { formatRelative } from "@/lib/utils/date";
 import type { PingNotification } from "@/features/ping/types";
@@ -25,15 +25,11 @@ export function PingSection({ pings, onMarkRead, onMarkAllRead }: PingSectionPro
 
 	if (pings.length === 0) {
 		return (
-			<div className="flex flex-col items-center justify-center py-16 text-center">
-				<div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-50 dark:bg-rose-900/20">
-					<Icon name="ping" size="lg" className="text-rose-400" />
-				</div>
-				<p className="mt-3 text-sm font-medium text-gray-700 dark:text-gray-300">Aucun ping</p>
-				<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-					Les pings que vous recevez apparaitront ici.
-				</p>
-			</div>
+			<StyledEmptyState
+				icon="ping"
+				title="Aucun ping"
+				description="Les pings que vous recevez apparaîtront ici."
+			/>
 		);
 	}
 
@@ -86,7 +82,7 @@ export function PingSection({ pings, onMarkRead, onMarkAllRead }: PingSectionPro
 								<span className="text-sm font-medium text-gray-900 dark:text-white">
 									{ping.fromUserName}
 								</span>
-								<span className="text-xs text-gray-400">vous a ping</span>
+								<span className="text-xs text-gray-400">vous a pingé</span>
 							</div>
 							{ping.message && (
 								<p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">{ping.message}</p>

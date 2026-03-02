@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formatRelative } from "@/lib/utils/date";
-import { Icon, Button } from "@/components/ui";
+import { Card, Icon, Button } from "@/components/ui";
 import type { PingNotification } from "../types";
 
 interface PingBubbleProps {
@@ -32,7 +32,10 @@ export function PingBubble({ ping, onDismiss, onNavigate }: PingBubbleProps) {
 
 	return (
 		<div className="animate-fade-in absolute top-full right-0 z-50 mt-2 w-72">
-			<div className="relative rounded-xl border border-rose-200 bg-white px-4 py-3 shadow-lg dark:border-rose-800 dark:bg-gray-800">
+			<Card
+				padding="sm"
+				className="relative rounded-xl border-dashed !border-rose-200 shadow-lg dark:!border-rose-800"
+			>
 				{/* Arrow */}
 				<div className="absolute -top-2 right-4 h-4 w-4 rotate-45 border-t border-l border-rose-200 bg-white dark:border-rose-800 dark:bg-gray-800" />
 
@@ -44,12 +47,9 @@ export function PingBubble({ ping, onDismiss, onNavigate }: PingBubbleProps) {
 						</div>
 						<span className="text-xs font-semibold text-rose-600 dark:text-rose-400">Ping</span>
 					</div>
-					<button
-						onClick={onDismiss}
-						className="rounded-md p-0.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700"
-					>
+					<Button variant="ghost" size="sm" onClick={onDismiss} className="!p-0.5">
 						<Icon name="close" size="xs" />
-					</button>
+					</Button>
 				</div>
 
 				{/* Content */}
@@ -74,7 +74,7 @@ export function PingBubble({ ping, onDismiss, onNavigate }: PingBubbleProps) {
 						Voir
 					</Button>
 				</div>
-			</div>
+			</Card>
 		</div>
 	);
 }

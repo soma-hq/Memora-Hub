@@ -1,4 +1,4 @@
-/** Represents a ping notification from another user */
+/** Represents à ping notification from another user */
 export interface PingNotification {
 	/** Unique ping identifier */
 	id: string;

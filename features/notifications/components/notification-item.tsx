@@ -28,10 +28,10 @@ function formatRelativeTime(time: string): string {
 	const diffD = Math.floor(diffH / 24);
 
 	if (diffMin < 1) return "A l'instant";
-	if (diffMin < 60) return `Il y a ${diffMin} min`;
-	if (diffH < 24) return `Il y a ${diffH}h`;
+	if (diffMin < 60) return `Il y à ${diffMin} min`;
+	if (diffH < 24) return `Il y à ${diffH}h`;
 	if (diffD === 1) return "Hier";
-	if (diffD < 7) return `Il y a ${diffD} jours`;
+	if (diffD < 7) return `Il y à ${diffD} jours`;
 
 	return date.toLocaleDateString("fr-FR", {
 		day: "numeric",

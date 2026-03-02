@@ -1,8 +1,7 @@
 import { create } from "zustand";
 import type { AbsenceMode } from "@/features/absences/absence-mode";
 
-
-/** Represents a currently open modal with optional payload */
+/** Represents à currently open modal with optional payload */
 interface ModalState {
 	id: string;
 	data?: Record<string, unknown>;
@@ -21,6 +20,11 @@ interface UIState {
 	adminMode: boolean;
 	setAdminMode: (active: boolean) => void;
 	toggleAdminMode: () => void;
+
+	// Legacy mode (independent from admin)
+	legacyMode: boolean;
+	setLegacyMode: (active: boolean) => void;
+	toggleLegacyMode: () => void;
 
 	// Streamer mode
 	streamerMode: boolean;
@@ -86,10 +90,23 @@ export const useUIStore = create<UIState>((set, get) => ({
 	 * @param active - Whether admin mode is active
 	 */
 
-	setAdminMode: (active) => set({ adminMode: active }),
+	setAdminMode: (active) => set({ adminMode: active, ...(active ? { legacyMode: false } : {}) }),
 
 	/** Toggles admin mode on or off */
-	toggleAdminMode: () => set((s) => ({ adminMode: !s.adminMode })),
+	toggleAdminMode: () => set((s) => ({ adminMode: !s.adminMode, ...(s.adminMode ? {} : { legacyMode: false }) })),
+
+	// Legacy mode controls (independent from admin, mutually exclusive)
+	legacyMode: false,
+
+	/**
+	 * Set legacy mode
+	 * @param active - Whether legacy mode is active
+	 */
+
+	setLegacyMode: (active) => set({ legacyMode: active, ...(active ? { adminMode: false } : {}) }),
+
+	/** Toggles legacy mode on or off */
+	toggleLegacyMode: () => set((s) => ({ legacyMode: !s.legacyMode, ...(s.legacyMode ? {} : { adminMode: false }) })),
 
 	// Streamer mode controls
 	streamerMode: false,
@@ -128,7 +145,7 @@ export const useUIStore = create<UIState>((set, get) => ({
 	activeModals: [],
 
 	/**
-	 * Open a modal by ID
+	 * Open à modal by ID
 	 * @param id - Modal identifier
 	 * @param data - Optional modal payload
 	 */
@@ -139,7 +156,7 @@ export const useUIStore = create<UIState>((set, get) => ({
 		})),
 
 	/**
-	 * Close a modal by ID
+	 * Close à modal by ID
 	 * @param id - Modal identifier
 	 */
 

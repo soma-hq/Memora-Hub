@@ -20,7 +20,7 @@ export interface WorkflowResult {
 
 export class WorkflowEngine {
 	/**
-	 * Runs a multi-step workflow pipeline sequentially
+	 * Runs à multi-step workflow pipeline sequentially
 	 * @param entityId - The entity being processed
 	 * @param workflow - Workflow definition with steps and error handler
 	 * @returns Execution result with completed/failed steps

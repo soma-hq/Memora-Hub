@@ -20,7 +20,7 @@ export interface ScoringResult {
 
 export class ScoringEngine {
 	/**
-	 * Calculates a relevance score for a candidate based on configured criteria
+	 * Calculates à relevance score for a candidate based on configured criteria
 	 * @param candidateId - The candidate to score
 	 * @param criteria - Scoring configuration with weights and required skills
 	 * @returns Scoring result with breakdown

@@ -1,21 +1,17 @@
 "use client";
 
-// Components
 import {
-
 	CalendarDaysIcon,
 	ExclamationTriangleIcon,
 	SparklesIcon,
 	MapPinIcon,
 	UsersIcon,
 } from "@heroicons/react/24/outline";
-
-// Utils & hooks
+import { StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { ScheduleItem } from "../utils/briefing-engine";
 
-
-// ─── Type color mapping ─────────────────────────────────────────────────────
+// Type color mapping
 
 const TYPE_STYLES: Record<ScheduleItem["type"], { dot: string; bg: string; icon: typeof CalendarDaysIcon }> = {
 	meeting: {
@@ -35,39 +31,37 @@ const TYPE_STYLES: Record<ScheduleItem["type"], { dot: string; bg: string; icon:
 	},
 };
 
-// ─── Props ──────────────────────────────────────────────────────────────────
-
 /** Props for the TodaySchedule component */
 interface TodayScheduleProps {
 	items: ScheduleItem[];
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────
-
 /**
  * Timeline display of today's events with time, title, location, and participants.
- * Left side shows time, right side shows event details with a vertical connector line.
+ * @param {TodayScheduleProps} props - Component props
+ * @param {ScheduleItem[]} props.items - Schedule items for the day
+ * @returns {JSX.Element} Today schedule widget
  */
+
 export function TodaySchedule({ items }: TodayScheduleProps) {
 	return (
 		<div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
 			{/* Header */}
-			<div className="mb-4 flex items-center gap-2">
-				<CalendarDaysIcon className="h-5 w-5 text-pink-500" />
-				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Agenda du jour</h3>
+			<SectionHeaderBanner icon="calendar" title="Agenda du Jour" accentColor="rose">
 				{items.length > 0 && (
-					<span className="rounded-full bg-pink-100 px-2 py-0.5 text-xs font-medium text-pink-700 dark:bg-pink-900/30 dark:text-pink-400">
+					<span className="rounded-full bg-rose-100 px-2 py-0.5 text-xs font-medium text-rose-600 dark:bg-rose-900/30 dark:text-rose-400">
 						{items.length}
 					</span>
 				)}
-			</div>
+			</SectionHeaderBanner>
 
 			{/* Empty state */}
 			{items.length === 0 && (
-				<div className="py-8 text-center">
-					<CalendarDaysIcon className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" />
-					<p className="mt-2 text-sm text-gray-400 dark:text-gray-500">Aucun evenement prevu aujourd'hui.</p>
-				</div>
+				<StyledEmptyState
+					icon="calendar"
+					title="Aucun événement prévu"
+					description="Votre agenda du jour est libre."
+				/>
 			)}
 
 			{/* Timeline */}
@@ -79,7 +73,7 @@ export function TodaySchedule({ items }: TodayScheduleProps) {
 					)}
 
 					<div className="space-y-3">
-						{items.map((item, index) => {
+						{items.map((item) => {
 							const style = TYPE_STYLES[item.type];
 							const TypeIcon = style.icon;
 

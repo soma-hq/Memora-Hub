@@ -4,9 +4,9 @@
 import { useState } from "react";
 import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
-import { Card, CardHeader, CardBody, Badge, Avatar, Checkbox } from "@/components/ui";
+import { Card, CardHeader, CardBody, Badge, Avatar, Checkbox, StyledEmptyState } from "@/components/ui";
+import { useUIStore } from "@/store/ui.store";
 import type { BadgeVariant } from "@/core/design/states";
-
 
 /** Task item for the dashboard widget */
 interface TaskItem {
@@ -38,6 +38,7 @@ const priorityVariantMap: Record<string, BadgeVariant> = {
 export function TasksWidget({ className }: TasksWidgetProps) {
 	// State
 	const [tasks, setTasks] = useState<TaskItem[]>([]);
+	const legacyMode = useUIStore((s) => s.legacyMode);
 
 	// Handlers
 	/**
@@ -49,11 +50,14 @@ export function TasksWidget({ className }: TasksWidgetProps) {
 		setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 	}
 
+	// Hide widget in legacy mode
+	if (legacyMode) return null;
+
 	// Render
 	return (
 		<Card padding="sm" className={className}>
 			<CardHeader>
-				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Taches recentes</h3>
+				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Tâches récentes</h3>
 				<Link
 					href="/tasks"
 					className="text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
@@ -64,9 +68,11 @@ export function TasksWidget({ className }: TasksWidgetProps) {
 
 			<CardBody className="divide-y divide-gray-100 py-0 dark:divide-gray-700">
 				{tasks.length === 0 && (
-					<div className="flex items-center justify-center py-8">
-						<p className="text-sm text-gray-400 dark:text-gray-500">Aucune tache recente.</p>
-					</div>
+					<StyledEmptyState
+						icon="tasks"
+						title="Aucune tâche récente"
+						description="Les tâches apparaîtront ici."
+					/>
 				)}
 
 				{tasks.map((task) => (

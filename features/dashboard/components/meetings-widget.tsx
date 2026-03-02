@@ -3,10 +3,9 @@
 // React
 import { useState } from "react";
 import Link from "next/link";
-import { Card, CardHeader, CardBody, Badge, Icon } from "@/components/ui";
+import { Card, CardHeader, CardBody, Badge, Icon, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { BadgeVariant } from "@/core/design/states";
-
 
 /** Meeting item for the dashboard widget */
 interface MeetingItem {
@@ -26,7 +25,7 @@ interface MeetingsWidgetProps {
 
 /** Badge variant mapping for meeting types */
 const typeVariantMap: Record<string, BadgeVariant> = {
-	Reunion: "info",
+	Réunion: "info",
 	Standup: "success",
 	Revue: "warning",
 	Retrospective: "primary",
@@ -47,7 +46,7 @@ export function MeetingsWidget({ className }: MeetingsWidgetProps) {
 	return (
 		<Card padding="sm" className={className}>
 			<CardHeader>
-				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Reunions a venir</h3>
+				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Réunions à venir</h3>
 				<Link
 					href="/meetings"
 					className="text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
@@ -58,9 +57,11 @@ export function MeetingsWidget({ className }: MeetingsWidgetProps) {
 
 			<CardBody className="divide-y divide-gray-100 py-0 dark:divide-gray-700">
 				{meetings.length === 0 && (
-					<div className="flex items-center justify-center py-8">
-						<p className="text-sm text-gray-400 dark:text-gray-500">Aucune reunion a venir.</p>
-					</div>
+					<StyledEmptyState
+						icon="calendar"
+						title="Aucune réunion à venir"
+						description="Les réunions apparaîtront ici."
+					/>
 				)}
 
 				{meetings.map((meeting) => (

@@ -3,9 +3,8 @@
 // React
 import { useState } from "react";
 import Link from "next/link";
-import { Card, CardHeader, CardBody, Badge, ProgressBar } from "@/components/ui";
+import { Card, CardHeader, CardBody, Badge, ProgressBar, StyledEmptyState } from "@/components/ui";
 import type { BadgeVariant } from "@/core/design/states";
-
 
 /** Project item for the dashboard widget */
 interface ProjectItem {
@@ -61,9 +60,11 @@ export function ProjectsWidget({ className }: ProjectsWidgetProps) {
 
 			<CardBody className="divide-y divide-gray-100 py-0 dark:divide-gray-700">
 				{projects.length === 0 && (
-					<div className="flex items-center justify-center py-8">
-						<p className="text-sm text-gray-400 dark:text-gray-500">Aucun projet en cours.</p>
-					</div>
+					<StyledEmptyState
+						icon="folder"
+						title="Aucun projet en cours"
+						description="Les projets apparaîtront ici."
+					/>
 				)}
 
 				{projects.map((project) => (

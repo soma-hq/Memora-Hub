@@ -56,7 +56,7 @@ interface TrendIndicatorProps {
 }
 
 /**
- * Displays a trend direction arrow with a change value label
+ * Displays à trend direction arrow with a change value label
  * @param props - Component props
  * @param props.change - Change percentage or label
  * @param props.trend - Direction of the trend

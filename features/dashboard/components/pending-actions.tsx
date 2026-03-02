@@ -1,12 +1,11 @@
 "use client";
 
-// Components
-import { BellAlertIcon, ChevronRightIcon, ClockIcon, ExclamationCircleIcon } from "@heroicons/react/24/outline";
+import { ChevronRightIcon, ClockIcon } from "@heroicons/react/24/outline";
+import { StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { ActionItem } from "../utils/briefing-engine";
 
-
-// ─── Urgency styling ────────────────────────────────────────────────────────
+// Urgency styling
 
 const URGENCY_STYLES: Record<
 	ActionItem["urgency"],
@@ -32,41 +31,39 @@ const URGENCY_STYLES: Record<
 	},
 };
 
-// ─── Props ──────────────────────────────────────────────────────────────────
-
 /** Props for the PendingActions component */
 interface PendingActionsProps {
 	items: ActionItem[];
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────
-
 /**
  * Displays action items that need the user's attention.
- * Urgent items get a red border, soon items get yellow, later items get gray.
+ * @param {PendingActionsProps} props - Component props
+ * @param {ActionItem[]} props.items - Action items to display
+ * @returns {JSX.Element} Pending actions widget
  */
+
 export function PendingActions({ items }: PendingActionsProps) {
 	const urgentCount = items.filter((i) => i.urgency === "urgent").length;
 
 	return (
 		<div className="rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-700 dark:bg-gray-800">
 			{/* Header */}
-			<div className="mb-4 flex items-center gap-2">
-				<BellAlertIcon className="h-5 w-5 text-pink-500" />
-				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Actions en attente</h3>
+			<SectionHeaderBanner icon="alert" title="Actions en attente" accentColor="rose">
 				{urgentCount > 0 && (
 					<span className="rounded-full bg-red-100 px-2 py-0.5 text-xs font-medium text-red-700 dark:bg-red-900/30 dark:text-red-400">
 						{urgentCount} urgent{urgentCount > 1 ? "s" : ""}
 					</span>
 				)}
-			</div>
+			</SectionHeaderBanner>
 
 			{/* Empty state */}
 			{items.length === 0 && (
-				<div className="py-8 text-center">
-					<ExclamationCircleIcon className="mx-auto h-8 w-8 text-gray-300 dark:text-gray-600" />
-					<p className="mt-2 text-sm text-gray-400 dark:text-gray-500">Aucune action en attente.</p>
-				</div>
+				<StyledEmptyState
+					icon="alert"
+					title="Aucune action en attente"
+					description="Tout est à jour, rien ne requiert votre attention."
+				/>
 			)}
 
 			{/* Action items */}

@@ -3,7 +3,6 @@
 // React
 import { useMemo } from "react";
 import {
-
 	FolderIcon,
 	CheckCircleIcon,
 	CalendarDaysIcon,
@@ -18,7 +17,6 @@ import {
 import { cn } from "@/lib/utils/cn";
 import type { BriefingItem } from "../utils/briefing-engine";
 import type { ComponentType, SVGProps } from "react";
-
 
 // ─── Icon mapping ───────────────────────────────────────────────────────────
 
@@ -42,7 +40,7 @@ interface CategoryConfig {
 
 const CATEGORY_CONFIG: Record<BriefingItem["category"], CategoryConfig> = {
 	deadlines: {
-		label: "Echeances",
+		label: "Échéances",
 		icon: ExclamationTriangleIcon,
 		iconColor: "text-red-500 dark:text-red-400",
 	},
@@ -52,7 +50,7 @@ const CATEGORY_CONFIG: Record<BriefingItem["category"], CategoryConfig> = {
 		iconColor: "text-pink-500 dark:text-pink-400",
 	},
 	tasks: {
-		label: "Taches",
+		label: "Tâches",
 		icon: CheckCircleIcon,
 		iconColor: "text-blue-500 dark:text-blue-400",
 	},
@@ -62,7 +60,7 @@ const CATEGORY_CONFIG: Record<BriefingItem["category"], CategoryConfig> = {
 		iconColor: "text-purple-500 dark:text-purple-400",
 	},
 	team: {
-		label: "Equipe",
+		label: "Équipe",
 		icon: UsersIcon,
 		iconColor: "text-green-500 dark:text-green-400",
 	},
@@ -184,7 +182,7 @@ export function BriefingSection({ greeting, subtitle, items }: BriefingSectionPr
 				<div className="py-12 text-center">
 					<CheckCircleIcon className="mx-auto h-10 w-10 text-green-400" />
 					<p className="mt-3 text-sm font-medium text-gray-600 dark:text-gray-400">
-						Tout est en ordre ! Rien de nouveau a signaler.
+						Tout est en ordre ! Rien de nouveau à signaler.
 					</p>
 				</div>
 			)}

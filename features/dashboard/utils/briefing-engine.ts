@@ -5,7 +5,6 @@ import type { Task } from "@/features/tasks/types";
 import type { Meeting } from "@/features/meetings/types";
 import type { Absence } from "@/features/absences/types";
 
-
 // ─── Briefing types ─────────────────────────────────────────────────────────
 
 /** Single briefing item displayed in the dashboard feed */
@@ -64,7 +63,7 @@ interface DataSources {
 function getGreeting(name: string): string {
 	const hour = new Date().getHours();
 	if (hour < 12) return `Bonjour ${name} !`;
-	if (hour < 18) return `Bon apres-midi ${name} !`;
+	if (hour < 18) return `Bon après-midi ${name} !`;
 	return `Bonsoir ${name} !`;
 }
 
@@ -72,13 +71,13 @@ function getGreeting(name: string): string {
 function getSubtitle(todayMeetingCount: number, pendingTaskCount: number, deadlineCount: number): string {
 	const parts: string[] = [];
 	if (todayMeetingCount > 0) {
-		parts.push(`${todayMeetingCount} reunion${todayMeetingCount > 1 ? "s" : ""} aujourd'hui`);
+		parts.push(`${todayMeetingCount} réunion${todayMeetingCount > 1 ? "s" : ""} aujourd'hui`);
 	}
 	if (pendingTaskCount > 0) {
-		parts.push(`${pendingTaskCount} tache${pendingTaskCount > 1 ? "s" : ""} en cours`);
+		parts.push(`${pendingTaskCount} tâche${pendingTaskCount > 1 ? "s" : ""} en cours`);
 	}
 	if (deadlineCount > 0) {
-		parts.push(`${deadlineCount} echeance${deadlineCount > 1 ? "s" : ""} proche${deadlineCount > 1 ? "s" : ""}`);
+		parts.push(`${deadlineCount} échéance${deadlineCount > 1 ? "s" : ""} proche${deadlineCount > 1 ? "s" : ""}`);
 	}
 	if (parts.length === 0) return "Voici ton briefing pour aujourd'hui.";
 	return `Tu as ${parts.join(", ")}.`;
@@ -178,7 +177,7 @@ function generateProjectItems(userId: string, projects: Project[]): BriefingItem
 				id: `proj-update-${project.id}`,
 				category: "projects",
 				icon: "FolderIcon",
-				title: `Le projet "${project.name}" a avance — ${latest.user} : ${latest.description}.`,
+				title: `Le projet "${project.name}" a avancé — ${latest.user} : ${latest.description}.`,
 				description: `Progression : ${project.progress}%`,
 				link: `/projects/${project.id}`,
 				priority: project.priority === "P0" || project.priority === "P1" ? "high" : "medium",
@@ -191,7 +190,7 @@ function generateProjectItems(userId: string, projects: Project[]): BriefingItem
 				category: "projects",
 				icon: "FolderIcon",
 				title: `Le projet "${project.name}" est en cours (${project.progress}%).`,
-				description: `${project.tasks.inProgress} tache${project.tasks.inProgress > 1 ? "s" : ""} en cours, ${project.tasks.todo} a faire`,
+				description: `${project.tasks.inProgress} tâche${project.tasks.inProgress > 1 ? "s" : ""} en cours, ${project.tasks.todo} à faire`,
 				link: `/projects/${project.id}`,
 				priority: "low",
 			});
@@ -226,7 +225,7 @@ function generateTaskItems(userId: string, tasks: Task[]): BriefingItem[] {
 				id: `task-due-today-${task.id}`,
 				category: "deadlines",
 				icon: "ExclamationTriangleIcon",
-				title: `Ta tache "${task.title}" arrive a echeance aujourd'hui.`,
+				title: `Ta tâche "${task.title}" arrive à échéance aujourd'hui.`,
 				description: task.projectName ? `Projet : ${task.projectName}` : undefined,
 				link: `/tasks/${task.id}`,
 				priority: "high",
@@ -237,7 +236,7 @@ function generateTaskItems(userId: string, tasks: Task[]): BriefingItem[] {
 				id: `task-due-tomorrow-${task.id}`,
 				category: "deadlines",
 				icon: "ClockIcon",
-				title: `Ta tache "${task.title}" arrive a echeance demain.`,
+				title: `Ta tâche "${task.title}" arrive à échéance demain.`,
 				description: task.projectName ? `Projet : ${task.projectName}` : undefined,
 				link: `/tasks/${task.id}`,
 				priority: "high",
@@ -248,7 +247,7 @@ function generateTaskItems(userId: string, tasks: Task[]): BriefingItem[] {
 				id: `task-due-soon-${task.id}`,
 				category: "deadlines",
 				icon: "ClockIcon",
-				title: `Ta tache "${task.title}" est due le ${humanDate(task.dueDate)}.`,
+				title: `Ta tâche "${task.title}" est due le ${humanDate(task.dueDate)}.`,
 				description: task.projectName ? `Projet : ${task.projectName}` : undefined,
 				link: `/tasks/${task.id}`,
 				priority: "medium",
@@ -266,8 +265,8 @@ function generateTaskItems(userId: string, tasks: Task[]): BriefingItem[] {
 				id: `task-progress-${task.id}`,
 				category: "tasks",
 				icon: "CheckCircleIcon",
-				title: `Ta tache "${task.title}" est en cours.`,
-				description: task.dueDate ? `Echeance : ${humanDate(task.dueDate)}` : undefined,
+				title: `Ta tâche "${task.title}" est en cours.`,
+				description: task.dueDate ? `Échéance : ${humanDate(task.dueDate)}` : undefined,
 				link: `/tasks/${task.id}`,
 				priority: "medium",
 			});
@@ -276,7 +275,7 @@ function generateTaskItems(userId: string, tasks: Task[]): BriefingItem[] {
 				id: "tasks-in-progress-summary",
 				category: "tasks",
 				icon: "CheckCircleIcon",
-				title: `Tu as ${inProgressTasks.length} taches en cours.`,
+				title: `Tu as ${inProgressTasks.length} tâches en cours.`,
 				description: inProgressTasks.map((t) => t.title).join(", "),
 				link: "/tasks",
 				priority: "medium",
@@ -291,7 +290,7 @@ function generateTaskItems(userId: string, tasks: Task[]): BriefingItem[] {
 			id: "tasks-todo-summary",
 			category: "tasks",
 			icon: "ClipboardDocumentListIcon",
-			title: `${todoTasks.length} tache${todoTasks.length > 1 ? "s" : ""} en attente te sont assignee${todoTasks.length > 1 ? "s" : ""}.`,
+			title: `${todoTasks.length} tâche${todoTasks.length > 1 ? "s" : ""} en attente te sont assignee${todoTasks.length > 1 ? "s" : ""}.`,
 			link: "/tasks",
 			priority: "low",
 		});
@@ -316,18 +315,18 @@ function generateScheduleItems(userId: string, meetings: Meeting[]): BriefingIte
 				id: `schedule-today-${mtg.id}`,
 				category: "schedule",
 				icon: "CalendarDaysIcon",
-				title: `Tu as 1 reunion aujourd'hui : ${mtg.title} a ${mtg.startTime}.`,
+				title: `Tu as 1 réunion aujourd'hui : ${mtg.title} à ${mtg.startTime}.`,
 				description: participantNames ? `Avec ${participantNames}` : undefined,
 				link: `/meetings/${mtg.id}`,
 				priority: "medium",
 			});
 		} else {
-			const titles = todayMeetings.map((m) => `${m.title} a ${m.startTime}`).join(" et ");
+			const titles = todayMeetings.map((m) => `${m.title} à ${m.startTime}`).join(" et ");
 			items.push({
 				id: "schedule-today-summary",
 				category: "schedule",
 				icon: "CalendarDaysIcon",
-				title: `Tu as ${todayMeetings.length} reunions aujourd'hui : ${titles}.`,
+				title: `Tu as ${todayMeetings.length} réunions aujourd'hui : ${titles}.`,
 				link: "/meetings",
 				priority: "medium",
 			});
@@ -344,7 +343,7 @@ function generateScheduleItems(userId: string, meetings: Meeting[]): BriefingIte
 			id: `schedule-upcoming-${mtg.id}`,
 			category: "schedule",
 			icon: "CalendarDaysIcon",
-			title: `Reunion "${mtg.title}" prevue le ${humanDate(mtg.date)} a ${mtg.startTime}.`,
+			title: `Réunion "${mtg.title}" prévue le ${humanDate(mtg.date)} à ${mtg.startTime}.`,
 			description: mtg.location ? `Lieu : ${mtg.location}` : undefined,
 			priority: "low",
 		});
@@ -422,7 +421,7 @@ function buildTodaySchedule(userId: string, meetings: Meeting[], tasks: Task[]):
 		schedule.push({
 			id: task.id,
 			time: "23:59",
-			title: `Echeance : ${task.title}`,
+			title: `Échéance : ${task.title}`,
 			participants: [],
 			type: "deadline",
 		});
@@ -469,7 +468,7 @@ function buildPendingActions(userId: string, tasks: Task[], projects: Project[])
 		for (const comm of pendingComms) {
 			actions.push({
 				id: `action-comm-${comm.id}`,
-				title: `Communication a preparer : ${comm.description} (${project.name})`,
+				title: `Communication à préparer : ${comm.description} (${project.name})`,
 				urgency: "soon",
 				link: `/projects/${project.id}`,
 			});

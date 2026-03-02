@@ -5,7 +5,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-youtube/centre-info/echelle",
+	section: "protected",
+	module: "moderation_youtube",
+	description: "Échelle de priorité de la modération YouTube.",
+	requiredPermissions: [{ module: "moderation_youtube", action: "view" }],
+	entityScoped: true,
+});
 
 // Data
 interface Member {
@@ -30,7 +39,7 @@ const HIERARCHY: HierarchyLevel[] = [
 		borderColor: "border-l-error-500",
 		iconBgColor: "bg-error-100 dark:bg-error-900/20",
 		iconColor: "text-error-500",
-		members: [{ name: "Jeremy", role: "Gerant des Lives" }],
+		members: [{ name: "Jeremy", role: "Gérant des Lives" }],
 	},
 	{
 		title: "Responsables",
@@ -45,7 +54,7 @@ const HIERARCHY: HierarchyLevel[] = [
 	},
 	{
 		title: "Coordinateurs",
-		subtitle: "Moderateur experimente designe avant chaque Live",
+		subtitle: "Modérateur expérimenté désigné avant chaque Live",
 		badgeVariant: "info",
 		borderColor: "border-l-info-500",
 		iconBgColor: "bg-info-100 dark:bg-info-900/20",
@@ -59,18 +68,18 @@ const HIERARCHY: HierarchyLevel[] = [
 		],
 	},
 	{
-		title: "Referents & Tuteurs",
-		subtitle: "Premiers a contacter en cas de besoin",
+		title: "Référents & Tuteurs",
+		subtitle: "Premiers à contacter en cas de besoin",
 		badgeVariant: "primary",
 		borderColor: "border-l-primary-500",
 		iconBgColor: "bg-primary-100 dark:bg-primary-900/20",
 		iconColor: "text-primary-500",
 		members: [
-			{ name: "Anaelle", role: "Referente" },
-			{ name: "Tacitusk7056", role: "Referent" },
-			{ name: "Miabehly", role: "Referente" },
-			{ name: "Emeline", role: "Referente" },
-			{ name: "Reouven", role: "Referent" },
+			{ name: "Anaelle", role: "Référente" },
+			{ name: "Tacitusk7056", role: "Référent" },
+			{ name: "Miabehly", role: "Référente" },
+			{ name: "Emeline", role: "Référente" },
+			{ name: "Reouven", role: "Référent" },
 		],
 	},
 ];
@@ -83,13 +92,13 @@ const HIERARCHY: HierarchyLevel[] = [
  */
 export default function EchelleYouTubePage() {
 	return (
-		<PageContainer title="Echelle de priorite" description="Chaine de commandement pour la moderation YouTube">
+		<PageContainer title="Échelle de priorité" description="Chaîne de commandement pour la modération YouTube">
 			{/* Intro banner */}
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-8 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
-					En cas de doute sur une action de moderation YouTube, remontez toujours au niveau superieur.
-					Respectez la chaine de commandement.
+					En cas de doute sur une action de modération YouTube, remontez toujours au niveau supérieur.
+					Respectez la chaîne de commandement.
 				</p>
 			</div>
 

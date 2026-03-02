@@ -3,9 +3,18 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Tag } from "@/components/ui";
+import { Card, Badge, Icon, Tag, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-youtube/consignes",
+	section: "protected",
+	module: "moderation_youtube",
+	description: "Consignes de modération YouTube.",
+	requiredPermissions: [{ module: "moderation_youtube", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 type Priority = "Haute" | "Moyenne" | "Standard";
@@ -70,10 +79,10 @@ export default function ConsignesYouTubePage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-6 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<div>
-					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone a acces restreint</p>
+					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone à accès restreint</p>
 					<p className="text-info-600 dark:text-info-500 mt-1 text-xs">
-						Seuls les membres de la Legacy peuvent creer ou modifier les consignes YouTube. Les autres
-						equipes ont un acces en lecture seule.
+						Seuls les membres de la Legacy peuvent créer ou modifier les consignes YouTube. Les autres
+						équipes ont un accès en lecture seule.
 					</p>
 				</div>
 			</div>
@@ -97,7 +106,7 @@ export default function ConsignesYouTubePage() {
 				<div className="border-error-200 bg-error-50 dark:border-error-800 dark:bg-error-900/10 mb-4 flex items-center gap-2 rounded-lg border px-4 py-3">
 					<Icon name="lock" size="sm" className="text-error-500 shrink-0" />
 					<p className="text-error-700 dark:text-error-400 text-sm">
-						Permission refusee — Seule la Legacy peut modifier les consignes. Vous etes connecte en tant que{" "}
+						Permission refusée — Seule la Legacy peut modifier les consignes. Vous êtes connecté en tant que{" "}
 						<strong>{CURRENT_USER.team}</strong>.
 					</p>
 				</div>
@@ -184,7 +193,7 @@ export default function ConsignesYouTubePage() {
 										</div>
 										<div className="flex items-center gap-1.5">
 											<Icon name="shield" size="xs" />
-											<span>Emise par la Legacy</span>
+											<span>Émise par la Legacy</span>
 										</div>
 									</div>
 
@@ -203,7 +212,7 @@ export default function ConsignesYouTubePage() {
 											)}
 										>
 											<Icon name="edit" size="xs" />
-											Editer
+											Éditer
 											{!CURRENT_USER.isLegacy && (
 												<Icon name="lock" size="xs" className="ml-0.5" />
 											)}
@@ -220,7 +229,7 @@ export default function ConsignesYouTubePage() {
 			<div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
 				{consignes.length} consigne{consignes.length > 1 ? "s" : ""} active
 				{consignes.length > 1 ? "s" : ""}
-				{" — "}Derniere mise a jour par la Legacy
+				{" — "}Dernière mise à jour par la Legacy
 			</div>
 		</PageContainer>
 	);

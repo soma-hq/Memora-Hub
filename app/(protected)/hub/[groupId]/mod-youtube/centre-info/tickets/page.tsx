@@ -5,7 +5,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-youtube/centre-info/tickets",
+	section: "protected",
+	module: "moderation_youtube",
+	description: "Gestion des tickets YouTube.",
+	requiredPermissions: [{ module: "moderation_youtube", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * YouTube ticket system page explaining moderation ticket procedures.
@@ -55,7 +64,7 @@ export default function TicketsYouTubePage() {
 					</div>
 					<p className={cn(textClasses.body, "leading-relaxed")}>
 						Il est formellement interdit de traiter des cas de moderation YouTube par messages prives. Cela
-						protege a la fois le moderateur et le membre, en garantissant une tracabilite et une
+						protege à la fois le moderateur et le membre, en garantissant une tracabilite et une
 						transparence totale des echanges.
 					</p>
 				</Card>
@@ -69,7 +78,7 @@ export default function TicketsYouTubePage() {
 						<h3 className={headingClasses.h5}>Rediriger les membres</h3>
 					</div>
 					<p className={cn(textClasses.body, "mb-3 leading-relaxed")}>
-						Lorsqu&apos;un membre vous contacte en prive pour un sujet lie a la moderation YouTube,
+						Lorsqu&apos;un membre vous contacte en prive pour un sujet lie à la moderation YouTube,
 						redirigez-le systematiquement vers le systeme de tickets.
 					</p>
 					<ul className="ml-4 list-disc space-y-1.5">

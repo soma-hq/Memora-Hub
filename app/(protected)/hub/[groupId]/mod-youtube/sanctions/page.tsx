@@ -5,7 +5,16 @@ import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Tag, Modal, Button } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-youtube/sanctions",
+	section: "protected",
+	module: "moderation_youtube",
+	description: "Gestion des sanctions YouTube.",
+	requiredPermissions: [{ module: "moderation_youtube", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -38,7 +47,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Spam Commentaires",
 		icon: "warning",
 		color: "warning",
-		defaultReason: "Envoi massif de commentaires repetitifs ou de spam dans les sections commentaires",
+		defaultReason: "Envoi massif de commentaires répétitifs ou de spam dans les sections commentaires",
 		sanctions: {
 			3: { first: "Masquer", repeat: "Bloquer 24h", multi: "Bloquer" },
 			2: { first: "Bloquer 24h", repeat: "Bloquer", multi: "Bloquer" },
@@ -50,7 +59,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Insultes / Irrespect",
 		icon: "chat",
 		color: "error",
-		defaultReason: "Commentaires irrespectueux envers le createur, le staff ou la communaute",
+		defaultReason: "Commentaires irrespectueux envers le créateur, le staff ou la communauté",
 		sanctions: {
 			3: { first: "Masquer", repeat: "Bloquer 24h", multi: "Bloquer 7d" },
 			2: { first: "Bloquer 24h", repeat: "Bloquer 7d", multi: "Bloquer" },
@@ -62,7 +71,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Self-promo / Liens",
 		icon: "globe",
 		color: "info",
-		defaultReason: "Promotion non-autorisee de chaine ou diffusion de liens externes",
+		defaultReason: "Promotion non-autorisée de chaîne ou diffusion de liens externes",
 		sanctions: {
 			3: { first: "Masquer", repeat: "Bloquer 24h", multi: "Bloquer" },
 			2: { first: "Bloquer 24h", repeat: "Bloquer", multi: "Bloquer" },
@@ -71,10 +80,10 @@ const SANCTION_TYPES: SanctionType[] = [
 	},
 	{
 		id: "usurpation",
-		title: "Usurpation d'identite",
+		title: "Usurpation d'identité",
 		icon: "profile",
 		color: "warning",
-		defaultReason: "Utilisation frauduleuse de l'identite du createur ou d'un membre du staff",
+		defaultReason: "Utilisation frauduleuse de l'identité du créateur ou d'un membre du staff",
 		sanctions: {
 			3: { first: "Signalement+Bloquer", repeat: "Bloquer", multi: "Bloquer" },
 			2: { first: "Bloquer", repeat: "Bloquer", multi: "Bloquer" },
@@ -86,7 +95,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Violation guidelines communautaires",
 		icon: "flag",
 		color: "error",
-		defaultReason: "Violation des regles de la communaute YouTube sur la chaine",
+		defaultReason: "Violation des règles de la communauté YouTube sur la chaîne",
 		sanctions: {
 			3: { first: "Bloquer 7d", repeat: "Bloquer", multi: "Bloquer" },
 			2: { first: "Bloquer", repeat: "Bloquer", multi: "Bloquer" },
@@ -95,10 +104,10 @@ const SANCTION_TYPES: SanctionType[] = [
 	},
 	{
 		id: "harcelement",
-		title: "Harcelement",
+		title: "Harcèlement",
 		icon: "shield",
 		color: "error",
-		defaultReason: "Comportement de harcelement repete dans les commentaires ou le chat en direct",
+		defaultReason: "Comportement de harcèlement répété dans les commentaires ou le chat en direct",
 		sanctions: {
 			3: { first: "Bloquer 7d", repeat: "Bloquer", multi: "Bloquer" },
 			2: { first: "Bloquer", repeat: "Bloquer", multi: "Bloquer" },
@@ -123,7 +132,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Brigading",
 		icon: "users",
 		color: "error",
-		defaultReason: "Participation a une attaque coordonnee de mass-report ou mass-dislike",
+		defaultReason: "Participation à une attaque coordonnée de mass-report ou mass-dislike",
 		fixed: true,
 		sanctions: {
 			3: { first: "Bloquer", repeat: "Bloquer", multi: "Bloquer" },
@@ -136,9 +145,9 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Underaged",
 		icon: "eye",
 		color: "warning",
-		defaultReason: "Compte identifie comme mineur — procedure speciale appliquee",
+		defaultReason: "Compte identifié comme mineur — procédure spéciale appliquée",
 		fixed: true,
-		note: "Procedure speciale : Bloquer 30 jours systematique, quel que soit le Livecon.",
+		note: "Procédure spéciale : Bloquer 30 jours systématique, quel que soit le Livecon.",
 		sanctions: {
 			3: { first: "Bloquer 30d", repeat: "Bloquer 30d", multi: "Bloquer 30d" },
 			2: { first: "Bloquer 30d", repeat: "Bloquer 30d", multi: "Bloquer 30d" },
@@ -158,7 +167,7 @@ const LIVECON_CONFIG: Record<
 		text: "text-success-700 dark:text-success-300",
 		ring: "ring-success-300 dark:ring-success-700",
 		dot: "bg-success-500",
-		description: "Situation calme. Sanctions legeres, priorite a la pedagogie.",
+		description: "Situation calme. Sanctions légères, priorité à la pédagogie.",
 	},
 	2: {
 		label: "Livecon 2",
@@ -167,7 +176,7 @@ const LIVECON_CONFIG: Record<
 		text: "text-warning-700 dark:text-warning-300",
 		ring: "ring-warning-300 dark:ring-warning-700",
 		dot: "bg-warning-500",
-		description: "Situation tendue. Sanctions moderees, tolerance reduite.",
+		description: "Situation tendue. Sanctions modérées, tolérance réduite.",
 	},
 	1: {
 		label: "Livecon 1",
@@ -176,15 +185,15 @@ const LIVECON_CONFIG: Record<
 		text: "text-error-700 dark:text-error-300",
 		ring: "ring-error-300 dark:ring-error-700",
 		dot: "bg-error-500",
-		description: "Situation critique. Sanctions maximales, tolerance zero.",
+		description: "Situation critique. Sanctions maximales, tolérance zéro.",
 	},
 };
 
 /** Active consignes displayed above the sanctions panel */
 const ACTIVE_CONSIGNES = [
-	"Toujours privilegier la desescalade avant toute sanction",
-	"Documenter chaque sanction avec la raison dans le systeme",
-	"En cas de doute, consulter un moderateur senior",
+	"Toujours privilégier la désescalade avant toute sanction",
+	"Documenter chaque sanction avec la raison dans le système",
+	"En cas de doute, consulter un modérateur senior",
 ];
 
 /** Currently active Livecon level (read-only, set by administration) */
@@ -229,7 +238,7 @@ export default function SanctionsYouTubePage() {
 	return (
 		<PageContainer
 			title="Panel de Sanctions YouTube"
-			description="Sanctions adaptees au Livecon actif — consultation uniquement"
+			description="Sanctions adaptées au Livecon actif — consultation uniquement"
 		>
 			{/* Top bar: Active consignes + Livecon logo + Reference button */}
 			<div className="mb-5 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
@@ -306,7 +315,7 @@ export default function SanctionsYouTubePage() {
 										</h3>
 										{!isExpanded && (
 											<p className="mt-0.5 text-[10px] text-gray-400 dark:text-gray-500">
-												1ere : <span className="font-medium">{row.first}</span>
+												1ère : <span className="font-medium">{row.first}</span>
 											</p>
 										)}
 									</div>
@@ -339,13 +348,13 @@ export default function SanctionsYouTubePage() {
 												<thead>
 													<tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
 														<th className="px-3 py-2 text-left text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															1ere fois
+															1ère fois
 														</th>
 														<th className="px-3 py-2 text-left text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															Recidive
+															Récidive
 														</th>
 														<th className="px-3 py-2 text-left text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															Multi-recidive
+															Multi-récidive
 														</th>
 													</tr>
 												</thead>
@@ -377,7 +386,7 @@ export default function SanctionsYouTubePage() {
 										{/* Default reason — read-only */}
 										<div>
 											<label className="mb-1 block text-[10px] font-medium text-gray-400 dark:text-gray-500">
-												Raison par defaut
+												Raison par défaut
 											</label>
 											<div className="rounded-md border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs text-gray-600 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
 												{sanction.defaultReason}
@@ -395,7 +404,7 @@ export default function SanctionsYouTubePage() {
 			<Modal
 				isOpen={refModalOpen}
 				onClose={() => setRefModalOpen(false)}
-				title="Reference des niveaux Livecon"
+				title="Référence des niveaux Livecon"
 				size="sm"
 			>
 				<div className="space-y-3">

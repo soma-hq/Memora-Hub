@@ -4,7 +4,7 @@
 import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Button, Tabs, Modal, EmptyState, Icon } from "@/components/ui";
+import { Card, Badge, Button, Tabs, Modal, EmptyState, Icon, StyledEmptyState } from "@/components/ui";
 import { JuniorCard } from "@/features/momentum/components/junior-card";
 import { FSIPanel } from "@/features/momentum/components/fsi-panel";
 import { FormationCard } from "@/features/momentum/components/formation-card";
@@ -13,7 +13,6 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { Junior, AuthorRole, RemarkType } from "@/features/momentum/types";
 import {
-
 	sessionStatusVariantMap,
 	remarkTypeVariantMap,
 	PIM_STATUSES,
@@ -21,7 +20,16 @@ import {
 	MODERATION_FUNCTIONS,
 } from "@/features/momentum/types";
 import type { PimStatus, Dispositif, ModerationFunction } from "@/features/momentum/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/momentum/sessions/[sessionId]",
+	section: "protected",
+	module: "momentum",
+	description: "Détail d'une session Momentum.",
+	requiredPermissions: [{ module: "momentum", action: "view" }],
+	entityScoped: true,
+});
 
 const selectClasses = cn(
 	"rounded-lg border px-3 py-2 text-sm transition-colors duration-200 appearance-none",
@@ -180,7 +188,7 @@ export default function MomentumSessionDetailPage() {
 				<EmptyState
 					icon="folder"
 					title="Session introuvable"
-					description="La session PIM demandee n'existe pas ou a ete supprimee."
+					description="La session PIM demandee n'existe pas ou à ete supprimee."
 				/>
 			</PageContainer>
 		);
@@ -339,15 +347,10 @@ export default function MomentumSessionDetailPage() {
 					</div>
 
 					{allNotes.length === 0 ? (
-						<EmptyState
+						<StyledEmptyState
 							icon="document"
 							title="Aucune note"
-							description="Aucune note n'a encore ete ajoutee pour cette session."
-							actionLabel="Ajouter une note"
-							onAction={() => {
-								setNoteJuniorId(session.juniors[0]?.id || "");
-								setNoteModalOpen(true);
-							}}
+							description="Aucune note n'a encore été ajoutée pour cette session."
 						/>
 					) : (
 						<div className="flex flex-col gap-3">
@@ -392,7 +395,7 @@ export default function MomentumSessionDetailPage() {
 			{activeTab === "formations" && (
 				<div>
 					{formations.length === 0 ? (
-						<EmptyState
+						<StyledEmptyState
 							icon="training"
 							title="Aucune formation"
 							description="Aucune formation n'est disponible pour le moment."
@@ -428,15 +431,10 @@ export default function MomentumSessionDetailPage() {
 					</div>
 
 					{allRemarks.length === 0 ? (
-						<EmptyState
-							icon="flag"
+						<StyledEmptyState
+							icon="chat"
 							title="Aucune remarque"
-							description="Aucune remarque n'a ete enregistree pour cette session."
-							actionLabel="Ajouter une remarque"
-							onAction={() => {
-								setRemarkJuniorId(session.juniors[0]?.id || "");
-								setRemarkModalOpen(true);
-							}}
+							description="Aucune remarque n'a été enregistrée pour cette session."
 						/>
 					) : (
 						<div className="flex flex-col gap-3">

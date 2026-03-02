@@ -8,7 +8,16 @@ import { PimSessionCard } from "@/features/momentum/components/pim-session-card"
 import { useSessions } from "@/features/momentum/hooks";
 import { cn } from "@/lib/utils/cn";
 import type { SessionStatus } from "@/features/momentum/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/momentum/sessions",
+	section: "protected",
+	module: "momentum",
+	description: "Liste des sessions Momentum.",
+	requiredPermissions: [{ module: "momentum", action: "view" }],
+	entityScoped: true,
+});
 
 const SESSION_STATUSES: { value: SessionStatus | ""; label: string }[] = [
 	{ value: "", label: "Tous les statuts" },
@@ -89,8 +98,8 @@ export default function MomentumSessionsPage() {
 			{filteredSessions.length === 0 ? (
 				<EmptyState
 					icon="folder"
-					title="Aucune session trouvee"
-					description="Aucune session PIM ne correspond a vos criteres de recherche."
+					title="Aucune session trouvée"
+					description="Aucune session PIM ne correspond à vos critères de recherche."
 				/>
 			) : (
 				<div className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">

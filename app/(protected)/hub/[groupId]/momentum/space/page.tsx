@@ -6,7 +6,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Icon, Badge, Tabs, Divider } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/momentum/space",
+	section: "protected",
+	module: "momentum",
+	description: "Espace Momentum du groupe.",
+	requiredPermissions: [{ module: "momentum", action: "view" }],
+	entityScoped: true,
+});
 
 const SPACE_TABS = [
 	{ id: "overview", label: "Vue d'ensemble", icon: "home" as const },
@@ -41,21 +50,21 @@ const TIMELINE_STEPS: {
 		icon: "training",
 		title: "3. Periode 1 — Integration",
 		description:
-			"Phase d'integration et de decouverte. Le Junior assiste aux formations de base, observe les equipes en action, decouvre les outils et les modes operatoires internes. Les premieres competences sont evaluees par le Referent. C'est une periode d'apprentissage intense ou le Junior est accompagne pas a pas. Les sessions se font en vocal Discord avec des debriefs reguliers.",
+			"Phase d'integration et de decouverte. Le Junior assiste aux formations de base, observe les equipes en action, decouvre les outils et les modes operatoires internes. Les premieres competences sont evaluees par le Referent. C'est une periode d'apprentissage intense ou le Junior est accompagne pas à pas. Les sessions se font en vocal Discord avec des debriefs reguliers.",
 		involved: "Referent, Tuteurs, Junior",
 	},
 	{
 		icon: "document",
 		title: "4. Bilan P1 — RRJ",
 		description:
-			"Le Bilan RRJ (Responsable, Referent, Junior) est une reunion formelle a trois. Le Responsable Momentum, le Referent et le Junior evaluent ensemble les acquis de la Periode 1. C'est un point de decision : soit le Junior passe en Periode 2, soit des ajustements sont necessaires. Le bilan est documente dans la FSI (Fiche de Suivi Individuelle).",
+			"Le Bilan RRJ (Responsable, Referent, Junior) est une réunion formelle à trois. Le Responsable Momentum, le Referent et le Junior evaluent ensemble les acquis de la Periode 1. C'est un point de decision : soit le Junior passe en Periode 2, soit des ajustements sont necessaires. Le bilan est documente dans la FSI (Fiche de Suivi Individuelle).",
 		involved: "Responsable (Legacy), Referent, Junior",
 	},
 	{
 		icon: "sparkles",
 		title: "5. Periode 2 — Approfondissement",
 		description:
-			"Le Junior gagne en autonomie. Des objectifs personnalises sont debloques, les formations se complexifient. Le Junior est amene a gerer des situations reelles avec moins de supervision. Les competences avancees sont evaluees. Cette periode met l'accent sur la prise de responsabilite et la capacite a travailler en equipe.",
+			"Le Junior gagne en autonomie. Des objectifs personnalises sont debloques, les formations se complexifient. Le Junior est amene à gerer des situations reelles avec moins de supervision. Les competences avancees sont evaluees. Cette periode met l'accent sur la prise de responsabilite et la capacite à travailler en equipe.",
 		involved: "Referent, Junior, Equipe de moderation",
 	},
 	{
@@ -77,7 +86,7 @@ const TIMELINE_STEPS: {
 		icon: "document",
 		title: "8. [Optionnel] Bilan Final",
 		description:
-			"Dernier bilan effectue a l'issue de la Periode Bonus. Decision definitive : validation ou fin du parcours PIM. Ce bilan est l'ultime evaluation, et la decision est sans appel.",
+			"Dernier bilan effectue à l'issue de la Periode Bonus. Decision definitive : validation ou fin du parcours PIM. Ce bilan est l'ultime evaluation, et la decision est sans appel.",
 		involved: "Responsable (Legacy), Referent, Junior",
 		optional: true,
 	},
@@ -85,7 +94,7 @@ const TIMELINE_STEPS: {
 		icon: "shield",
 		title: "9. Validation / Integration Marsha Squad",
 		description:
-			"Le Junior a complete sa PIM avec succes. Il rejoint officiellement la Marsha Squad en tant que membre a part entiere. Les acces sont mis a jour, le role est attribue, et le Junior est presente a l'equipe. C'est la fin du parcours Momentum et le debut d'une nouvelle etape.",
+			"Le Junior à complete sa PIM avec succes. Il rejoint officiellement la Marsha Squad en tant que membre à part entiere. Les accès sont mis à jour, le role est attribue, et le Junior est presente à l'equipe. C'est la fin du parcours Momentum et le debut d'une nouvelle etape.",
 		involved: "Legacy, Marsha Teams, Momentum, Junior",
 	},
 ];
@@ -111,9 +120,9 @@ const CHANNELS: { icon: IconName; label: string; description: string; detail: st
 	},
 	{
 		icon: "calendar",
-		label: "Reunions planifiees",
+		label: "Réunions planifiees",
 		description: "Bilans RRJ et points d'equipe",
-		detail: "Les reunions formelles (Bilans RRJ, points hebdomadaires Momentum, retrospectives) sont planifiees a l'avance. Elles suivent un format structure avec compte-rendu obligatoire. Les decisions prises en reunion sont consignees dans les FSI.",
+		detail: "Les réunions formelles (Bilans RRJ, points hebdomadaires Momentum, retrospectives) sont planifiees à l'avance. Elles suivent un format structure avec compte-rendu obligatoire. Les decisions prises en réunion sont consignees dans les FSI.",
 	},
 ];
 
@@ -150,11 +159,11 @@ export default function MomentumSpacePage() {
 									role est d&apos;accueillir, former et evaluer les Juniors qui rejoignent les equipes
 									de moderation. A travers un parcours structure (la PIM), chaque Junior est
 									accompagne individuellement par un Referent pour acquerir les competences
-									necessaires a son poste.
+									necessaires à son poste.
 								</p>
 								<p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
 									Le Momentum agit comme un pont entre le recrutement et l&apos;integration
-									definitive. Il garantit que chaque membre de la Marsha Squad a ete forme selon les
+									definitive. Il garantit que chaque membre de la Marsha Squad à ete forme selon les
 									memes standards de qualite et partage les memes valeurs.
 								</p>
 							</div>
@@ -175,7 +184,7 @@ export default function MomentumSpacePage() {
 									les parcours d&apos;evolution pour l&apos;ensemble des equipes de moderation.
 								</p>
 								<p className="text-sm leading-relaxed text-gray-600 dark:text-gray-300">
-									Chaque Junior qui passe par Momentum suit un cursus adapte a son profil et a sa
+									Chaque Junior qui passe par Momentum suit un cursus adapte à son profil et à sa
 									fonction (Discord, Twitch, YouTube). Les formations couvrent les aspects techniques,
 									relationnels et organisationnels du metier de moderateur.
 								</p>
@@ -317,7 +326,7 @@ export default function MomentumSpacePage() {
 									"Assister les Referents lors des formations",
 									"Partager l'experience terrain avec les Juniors",
 									"Intervenir en renfort si necessaire",
-									"Contribuer a l'ambiance positive du Momentum",
+									"Contribuer à l'ambiance positive du Momentum",
 									"Signaler les progres ou difficultes observes",
 								].map((item) => (
 									<li
@@ -383,13 +392,13 @@ export default function MomentumSpacePage() {
 									badge: "warning" as const,
 									label: "Momentum",
 									description:
-										"Pole de formation et d'integration. Les Referents et Tuteurs forment et evaluent les Juniors. Le Responsable Momentum rapporte a Marsha Teams et Legacy.",
+										"Pole de formation et d'integration. Les Referents et Tuteurs forment et evaluent les Juniors. Le Responsable Momentum rapporte à Marsha Teams et Legacy.",
 								},
 								{
 									badge: "neutral" as const,
 									label: "Juniors",
 									description:
-										"Membres en cours d'integration (PIM). Suivent le parcours de formation, sont evalues par les Referents, et aspirent a rejoindre la Marsha Squad.",
+										"Membres en cours d'integration (PIM). Suivent le parcours de formation, sont evalues par les Referents, et aspirent à rejoindre la Marsha Squad.",
 								},
 							].map((item, index) => (
 								<div key={item.label}>
@@ -530,7 +539,7 @@ export default function MomentumSpacePage() {
 									Duree estimee
 								</h4>
 								<p className="text-sm text-gray-600 dark:text-gray-300">
-									4 a 6 semaines pour la P1, 3 a 4 semaines pour la P2. Variable selon la progression.
+									4 à 6 semaines pour la P1, 3 à 4 semaines pour la P2. Variable selon la progression.
 								</p>
 							</div>
 							<div>
@@ -596,7 +605,7 @@ export default function MomentumSpacePage() {
 								</h4>
 								<p className="text-sm text-gray-600 dark:text-gray-300">
 									Formation ciblee sur les specificites internes. Le Junior est rapidement mis en
-									autonomie partielle. L&apos;accent est sur l&apos;adaptation aux procedures et a la
+									autonomie partielle. L&apos;accent est sur l&apos;adaptation aux procedures et à la
 									culture d&apos;equipe plutot que sur les competences de base.
 								</p>
 							</div>
@@ -605,7 +614,7 @@ export default function MomentumSpacePage() {
 									Duree estimee
 								</h4>
 								<p className="text-sm text-gray-600 dark:text-gray-300">
-									2 a 3 semaines pour la P1, 2 semaines pour la P2. Souvent plus rapide qu&apos;ATRIA.
+									2 à 3 semaines pour la P1, 2 semaines pour la P2. Souvent plus rapide qu&apos;ATRIA.
 								</p>
 							</div>
 							<div>

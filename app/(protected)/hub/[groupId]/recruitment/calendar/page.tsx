@@ -8,7 +8,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Button, Badge, Icon, Card } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/recruitment/calendar",
+	section: "protected",
+	module: "talent",
+	description: "Calendrier de recrutement.",
+	requiredPermissions: [{ module: "talent", action: "view" }],
+	entityScoped: true,
+});
 
 const DAYS_OF_WEEK = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 const MONTH_NAMES = [
@@ -231,7 +240,7 @@ export default function CalendarPage() {
 			</Card>
 
 			{/* Upcoming interviews list */}
-			<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Entretiens a venir</h3>
+			<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Entretiens à venir</h3>
 			<div className="space-y-3">
 				{interviews.map((interview) => (
 					<div

@@ -9,7 +9,16 @@ import { CANDIDATE_DECISIONS } from "@/features/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { Modal, Icon, EmptyState } from "@/components/ui";
 import type { Candidate } from "@/features/recruitment/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/recruitment/candidates",
+	section: "protected",
+	module: "talent",
+	description: "Liste des candidats.",
+	requiredPermissions: [{ module: "talent", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Candidates list page with search, session and decision filtering.
@@ -96,7 +105,7 @@ export default function CandidatesPage() {
 				<EmptyState
 					icon="users"
 					title="Aucun candidat"
-					description="Aucun candidat ne correspond a vos criteres de recherche."
+					description="Aucun candidat ne correspond à vos criteres de recherche."
 				/>
 			)}
 

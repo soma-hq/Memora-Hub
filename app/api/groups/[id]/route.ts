@@ -64,7 +64,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 /**
- * DELETE /api/groups/[id] - Delete a group
+ * DELETE /api/groups/[id] - Delete à group
  * @param request - Incoming request
  * @param params - Route params containing group ID
  * @returns JSON response confirming deletion

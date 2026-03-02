@@ -123,10 +123,10 @@ export function MeetingDetailModal({ isOpen, onClose, meeting }: MeetingDetailMo
 				{/* Notes */}
 				<Divider />
 				<div>
-					<h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Notes de reunion</h4>
+					<h4 className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Notes de réunion</h4>
 					<div className="min-h-[80px] rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
 						<p className="text-sm text-gray-400 italic">
-							{meeting.notes || "Aucune note pour cette reunion."}
+							{meeting.notes || "Aucune note pour cette réunion."}
 						</p>
 					</div>
 				</div>

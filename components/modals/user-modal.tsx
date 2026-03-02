@@ -6,7 +6,6 @@ import { Modal, ModalFooter, Button, Input, Select, Icon, Badge, Divider } from 
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { BadgeVariant } from "@/core/design/states";
 
-
 interface GroupAccess {
 	groupId: string;
 	groupName: string;
@@ -30,7 +29,7 @@ const roleOptions = [
 	{ label: "Admin", value: "Admin" },
 	{ label: "Manager", value: "Manager" },
 	{ label: "Collaborateur", value: "Collaborator" },
-	{ label: "Invite", value: "Guest" },
+	{ label: "Invité", value: "Guest" },
 ];
 
 const availableGroups = [
@@ -64,7 +63,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 
 	// Handlers
 	/**
-	 * Adds a new group access entry for an unassigned group.
+	 * Adds a new group accèss entry for an unassigned group.
 	 * @returns {void}
 	 */
 	const addGroupAccess = () => {
@@ -79,7 +78,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 	};
 
 	/**
-	 * Removes a group access entry by index.
+	 * Removes a group accèss entry by index.
 	 * @param {number} index - Index of the entry to remove
 	 * @returns {void}
 	 */
@@ -88,7 +87,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 	};
 
 	/**
-	 * Updates the role for a specific group access entry.
+	 * Updates the role for a specific group accèss entry.
 	 * @param {number} index - Index of the entry to update
 	 * @param {string} role - New role value
 	 * @returns {void}
@@ -126,7 +125,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 
 		try {
 			await new Promise((r) => setTimeout(r, 1000));
-			showSuccess(isEdit ? "Utilisateur modifie" : "Utilisateur cree");
+			showSuccess(isEdit ? "Utilisateur modifié" : "Utilisateur créé");
 			onClose();
 		} catch {
 			showError("Une erreur est survenue");
@@ -143,15 +142,15 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 			title={isEdit ? "Modifier l'utilisateur" : "Nouvel utilisateur"}
 			description={
 				isEdit
-					? "Modifiez les informations et les acces de l'utilisateur."
-					: "Remplissez les informations et definissez les acces par groupement."
+					? "Modifiez les informations et les accès de l'utilisateur."
+					: "Remplissez les informations et définissez les accès par groupement."
 			}
 			size="lg"
 		>
 			<form onSubmit={handleSubmit} className="space-y-5">
 				{/* Personal info */}
 				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					<Input label="Prenom" placeholder="John" defaultValue={user?.name?.split(" ")[0]} required />
+					<Input label="Prénom" placeholder="John" defaultValue={user?.name?.split(" ")[0]} required />
 					<Input label="Nom" placeholder="Doe" defaultValue={user?.name?.split(" ")[1]} required />
 				</div>
 				<Input label="Email" type="email" placeholder="john@memora.hub" defaultValue={user?.email} required />
@@ -162,15 +161,15 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 						type="password"
 						placeholder="Mot de passe temporaire"
 						required
-						hint="Minimum 8 caracteres"
+						hint="Minimum 8 caractères"
 					/>
 				)}
 
-				{/* Per-group access */}
-				<Divider label="Acces par groupement" className="pt-2" />
+				{/* Per-group accèss */}
+				<Divider label="Accès par groupement" className="pt-2" />
 
 				<div className="space-y-3">
-					{groupAccess.map((access, idx) => (
+					{groupAccess.map((accèss, idx) => (
 						<div
 							key={idx}
 							className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800"
@@ -182,7 +181,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 							<div className="min-w-0 flex-1">
 								<Select
 									options={availableGroups}
-									value={access.groupId}
+									value={accèss.groupId}
 									onChange={(e) => updateGroupId(idx, e.target.value)}
 								/>
 							</div>
@@ -190,17 +189,17 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 							<div className="w-40 shrink-0">
 								<Select
 									options={roleOptions}
-									value={access.role}
+									value={accèss.role}
 									onChange={(e) => updateGroupRole(idx, e.target.value)}
 								/>
 							</div>
 
 							<Badge
-								variant={roleVariant[access.role] || "neutral"}
+								variant={roleVariant[accèss.role] || "neutral"}
 								showDot={false}
 								className="hidden shrink-0 sm:flex"
 							>
-								{access.role}
+								{accèss.role}
 							</Badge>
 
 							{groupAccess.length > 1 && (
@@ -222,7 +221,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 							className="hover:border-primary-400 hover:bg-primary-50 hover:text-primary-600 dark:hover:border-primary-400 dark:hover:bg-primary-900/10 flex w-full items-center justify-center gap-2 rounded-xl border-2 border-dashed border-gray-300 px-4 py-3 text-sm font-medium text-gray-400 transition-all duration-200 dark:border-gray-600"
 						>
 							<Icon name="plus" size="sm" />
-							Ajouter un acces groupement
+							Ajouter un accès groupement
 						</button>
 					)}
 				</div>
@@ -232,7 +231,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 					<div className="flex gap-2">
 						<Icon name="info" size="sm" className="text-info-500 mt-0.5 shrink-0" />
 						<p className="text-info-700 dark:text-info-400 text-xs">
-							Chaque groupement a ses propres acces. Un utilisateur peut avoir un role different dans
+							Chaque groupement a ses propres accès. Un utilisateur peut avoir un rôle différent dans
 							chaque groupement auquel il appartient.
 						</p>
 					</div>
@@ -243,7 +242,7 @@ export function UserModal({ isOpen, onClose, user }: UserModalProps) {
 						Annuler
 					</Button>
 					<Button type="submit" isLoading={isLoading}>
-						{isEdit ? "Enregistrer" : "Creer l'utilisateur"}
+						{isEdit ? "Enregistrer" : "Créer l'utilisateur"}
 					</Button>
 				</ModalFooter>
 			</form>

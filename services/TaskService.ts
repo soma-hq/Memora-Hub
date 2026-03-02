@@ -286,7 +286,7 @@ export class TaskService {
 		return prisma.task.findMany({
 			where: {
 				dueDate: { lt: new Date() },
-				status: { notIn: ["done", "archived"] },
+				status: { notIn: ["done", "done"] },
 				...(groupId && { project: { groupId } }),
 			},
 			include: {

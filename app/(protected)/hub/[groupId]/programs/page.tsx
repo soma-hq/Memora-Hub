@@ -6,7 +6,6 @@ import { StyledEmptyState } from "@/components/ui/display/styled-empty-state";
 import { SectionHeaderBanner } from "@/components/ui/display/section-header-banner";
 import { Badge, Card, Icon } from "@/components/ui";
 import { definePageConfig } from "@/structures";
-import { cn } from "@/lib/utils/cn";
 import {
 	PROGRAM_STATUS_LABELS,
 	PROGRAM_PHASE_LABELS,
@@ -15,6 +14,8 @@ import {
 	programPhaseVariantMap,
 } from "@/features/programs/types";
 import type { ProgramEnrollment, ProgramDefinition, ProgramTrack } from "@/features/programs/types";
+import type { IconName } from "@/core/design/icons";
+
 // Static fallback data (programs.json is gitignored — will be replaced with server actions)
 const programsData = {
 	programs: [] as any[],
@@ -49,7 +50,7 @@ export default function ProgramsPage() {
 		<PageContainer>
 			{/* Header */}
 			<SectionHeaderBanner
-				icon="book-open"
+				icon="training"
 				title="Programmes de Formation"
 				description="Marsha Academy — Parcours d'integration et de formation"
 				accentColor="primary"
@@ -57,13 +58,13 @@ export default function ProgramsPage() {
 
 			{/* Overview stats */}
 			<div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-				<StatBox label="Programmes" value={programs.length} icon="BookOpen" />
-				<StatBox label="Inscriptions actives" value={activeEnrollments.length} icon="Users" />
-				<StatBox label="Terminees" value={completedEnrollments.length} icon="CheckCircle" />
+				<StatBox label="Programmes" value={programs.length} icon="training" />
+				<StatBox label="Inscriptions actives" value={activeEnrollments.length} icon="users" />
+				<StatBox label="Terminees" value={completedEnrollments.length} icon="success" />
 				<StatBox
 					label="Tracks disponibles"
 					value={programs.reduce((acc, p) => acc + p.availableTracks.length, 0)}
-					icon="Layers"
+					icon="folder"
 				/>
 			</div>
 
@@ -74,7 +75,7 @@ export default function ProgramsPage() {
 					<StyledEmptyState
 						title="Aucun programme"
 						description="Aucun programme de formation n'est disponible pour le moment."
-						icon="BookOpen"
+						icon="training"
 					/>
 				) : (
 					<div className="space-y-4">
@@ -92,7 +93,7 @@ export default function ProgramsPage() {
 					<StyledEmptyState
 						title="Aucune inscription active"
 						description="Aucun collaborateur n'est actuellement inscrit a un programme."
-						icon="UserPlus"
+						icon="users"
 					/>
 				) : (
 					<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -112,8 +113,8 @@ export default function ProgramsPage() {
 							<div className="flex items-center gap-3">
 								<div className="bg-primary-50 dark:bg-primary-900/20 flex h-10 w-10 items-center justify-center rounded-lg">
 									<Icon
-										name="BookOpen"
-										size={20}
+										name="training"
+										size="md"
 										className="text-primary-600 dark:text-primary-400"
 									/>
 								</div>
@@ -125,7 +126,7 @@ export default function ProgramsPage() {
 										{space.modules.length} module{space.modules.length > 1 ? "s" : ""}
 									</p>
 								</div>
-								{space.isLocked && <Icon name="Lock" size={16} className="text-gray-400" />}
+								{space.isLocked && <Icon name="lock" size="sm" className="text-gray-400" />}
 							</div>
 						</Card>
 					))}
@@ -139,12 +140,12 @@ export default function ProgramsPage() {
 // Sub-components
 // ---------------------------------------------------------------------------
 
-function StatBox({ label, value, icon }: { label: string; value: number; icon: string }) {
+function StatBox({ label, value, icon }: { label: string; value: number; icon: IconName }) {
 	return (
 		<Card className="p-4">
 			<div className="flex items-center gap-3">
 				<div className="bg-primary-50 dark:bg-primary-900/20 flex h-10 w-10 items-center justify-center rounded-lg">
-					<Icon name={icon} size={20} className="text-primary-600 dark:text-primary-400" />
+					<Icon name={icon} size="md" className="text-primary-600 dark:text-primary-400" />
 				</div>
 				<div>
 					<p className="text-2xl font-bold text-gray-900 dark:text-white">{value}</p>
@@ -163,19 +164,15 @@ function ProgramCard({ program }: { program: ProgramDefinition }) {
 					<div className="flex items-center gap-2">
 						<h3 className="text-base font-semibold text-gray-900 dark:text-white">{program.name}</h3>
 						{program.isOpen ? (
-							<Badge variant="success" size="sm">
-								Ouvert
-							</Badge>
+							<Badge variant="success">Ouvert</Badge>
 						) : (
-							<Badge variant="neutral" size="sm">
-								Ferme
-							</Badge>
+							<Badge variant="neutral">Ferme</Badge>
 						)}
 					</div>
 					<p className="mt-1 text-sm text-gray-600 dark:text-gray-400">{program.description}</p>
 					<div className="mt-3 flex flex-wrap gap-2">
 						{program.availableTracks.map((track: ProgramTrack) => (
-							<Badge key={track.id} variant="info" size="sm">
+							<Badge key={track.id} variant="info">
 								{PROGRAM_FUNCTION_LABELS[track.function] ?? track.function}
 							</Badge>
 						))}
@@ -203,10 +200,10 @@ function EnrollmentCard({ enrollment }: { enrollment: ProgramEnrollment }) {
 				</div>
 			</div>
 			<div className="mb-2 flex items-center justify-between">
-				<Badge variant={programStatusVariantMap[enrollment.status]} size="sm">
+				<Badge variant={programStatusVariantMap[enrollment.status]}>
 					{PROGRAM_STATUS_LABELS[enrollment.status]}
 				</Badge>
-				<Badge variant={programPhaseVariantMap[enrollment.currentPhase]} size="sm">
+				<Badge variant={programPhaseVariantMap[enrollment.currentPhase]}>
 					{PROGRAM_PHASE_LABELS[enrollment.currentPhase]}
 				</Badge>
 			</div>

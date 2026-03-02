@@ -3,13 +3,19 @@
 // React
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { Button, Input, Card, Icon } from "@/components/ui";
+import { Button, Input, SectionCard, Icon } from "@/components/ui";
 import { showSuccess, showWarning, showInfo, showError } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "settings/account",
+	section: "protected",
+	description: "Paramètres du compte utilisateur.",
+});
 
 /**
- * Account settings page for managing profile info and avatar.
- * @returns The account settings form
+ * Account settings page
+ * @returns Account settings form
  */
 export default function AccountPage() {
 	const [isLoading, setIsLoading] = useState(false);
@@ -55,8 +61,7 @@ export default function AccountPage() {
 	return (
 		<div className="max-w-2xl space-y-6">
 			{/* Avatar */}
-			<Card padding="lg">
-				<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Photo de profil</h3>
+			<SectionCard title="Photo de profil" icon="profile" color="primary" padding="lg">
 				<div className="flex items-center gap-6">
 					<Image
 						src={avatarPreview}
@@ -86,11 +91,10 @@ export default function AccountPage() {
 						<p className="text-xs text-gray-400">JPG, PNG ou GIF. Max 2 Mo.</p>
 					</div>
 				</div>
-			</Card>
+			</SectionCard>
 
 			{/* Personal info */}
-			<Card padding="lg">
-				<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Informations personnelles</h3>
+			<SectionCard title="Informations personnelles" icon="edit" color="primary" padding="lg">
 				<form onSubmit={handleSave} className="space-y-4">
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						<Input label="Prénom" defaultValue="Jeremy" />
@@ -102,7 +106,7 @@ export default function AccountPage() {
 						defaultValue="jeremy@memora.hub"
 						hint="Votre adresse email professionnelle"
 					/>
-					<Input label="Telephone" type="tel" placeholder="+33 6 00 00 00 00" />
+					<Input label="Téléphone" type="tel" placeholder="+33 6 00 00 00 00" />
 					<Input
 						label="Poste"
 						placeholder="Votre fonction dans l'organisation"
@@ -114,7 +118,7 @@ export default function AccountPage() {
 						</Button>
 					</div>
 				</form>
-			</Card>
+			</SectionCard>
 		</div>
 	);
 }

@@ -2,11 +2,17 @@
 
 // React
 import { useState } from "react";
-import { Card, Button, Icon, Badge } from "@/components/ui";
+import { Button, Icon, Badge, SectionCard } from "@/components/ui";
 import { ConfirmAction } from "@/components/feedback/confirm-action";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "settings/data",
+	section: "protected",
+	description: "Gestion des données personnelles.",
+});
 
 const exportFormats = [
 	{
@@ -37,7 +43,7 @@ const dataCategories = [
 	{ label: "Projets et tâches", count: "47 éléments", checked: true },
 	{ label: "Réunions", count: "12 éléments", checked: true },
 	{ label: "Absences", count: "3 éléments", checked: true },
-	{ label: "Activite et logs", count: "156 entrees", checked: false },
+	{ label: "Activité et logs", count: "156 entrées", checked: false },
 ];
 
 /**
@@ -72,13 +78,10 @@ export default function SettingsDataPage() {
 	return (
 		<div className="space-y-6">
 			{/* Export section */}
-			<Card padding="lg">
-				<div className="mb-6">
-					<h3 className="text-lg font-semibold text-gray-900 dark:text-white">Exporter mes données</h3>
-					<p className="mt-1 text-sm text-gray-400">
-						Télécharger une copie de vos données conformément au RGPD (Art. 20 — Droit à la portabilité).
-					</p>
-				</div>
+			<SectionCard title="Exporter mes données" icon="download" color="primary" padding="lg">
+				<p className="mb-6 text-sm text-gray-400">
+					Télécharger une copie de vos données conformément au RGPD (Art. 20 — Droit à la portabilité).
+				</p>
 
 				{/* Data categories */}
 				<div className="mb-6">
@@ -140,11 +143,10 @@ export default function SettingsDataPage() {
 					<Icon name="download" size="xs" />
 					Exporter mes données
 				</Button>
-			</Card>
+			</SectionCard>
 
 			{/* Data usage */}
-			<Card padding="lg">
-				<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Utilisation des données</h3>
+			<SectionCard title="Utilisation des données" icon="stats" color="primary" padding="lg">
 				<div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
 					{[
 						{ label: "Stockage utilisé", value: "24.7 Mo", icon: "folder" as IconName },
@@ -159,18 +161,13 @@ export default function SettingsDataPage() {
 						</div>
 					))}
 				</div>
-			</Card>
+			</SectionCard>
 
 			{/* Danger zone */}
-			<Card padding="lg" className="border-error-200 dark:border-error-800">
+			<SectionCard title="Zone de danger" icon="warning" color="error" padding="lg">
 				<div className="flex items-start gap-4">
-					<div className="bg-error-100 dark:bg-error-900/20 shrink-0 rounded-lg p-2">
-						<Icon name="warning" size="md" className="text-error-500" />
-					</div>
 					<div className="flex-1">
-						<h3 className="text-error-700 dark:text-error-400 text-lg font-semibold">
-							Supprimer mon compte
-						</h3>
+						<h4 className="text-error-700 dark:text-error-400 font-semibold">Supprimer mon compte</h4>
 						<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
 							Cette action est définitive. Toutes vos données seront supprimées de manière permanente
 							après un délai de 30 jours. Vous recevrez un email de confirmation avant la suppression.
@@ -186,7 +183,7 @@ export default function SettingsDataPage() {
 						</Button>
 					</div>
 				</div>
-			</Card>
+			</SectionCard>
 
 			<ConfirmAction
 				isOpen={showDeleteConfirm}

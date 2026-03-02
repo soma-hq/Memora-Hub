@@ -1,10 +1,15 @@
 "use client";
 
-// React
 import { useState } from "react";
-import { Card, Button, Icon } from "@/components/ui";
+import { Button, SectionCard } from "@/components/ui";
 import { showSuccess } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "settings/notifications",
+	section: "protected",
+	description: "Configuration des notifications.",
+});
 
 interface NotifSetting {
 	label: string;
@@ -28,9 +33,10 @@ const defaultSettings: NotifSetting[] = [
 ];
 
 /**
- * Notification settings page for configuring email and push preferences.
- * @returns The notification preferences form
+ * Notification settings page
+ * @returns - Notification preferences form
  */
+
 export default function NotificationsSettingsPage() {
 	const [settings, setSettings] = useState(defaultSettings);
 
@@ -42,10 +48,7 @@ export default function NotificationsSettingsPage() {
 
 	return (
 		<div className="max-w-2xl space-y-6">
-			<Card padding="lg">
-				<h3 className="mb-2 text-lg font-semibold text-gray-900 dark:text-white">
-					Préférences de notifications
-				</h3>
+			<SectionCard title="Préférences de notifications" icon="bell" color="primary" padding="lg">
 				<p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
 					Choisissez comment vous souhaitez être notifié.
 				</p>
@@ -99,7 +102,7 @@ export default function NotificationsSettingsPage() {
 						</div>
 					))}
 				</div>
-			</Card>
+			</SectionCard>
 
 			<div className="flex justify-end">
 				<Button onClick={() => showSuccess("Préférences de notifications enregistrées")}>Enregistrer</Button>

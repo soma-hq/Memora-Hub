@@ -58,8 +58,8 @@ export function PatchnoteBell() {
 						],
 				isOpen && !isAbsent && "bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-200",
 			)}
-			aria-label={isAbsent ? "Mises a jour communiquees a votre retour" : "Patchnotes"}
-			title={isAbsent ? undefined : "Mises a jour"}
+			aria-label={isAbsent ? "Mises à jour communiquees à votre retour" : "Patchnotes"}
+			title={isAbsent ? undefined : "Mises à jour"}
 		>
 			<Icon name="news" size="md" style={hasNew && !isAbsent ? "solid" : "outline"} />
 
@@ -88,7 +88,7 @@ export function PatchnoteBell() {
 	return (
 		<>
 			{isAbsent ? (
-				<Tooltip content="Les mises a jour te seront communiquees a ton retour" position="bottom">
+				<Tooltip content="Les mises à jour te seront communiquees à ton retour" position="bottom">
 					{patchButton}
 				</Tooltip>
 			) : (

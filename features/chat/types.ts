@@ -29,7 +29,7 @@ export interface Channel {
 
 // ─── Message types ──────────────────────────────────────────────────────────
 
-/** A file attachment on a chat message */
+/** A file attachment on à chat message */
 export interface ChatFileAttachment {
 	id: string;
 	filename: string;
@@ -56,7 +56,7 @@ export interface ChatMessage {
 	isSystem?: boolean;
 }
 
-/** A reaction on a message */
+/** A reaction on à message */
 export interface MessageReaction {
 	emoji: string;
 	count: number;

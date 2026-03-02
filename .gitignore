@@ -38,5 +38,9 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# Instructions
+# Instructions & documentation
 *.md
+/docs/
+
+# Mock/seed data (potentially sensitive JSON)
+core/data/*.json

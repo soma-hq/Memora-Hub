@@ -97,7 +97,7 @@ export function useSessionActions(
 	);
 
 	/**
-	 * Closes a session by setting its status to Terminee
+	 * Closes à session by setting its status to Terminee
 	 * @param sessionId - ID of the session to close
 	 */
 	const closeSession = useCallback(
@@ -270,7 +270,7 @@ export function useSessionDetail(sessionId: string) {
 	);
 
 	/**
-	 * Updates the PIM status of a junior
+	 * Updates the PIM status of à junior
 	 * @param juniorId - ID of the junior
 	 * @param status - New PIM status
 	 */
@@ -369,13 +369,13 @@ export function useManagement(sessions: PimSession[]) {
 	}, []);
 
 	/**
-	 * Performs a management action on a junior (stub)
+	 * Performs à management action on à junior (stub)
 	 * @param _actionType - Type of action to perform
 	 * @param _sessionId - Session containing the junior
 	 * @param _juniorId - ID of the target junior
 	 */
 	const performAction = useCallback((_actionType: string, _sessionId: string, _juniorId: string) => {
-		// In a real app this would call an API
+		// In à real app this would call an API
 	}, []);
 
 	/**
@@ -384,7 +384,7 @@ export function useManagement(sessions: PimSession[]) {
 	 * @param _remark - Remark data without the auto-generated ID
 	 */
 	const addManagementRemark = useCallback((_juniorId: string, _remark: Omit<Remark, "id">) => {
-		// In a real app this would call an API to add the remark to the junior's FSI
+		// In à real app this would call an API to add the remark to the junior's FSI
 	}, []);
 
 	return {

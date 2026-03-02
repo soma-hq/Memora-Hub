@@ -2,12 +2,11 @@
 
 // React
 import { useState } from "react";
-import { Tabs, Badge, Icon, Card, ProgressBar } from "@/components/ui";
+import { Tabs, Badge, Icon, Card, ProgressBar, StyledEmptyState } from "@/components/ui";
 import { CompetencyGrid } from "./competency-grid";
 import { cn } from "@/lib/utils/cn";
 import type { Junior, CompetencyLevel } from "../types";
 import { pimStatusVariantMap, dispositifVariantMap, periodVariantMap, remarkTypeVariantMap } from "../types";
-
 
 /** Props for the FSIPanel component */
 interface FSIPanelProps {
@@ -163,9 +162,11 @@ interface ObjectifsTabProps {
 function ObjectifsTab({ objectives, formatDate }: ObjectifsTabProps) {
 	if (objectives.length === 0) {
 		return (
-			<p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">
-				Aucun objectif defini pour le moment.
-			</p>
+			<StyledEmptyState
+				icon="flag"
+				title="Aucun objectif défini"
+				description="Ajoutez des objectifs pour cette période."
+			/>
 		);
 	}
 
@@ -241,7 +242,13 @@ interface BilansTabProps {
  */
 function BilansTab({ bilans, formatDate }: BilansTabProps) {
 	if (bilans.length === 0) {
-		return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucun bilan disponible.</p>;
+		return (
+			<StyledEmptyState
+				icon="document"
+				title="Aucun bilan disponible"
+				description="Les bilans apparaîtront ici."
+			/>
+		);
 	}
 
 	/** Badge variant mapping for bilan decisions */
@@ -300,7 +307,7 @@ interface NotesTabProps {
  */
 function NotesTab({ notes, formatDate }: NotesTabProps) {
 	if (notes.length === 0) {
-		return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucune note enregistree.</p>;
+		return <StyledEmptyState icon="file" title="Aucune note enregistrée" description="Ajoutez une note." />;
 	}
 
 	// Render
@@ -343,9 +350,7 @@ interface RemarquesTabProps {
  */
 function RemarquesTab({ remarks, formatDate }: RemarquesTabProps) {
 	if (remarks.length === 0) {
-		return (
-			<p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucune remarque enregistree.</p>
-		);
+		return <StyledEmptyState icon="chat" title="Aucune remarque enregistrée" description="Ajoutez une remarque." />;
 	}
 
 	// Render

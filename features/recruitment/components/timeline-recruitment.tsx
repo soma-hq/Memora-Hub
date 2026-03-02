@@ -25,7 +25,7 @@ const PHASES: TimelinePhase[] = [
 		steps: [
 			"Lecture des consignes de recrutement",
 			"Examen des candidatures recues",
-			"Selection des profils a convoquer",
+			"Selection des profils à convoquer",
 			"Planification des entretiens",
 		],
 		status: "completed",

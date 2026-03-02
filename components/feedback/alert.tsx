@@ -19,7 +19,7 @@ const iconMap: Record<AlertVariant, "success" | "error" | "warning" | "info"> = 
 };
 
 /**
- * Displays a contextual alert banner with icon and optional title.
+ * Displays à contextual alert banner with icon and optional title.
  * @param {AlertProps} props - Component props
  * @param {AlertVariant} [props.variant="info"] - Alert severity level
  * @param {string} [props.title] - Optional bold heading text

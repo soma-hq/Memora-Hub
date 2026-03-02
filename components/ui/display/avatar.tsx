@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { cn } from "@/lib/utils/cn";
 
-
 interface AvatarProps {
 	src?: string | null;
 	name: string;
@@ -94,6 +93,54 @@ export function Avatar({ src, name, size = "md", className }: AvatarProps) {
 			title={name}
 		>
 			{getInitials(name)}
+		</div>
+	);
+}
+
+// ─── AvatarGroup ────────────────────────────────────────────────
+
+interface AvatarGroupProps {
+	users: { name: string; src?: string | null }[];
+	max?: number;
+	size?: "xs" | "sm" | "md";
+	className?: string;
+}
+
+const overlapMap = {
+	xs: "-ml-1.5",
+	sm: "-ml-2",
+	md: "-ml-2.5",
+} as const;
+
+export function AvatarGroup({ users, max = 4, size = "sm", className }: AvatarGroupProps) {
+	const visible = users.slice(0, max);
+	const overflow = users.length - max;
+
+	return (
+		<div className={cn("flex items-center", className)}>
+			{visible.map((user, idx) => (
+				<div
+					key={idx}
+					className={cn("rounded-full ring-2 ring-white dark:ring-gray-800", idx > 0 && overlapMap[size])}
+				>
+					<Avatar src={user.src} name={user.name} size={size} />
+				</div>
+			))}
+			{overflow > 0 && (
+				<div
+					className={cn(
+						"flex items-center justify-center rounded-full bg-gray-200 font-medium text-gray-600 ring-2 ring-white dark:bg-gray-700 dark:text-gray-300 dark:ring-gray-800",
+						overlapMap[size],
+						size === "xs"
+							? "h-6 w-6 text-[9px]"
+							: size === "sm"
+								? "h-8 w-8 text-[10px]"
+								: "h-10 w-10 text-xs",
+					)}
+				>
+					+{overflow}
+				</div>
+			)}
 		</div>
 	);
 }

@@ -1,14 +1,13 @@
 export { AbsenceIndicator } from "./absence-indicator";
-export { Avatar } from "./avatar";
-export { AvatarGroup } from "./avatar-group";
+export { Avatar, AvatarGroup } from "./avatar";
 export { Badge } from "./badge";
-export { Card, CardHeader, CardBody, CardFooter } from "./card";
+export { Card, CardHeader, CardBody, CardFooter, StatCard, SectionCard } from "./card";
 export { Divider } from "./divider";
 export { EmptyState } from "./empty-state";
 export { Icon } from "./icon";
 export { ProgressBar } from "./progress-bar";
 export { Skeleton, SkeletonCard, SkeletonTable } from "./skeleton";
-export { StatCard } from "./stat-card";
+export { SectionHeaderBanner } from "./section-header-banner";
+export { StyledEmptyState } from "./styled-empty-state";
 export { Tag } from "./tag";
 export { Timeline } from "./timeline";
-

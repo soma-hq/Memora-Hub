@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils/cn";
 import { WIZARD_STEPS, PROJECT_PRIORITIES, priorityLabel, priorityVariant } from "../types";
 import type { WizardStep, ProjectFormData, ProjectPriorityValue, ProjectMember } from "../types";
 
-
 interface ProjectCreationWizardProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -77,9 +76,9 @@ export function ProjectCreationWizard({ isOpen, onClose, onSubmit }: ProjectCrea
 				priority,
 				startDate,
 				endDate,
-				responsible: responsible ?? { userId: "", name: "Non defini", role: "" },
+				responsible: responsible ?? { userId: "", name: "Non défini", role: "" },
 				assistants,
-				members: [responsible ?? { userId: "", name: "Non defini", role: "" }, ...assistants],
+				members: [responsible ?? { userId: "", name: "Non défini", role: "" }, ...assistants],
 			});
 			handleReset();
 			onClose();
@@ -424,7 +423,7 @@ export function ProjectCreationWizard({ isOpen, onClose, onSubmit }: ProjectCrea
 					{currentStepIndex === 0 ? "Annuler" : "Retour"}
 				</Button>
 				<Button variant="primary" onClick={handleNext} disabled={!isStepValid()}>
-					{isLastStep ? "Creer le projet" : "Suivant"}
+					{isLastStep ? "Créer le projet" : "Suivant"}
 				</Button>
 			</div>
 		</Modal>

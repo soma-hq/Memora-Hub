@@ -224,3 +224,16 @@ export async function getProjectsByUserAction(): Promise<ActionResult> {
 	const projects = await ProjectService.getByUser(currentUser.id);
 	return { success: true, data: { projects } as unknown as Record<string, unknown> };
 }
+
+/**
+ * Search projects by name or description within a group
+ * @param groupId - Group ID
+ * @param query - Search query
+ * @returns Action result with matching projects
+ */
+export async function searchProjectsAction(groupId: string, query: string): Promise<ActionResult> {
+	const currentUser = await AuthService.getCurrentUser();
+	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const projects = await ProjectService.search(groupId, query);
+	return { success: true, data: { projects } as unknown as Record<string, unknown> };
+}

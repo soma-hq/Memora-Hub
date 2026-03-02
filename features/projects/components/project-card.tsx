@@ -93,7 +93,7 @@ export function ProjectCard({ project, groupId }: ProjectCardProps) {
 			<div className="mb-3">
 				<div className="mb-1 flex items-center justify-between">
 					<span className="text-[10px] font-medium text-gray-500 dark:text-gray-400">
-						{project.tasks.done}/{project.tasks.total} taches
+						{project.tasks.done}/{project.tasks.total} tâches
 					</span>
 					<span
 						className={cn(
@@ -157,7 +157,7 @@ function formatDate(iso: string): string {
 }
 
 /**
- * Calculates the number of days remaining until a deadline.
+ * Calculates the number of days remaining until à deadline.
  * @param {string} endDate - ISO date string for the deadline
  * @returns {number} Days remaining, negative if overdue
  */

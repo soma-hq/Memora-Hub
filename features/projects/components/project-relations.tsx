@@ -2,13 +2,12 @@
 
 // React
 import { useState } from "react";
-import { Icon, Badge, Button } from "@/components/ui";
+import { Icon, Badge, Button, Card } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showInfo } from "@/lib/utils/toast";
 import type { ProjectRelations as Relations, RelationStatusValue } from "../types";
 import { RelationStatusLabel } from "../types";
 import type { IconName } from "@/core/design/icons";
-
 
 interface ProjectRelationsProps {
 	relations: Relations;
@@ -19,7 +18,7 @@ type RelationTab = "tasks" | "communications" | "contents" | "creations" | "idea
 
 /** Display config for each relation tab */
 const TAB_CONFIG: Record<RelationTab, { label: string; icon: IconName }> = {
-	tasks: { label: "Taches", icon: "tasks" },
+	tasks: { label: "Tâches", icon: "tasks" },
 	communications: { label: "Communications", icon: "communication" },
 	contents: { label: "Contenu", icon: "content" },
 	creations: { label: "Creations", icon: "creation" },
@@ -88,7 +87,7 @@ export function ProjectRelations({ relations }: ProjectRelationsProps) {
 				{/* Tasks */}
 				{activeTab === "tasks" &&
 					(relations.tasks.length === 0 ? (
-						<EmptyRelation label="Aucune tache liee" />
+						<EmptyRelation label="Aucune tâche liee" />
 					) : (
 						relations.tasks.map((item) => (
 							<RelationCard key={item.id}>
@@ -295,9 +294,9 @@ export function ProjectRelations({ relations }: ProjectRelationsProps) {
  */
 function RelationCard({ children }: { children: React.ReactNode }) {
 	return (
-		<div className="rounded-lg border border-gray-200 bg-white p-3 transition-all duration-200 hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600">
+		<Card padding="sm" hover>
 			{children}
-		</div>
+		</Card>
 	);
 }
 

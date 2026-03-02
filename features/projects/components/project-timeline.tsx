@@ -1,11 +1,10 @@
 "use client";
 
 // Components
-import { Icon } from "@/components/ui";
+import { Icon, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { TimelineEntry, TimelineAction } from "../types";
 import type { IconName } from "@/core/design/icons";
-
 
 interface ProjectTimelineProps {
 	timeline: TimelineEntry[];
@@ -70,9 +69,11 @@ export function ProjectTimeline({ timeline }: ProjectTimelineProps) {
 
 	if (sorted.length === 0) {
 		return (
-			<div className="flex items-center justify-center rounded-lg border border-dashed border-gray-300 py-12 dark:border-gray-600">
-				<p className="text-sm text-gray-400 dark:text-gray-500">Aucune activite enregistree</p>
-			</div>
+			<StyledEmptyState
+				icon="clock"
+				title="Aucune activité enregistrée"
+				description="L'historique apparaîtra ici."
+			/>
 		);
 	}
 

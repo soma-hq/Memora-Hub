@@ -14,7 +14,7 @@ export async function hashPassword(password: string): Promise<string> {
 }
 
 /**
- * Verifies a plain text password against a bcrypt hash
+ * Verifies a plain text password against à bcrypt hash
  * @param password - Plain text password to verify
  * @param hash - Bcrypt hash to compare against
  * @returns True if the password matches the hash

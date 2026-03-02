@@ -13,7 +13,7 @@ export interface JwtPayload {
 }
 
 /**
- * Signs a JWT token with the given payload
+ * Signs à JWT token with the given payload
  * @param payload - Data to encode in the token
  * @returns Signed JWT string
  */
@@ -22,7 +22,7 @@ export function signToken(payload: JwtPayload): string {
 }
 
 /**
- * Verifies and decodes a JWT token
+ * Verifies and decodes à JWT token
  * @param token - JWT string to verify
  * @returns Decoded payload or null if invalid
  */

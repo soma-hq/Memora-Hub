@@ -19,7 +19,7 @@ const ThemeContext = createContext<ThemeContextValue>({
 });
 
 /**
- * Hook to access the current theme and the setter.
+ * Hook to accèss the current theme and the setter.
  * @returns {ThemeContextValue} Current theme context value
  */
 export function useTheme() {

@@ -9,14 +9,16 @@ import { EntityModal } from "@/components/modals/entity-modal";
 import { NotificationBell } from "@/features/notifications/components/notification-bell";
 import { PatchnoteBell } from "@/features/patchnotes/components/patchnote-bell";
 import { AdminModePopover } from "@/components/layout/admin-mode-popover";
+import { LegacyModePopover } from "@/components/layout/legacy-mode-popover";
 import { StreamerModePopover } from "@/components/layout/streamer-mode-popover";
 import { AssistantButton } from "@/features/assistant/components/assistant-button";
 import { AssistantModal } from "@/features/assistant/components/assistant-modal";
 import { useUIStore } from "@/store/ui.store";
 import { useHubStore } from "@/store/hub.store";
+import { useDataStore } from "@/store/data.store";
+import { ROLE_LABELS } from "@/core/config/roles";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
-
 
 interface HeaderProps {
 	onMobileMenuToggle?: () => void;
@@ -24,7 +26,7 @@ interface HeaderProps {
 }
 
 /**
- * App header.
+ * App header with mode-aware title (SQUAD / OWNER / LEGACY).
  * @param {HeaderProps} props - Component props
  * @param {() => void} [props.onMobileMenuToggle] - Mobile sidebar toggle callback
  * @param {() => void} [props.onSearchOpen] - Search modal open callback
@@ -39,7 +41,9 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 	const [activeEntityId, setActiveEntityId] = useState("bazalthe");
 	const userRef = useRef<HTMLDivElement>(null);
 	const adminMode = useUIStore((s) => s.adminMode);
+	const legacyMode = useUIStore((s) => s.legacyMode);
 	const activeGroupId = useHubStore((s) => s.activeGroupId);
+	const currentUser = useDataStore((s) => s.currentUser);
 	const [showChatbotBubble, setShowChatbotBubble] = useState(false);
 
 	useEffect(() => {
@@ -76,10 +80,10 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 			document.cookie = "memora-session=; path=/; max-age=0";
 			localStorage.removeItem("authToken");
 			sessionStorage.clear();
-			showSuccess("Deconnexion reussie.");
+			showSuccess("Déconnexion réussie.");
 			window.location.href = "/login";
 		} catch (error) {
-			showError("Erreur lors de la deconnexion.");
+			showError("Erreur lors de la déconnexion.");
 		}
 	};
 
@@ -94,7 +98,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 
 	// Computed
 	const themeIcon = resolvedTheme === "dark" ? "moon" : "sun";
-	const themeLabel = theme === "system" ? "Systeme" : theme === "dark" ? "Sombre" : "Clair";
+	const themeLabel = theme === "system" ? "Système" : theme === "dark" ? "Sombre" : "Clair";
 
 	// Render
 	return (
@@ -104,10 +108,12 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					"sticky top-0 z-40 flex h-16 items-center justify-between border-b px-4 transition-colors duration-300 md:px-6",
 					adminMode
 						? "border-red-200 bg-white dark:border-red-900/40 dark:bg-gray-800"
-						: "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800",
+						: legacyMode
+							? "border-orange-200 bg-white dark:border-orange-900/40 dark:bg-gray-800"
+							: "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800",
 				)}
 			>
-				{/* Left: Mobile menu + Logo */}
+				{/* Left: Mobile menu + Mode title */}
 				<div className="flex items-center gap-3">
 					<button
 						onClick={onMobileMenuToggle}
@@ -116,28 +122,50 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 						<Icon name="menu" size="md" />
 					</button>
 
-					<div className="flex items-center gap-2">
+					<div className="flex items-center gap-2.5">
 						<Image
 							src="/logos/memora-logo.png"
 							alt="Memora"
 							width={32}
 							height={32}
-							className={cn("rounded-lg transition-all duration-300", adminMode && "ring-2 ring-red-500")}
-						/>
-						<span
 							className={cn(
-								"hidden font-serif text-xl font-bold transition-colors duration-300 sm:block",
-								adminMode ? "text-red-600 dark:text-red-400" : "text-gray-900 dark:text-white",
+								"rounded-lg transition-all duration-300",
+								adminMode && "ring-2 ring-red-500",
+								legacyMode && "ring-2 ring-orange-500",
 							)}
-						>
-							{adminMode ? "Memora Owner" : "Memora Hub"}
-						</span>
+						/>
+						<div className="hidden items-center gap-1.5 sm:flex">
+							{adminMode ? (
+								<span className="text-2xl font-black tracking-tight text-red-500 transition-colors duration-300">
+									OWNER
+								</span>
+							) : legacyMode ? (
+								<>
+									<span className="text-lg font-medium text-gray-500 transition-colors duration-300 dark:text-gray-400">
+										Memora
+									</span>
+									<span className="text-2xl font-black tracking-tight text-orange-500 transition-colors duration-300">
+										LEGACY
+									</span>
+								</>
+							) : (
+								<>
+									<span className="text-lg font-medium text-gray-500 transition-colors duration-300 dark:text-gray-400">
+										Memora
+									</span>
+									<span className="text-xl font-bold text-gray-900 transition-colors duration-300 dark:text-white">
+										SQUAD
+									</span>
+								</>
+							)}
+						</div>
 					</div>
 				</div>
 
 				{/* Right: Icon actions */}
 				<div className="flex items-center gap-1">
 					<AdminModePopover />
+					<LegacyModePopover />
 					<StreamerModePopover />
 
 					{/* Chat link */}
@@ -178,7 +206,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					{/* Entity selector */}
 					<button
 						onClick={() => setEntityModalOpen(true)}
-						title="Changer d'entite"
+						title="Changer d'entité"
 						className="rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 					>
 						<Icon name="group" size="md" />
@@ -204,7 +232,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					{/* Theme toggle */}
 					<button
 						onClick={cycleTheme}
-						title={`Theme : ${themeLabel}`}
+						title={`Thème : ${themeLabel}`}
 						className={cn(
 							"rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700",
 							theme === "system" && "ring-primary-300 ring-1 ring-offset-1 dark:ring-offset-gray-800",
@@ -224,9 +252,11 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 							</div>
 							<div className="hidden flex-col items-start md:flex">
 								<span className="text-sm font-medium text-gray-700 dark:text-gray-200">
-									Utilisateur
+									{currentUser?.pseudo ?? "Utilisateur"}
 								</span>
-								<span className="text-xs text-gray-500 dark:text-gray-400"></span>
+								<span className="text-xs text-gray-500 dark:text-gray-400">
+									{currentUser ? ROLE_LABELS[currentUser.roleId] : ""}
+								</span>
 							</div>
 							<Icon
 								name="chevronDown"
@@ -239,8 +269,12 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 						{userMenuOpen && (
 							<div className="animate-slide-in absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
 								<div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
-									<p className="text-sm font-medium text-gray-900 dark:text-white">Utilisateur</p>
-									<p className="text-xs text-gray-500 dark:text-gray-400"></p>
+									<p className="text-sm font-medium text-gray-900 dark:text-white">
+										{currentUser?.pseudo ?? "Utilisateur"}
+									</p>
+									<p className="text-xs text-gray-500 dark:text-gray-400">
+										{currentUser?.email ?? ""}
+									</p>
 								</div>
 								<div className="p-1.5">
 									{[
@@ -250,7 +284,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 											href: "/profile",
 										},
 										{
-											label: "Parametres",
+											label: "Paramètres",
 											icon: "settings" as const,
 											href: "/settings/account",
 										},
@@ -274,7 +308,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 										className="text-error-600 hover:bg-error-50 dark:hover:bg-error-900/10 flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm transition-colors"
 									>
 										<Icon name="logout" size="sm" />
-										Se deconnecter
+										Se déconnecter
 									</button>
 								</div>
 							</div>

@@ -6,7 +6,6 @@ import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
 
-
 interface PageContainerProps {
 	title?: string;
 	description?: string;
@@ -58,6 +57,16 @@ const ROUTE_LABELS: Record<string, string> = {
 	profile: "Mon profil",
 	chat: "Chat",
 	alerts: "Alertes",
+	logs: "Logs",
+	patchnotes: "Patchnotes",
+	"mod-twitch": "Mod. Twitch",
+	"mod-polyvalent": "Mod. Polyvalent",
+	permissions: "Permissions",
+	legacy: "Legacy",
+	access: "Accès",
+	dev: "Développeur",
+	trash: "Corbeille",
+	links: "Liens",
 };
 
 /**

@@ -1,6 +1,5 @@
 "use client";
 
-// React
 import { useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
@@ -9,28 +8,37 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showWarning, showInfo, showError } from "@/lib/utils/toast";
 import type { IconName } from "@/core/design/icons";
 import type { BadgeVariant } from "@/core/design/states";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/projects/[projectId]",
+	section: "protected",
+	module: "projects",
+	description: "Détail et suivi d'un projet.",
+	requiredPermissions: [{ module: "projects", action: "view" }],
+	entityScoped: true,
+});
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
+/** Tab identifier for the project detail view */
+type ProjectTab = "communication" | "contenu" | "squad" | "tâches";
 
-type ProjectTab = "communication" | "contenu" | "squad" | "taches";
-
+/** Tab definition with label and icon */
 interface TabDef {
 	id: ProjectTab;
 	label: string;
 	icon: IconName;
 }
 
-// ─── Constants ──────────────────────────────────────────────────────────────────
+// Constants
 
 const TABS: TabDef[] = [
 	{ id: "communication", label: "Communication", icon: "chat" },
 	{ id: "contenu", label: "Contenu", icon: "document" },
 	{ id: "squad", label: "Squad", icon: "users" },
-	{ id: "taches", label: "Tâches", icon: "tasks" },
+	{ id: "tâches", label: "Tâches", icon: "tasks" },
 ];
 
-// ─── Mock Data ──────────────────────────────────────────────────────────────────
+// Mock Data
 
 const mockParticipants = [
 	{ name: "Jeremy Alpha", role: "Owner", avatar: "/avatar/Alpha.jpeg", initials: "JA" },
@@ -176,7 +184,7 @@ const mockTaskLogs = [
 				<span className="font-medium">Jeremy</span> a créé la tâche &ldquo;Optimiser les Core Web Vitals&rdquo;
 			</>
 		),
-		time: "Il y a 1h",
+		time: "Il y à 1h",
 	},
 	{
 		id: "tl2",
@@ -186,14 +194,14 @@ const mockTaskLogs = [
 				<span className="font-medium">Lucas</span> a terminé &ldquo;Implémenter le header responsive&rdquo;
 			</>
 		),
-		time: "Il y a 3h",
+		time: "Il y à 3h",
 	},
 	{
 		id: "tl3",
 		icon: "edit" as const,
 		title: (
 			<>
-				<span className="font-medium">Thomas</span> a changé le statut de &ldquo;Tests unitaires composants
+				<span className="font-medium">Thomas</span> à changé le statut de &ldquo;Tests unitaires composants
 				UI&rdquo; en &ldquo;En cours&rdquo;
 			</>
 		),
@@ -247,7 +255,7 @@ const mockLogs = [
 		icon: "calendar" as const,
 		title: (
 			<>
-				<span className="font-medium">Marie Delta</span> a planifié la réunion &ldquo;Kick-off technique&rdquo;
+				<span className="font-medium">Marie Delta</span> à planifié la réunion &ldquo;Kick-off technique&rdquo;
 			</>
 		),
 		time: "18 Fév 2024 — 08:00",
@@ -277,7 +285,7 @@ const mockLogs = [
 		icon: "star" as const,
 		title: (
 			<>
-				<span className="font-medium">Sophie Mike</span> a proposé l&apos;idée &ldquo;Mode sombre
+				<span className="font-medium">Sophie Mike</span> à proposé l&apos;idée &ldquo;Mode sombre
 				automatique&rdquo;
 			</>
 		),
@@ -288,7 +296,7 @@ const mockLogs = [
 		icon: "flag" as const,
 		title: (
 			<>
-				<span className="font-medium">Jeremy Alpha</span> a changé la priorité en &ldquo;Haute&rdquo;
+				<span className="font-medium">Jeremy Alpha</span> à changé la priorité en &ldquo;Haute&rdquo;
 			</>
 		),
 		time: "23 Fév 2024 — 09:00",
@@ -298,7 +306,7 @@ const mockLogs = [
 		icon: "chat" as const,
 		title: (
 			<>
-				<span className="font-medium">Clara Novak</span> a rejoint le projet
+				<span className="font-medium">Clara Novak</span> à rejoint le projet
 			</>
 		),
 		time: "24 Fév 2024 — 10:15",
@@ -336,7 +344,7 @@ const mockComments = [
 		initials: "JA",
 		date: "26 Fév 2024 — 11:30",
 		content:
-			"Excellent travail à tous. N'oubliez pas de mettre à jour le board Kanban avec vos avancements. Le client a prévu un check-in jeudi prochain, on doit être prêts pour la démo.",
+			"Excellent travail à tous. N'oubliez pas de mettre à jour le board Kanban avec vos avancements. Le client à prévu un check-in jeudi prochain, on doit être prêts pour la démo.",
 	},
 ];
 
@@ -704,7 +712,7 @@ function SquadView() {
 
 // ─── Tâches Tab ─────────────────────────────────────────────────────────────────
 
-function TachesView() {
+function TasksView() {
 	const [affiliations, setAffiliations] = useState<Record<string, boolean>>(
 		Object.fromEntries(mockTasks.map((t) => [t.id, t.affiliated])),
 	);
@@ -845,7 +853,7 @@ function LogsPanel({ isOpen, onToggle }: { isOpen: boolean; onToggle: () => void
 						</button>
 					</div>
 
-					{/* Access notice */}
+					{/* Accèss notice */}
 					<div className="mb-4 flex items-center gap-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 dark:border-amber-800 dark:bg-amber-900/20">
 						<Icon name="shield" size="xs" className="shrink-0 text-amber-500" />
 						<p className="text-[11px] text-amber-700 dark:text-amber-400">
@@ -1147,7 +1155,7 @@ export default function ProjectDetailPage() {
 					{activeTab === "communication" && <CommunicationView />}
 					{activeTab === "contenu" && <ContenuView />}
 					{activeTab === "squad" && <SquadView />}
-					{activeTab === "taches" && <TachesView />}
+					{activeTab === "tâches" && <TasksView />}
 				</div>
 
 				{/* Logs panel (right side, collapsible) */}

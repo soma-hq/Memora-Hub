@@ -5,7 +5,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-twitch/centre-info/tickets",
+	section: "protected",
+	module: "moderation_twitch",
+	description: "Gestion des tickets Twitch.",
+	requiredPermissions: [{ module: "moderation_twitch", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Twitch ticket system page explaining moderation ticket procedures.
@@ -55,7 +64,7 @@ export default function TwitchTicketsPage() {
 					</div>
 					<p className={cn(textClasses.body, "leading-relaxed")}>
 						Il est formellement interdit de traiter des cas de moderation par messages prives (Twitch
-						whispers ou DM). Cela protege a la fois le moderateur et le viewer, en garantissant une
+						whispers ou DM). Cela protege à la fois le moderateur et le viewer, en garantissant une
 						tracabilite et une transparence totale des echanges.
 					</p>
 				</Card>
@@ -69,7 +78,7 @@ export default function TwitchTicketsPage() {
 						<h3 className={headingClasses.h5}>Rediriger les viewers</h3>
 					</div>
 					<p className={cn(textClasses.body, "mb-3 leading-relaxed")}>
-						Lorsqu&apos;un viewer vous contacte en prive pour un sujet lie a la moderation, redirigez-le
+						Lorsqu&apos;un viewer vous contacte en prive pour un sujet lie à la moderation, redirigez-le
 						systematiquement vers le systeme de tickets.
 					</p>
 					<ul className="ml-4 list-disc space-y-1.5">

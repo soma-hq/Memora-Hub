@@ -5,7 +5,16 @@ import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-twitch",
+	section: "protected",
+	module: "moderation_twitch",
+	description: "Tableau de bord de la modération Twitch.",
+	requiredPermissions: [{ module: "moderation_twitch", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -38,9 +47,9 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 	{
 		level: 3,
 		label: "Livecon 3",
-		subtitle: "Periode Normale",
+		subtitle: "Période Normale",
 		description:
-			"Tout est normal, gestion habituelle du chat Twitch. Mobilisation habituelle, reponses classiques, panel de sanction inchange.",
+			"Tout est normal, gestion habituelle du chat Twitch. Mobilisation habituelle, réponses classiques, panel de sanction inchangé.",
 		color: {
 			ring: "ring-emerald-500/30",
 			bg: "bg-emerald-500",
@@ -59,17 +68,17 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 		consignes: [
 			"Panel de sanction standard en vigueur.",
 			"Gestion habituelle du chat et des viewers.",
-			"Les moderateurs suivent la procedure classique pour les infractions.",
-			"Les membres de l'equipe peuvent apparaitre normalement sur le stream.",
-			"Reponses dans un delai classique (pendant le live).",
+			"Les modérateurs suivent la procédure classique pour les infractions.",
+			"Les membres de l'équipe peuvent apparaître normalement sur le stream.",
+			"Réponses dans un délai classique (pendant le live).",
 		],
 	},
 	{
 		level: 2,
 		label: "Livecon 2",
-		subtitle: "Vigilance renforcee",
+		subtitle: "Vigilance renforcée",
 		description:
-			"Periode instable, drama a petite echelle. Moderation plus stricte du chat, panel durci, reduction d'apparition de l'equipe.",
+			"Période instable, drama à petite échelle. Modération plus stricte du chat, panel durci, réduction d'apparition de l'équipe.",
 		color: {
 			ring: "ring-amber-500/30",
 			bg: "bg-amber-500",
@@ -86,20 +95,20 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 			badgeDot: "bg-amber-500",
 		},
 		consignes: [
-			"Panel de sanction durci — tolerances reduites, sanctions plus rapides.",
+			"Panel de sanction durci — tolérances réduites, sanctions plus rapides.",
 			"Surveillance accrue du chat Twitch et des potentiels raids.",
-			"Reduction drastique de l'apparition de l'equipe sur le stream.",
-			"Les moderateurs doivent prioriser la deescalade et eviter de nourrir le drama.",
-			"Signalement immediat de tout incident a la hierarchie.",
-			"Reponses aux situations critiques en moins de 2 minutes dans le chat.",
+			"Réduction drastique de l'apparition de l'équipe sur le stream.",
+			"Les modérateurs doivent prioriser la désescalade et éviter de nourrir le drama.",
+			"Signalement immédiat de tout incident à la hiérarchie.",
+			"Réponses aux situations critiques en moins de 2 minutes dans le chat.",
 		],
 	},
 	{
 		level: 1,
 		label: "Livecon 1",
-		subtitle: "Periode critique",
+		subtitle: "Période critique",
 		description:
-			"Harcelement, hate raids, drama a grande echelle. Moderation tres stricte, bannissements definitifs frequents, mode emote-only si necessaire.",
+			"Harcèlement, hate raids, drama à grande échelle. Modération très stricte, bannissements définitifs fréquents, mode emote-only si nécessaire.",
 		color: {
 			ring: "ring-red-500/30",
 			bg: "bg-red-500",
@@ -116,13 +125,13 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 			badgeDot: "bg-red-500",
 		},
 		consignes: [
-			"Tolerance zero — tout manquement entraine un bannissement definitif.",
-			"Interdiction totale d'apparition de l'equipe de moderation sur le stream.",
-			"Les messages lies au drama sont immediatement supprimes (timeout).",
-			"Les viewers impliques dans le harcelement sont bannis sans avertissement.",
-			"Mode emote-only ou sub-only active si necessaire.",
-			"Communication uniquement via les canaux officiels. Aucune declaration personnelle.",
-			"Rapport detaille de chaque incident a Legacy dans l'heure.",
+			"Tolérance zéro — tout manquement entraîne un bannissement définitif.",
+			"Interdiction totale d'apparition de l'équipe de modération sur le stream.",
+			"Les messages liés au drama sont immédiatement supprimés (timeout).",
+			"Les viewers impliqués dans le harcèlement sont bannis sans avertissement.",
+			"Mode emote-only ou sub-only activé si nécessaire.",
+			"Communication uniquement via les canaux officiels. Aucune déclaration personnelle.",
+			"Rapport détaillé de chaque incident à Legacy dans l'heure.",
 		],
 	},
 ];
@@ -147,7 +156,7 @@ export default function ModTwitchPanelPage() {
 	};
 
 	return (
-		<PageContainer title="Panel Twitch" description="Systeme Livecon — Niveaux de vigilance">
+		<PageContainer title="Panel Twitch" description="Système Livecon — Niveaux de vigilance">
 			{/* Current status indicator */}
 			<Card padding="lg" className="mb-8">
 				<div className="flex flex-col items-center gap-5 sm:flex-row sm:items-center sm:gap-6">
@@ -333,9 +342,9 @@ export default function ModTwitchPanelPage() {
 						<p className={cn("text-xs font-medium", activeConfig.color.text)}>
 							{currentLevel === 3 && "Situation stable — Aucune mesure extraordinaire requise."}
 							{currentLevel === 2 &&
-								"Vigilance requise — Les moderateurs doivent appliquer les consignes renforcees immediatement."}
+								"Vigilance requise — Les modérateurs doivent appliquer les consignes renforcées immédiatement."}
 							{currentLevel === 1 &&
-								"Situation critique — Toutes les mesures d'urgence sont en vigueur. Aucune exception toleree."}
+								"Situation critique — Toutes les mesures d'urgence sont en vigueur. Aucune exception tolérée."}
 						</p>
 					</div>
 				</Card>
@@ -343,7 +352,7 @@ export default function ModTwitchPanelPage() {
 
 			{/* All levels reference */}
 			<div className="mt-8">
-				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Reference des niveaux</h2>
+				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Référence des niveaux</h2>
 				<div className="space-y-4">
 					{LIVECON_LEVELS.map((config) => (
 						<Card key={config.level} padding="md">

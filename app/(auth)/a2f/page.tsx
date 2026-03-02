@@ -5,10 +5,16 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { A2FForm } from "@/features/auth";
 import { showSuccess, showError, showInfo } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "a2f",
+	section: "auth",
+	description: "Vérification à deux facteurs.",
+});
 
 /**
- * Two-factor authentication page for verifying login with a 6-digit code.
+ * Two-factor authentication page for verifying login with à 6-digit code.
  * @returns The A2F verification page with code input and demo hint
  */
 export default function A2FPage() {
@@ -47,7 +53,7 @@ export default function A2FPage() {
 	 * @returns void
 	 */
 	const handleResend = () => {
-		showInfo("Un nouveau code a ete envoye a votre appareil.");
+		showInfo("Un nouveau code à ete envoye à votre appareil.");
 	};
 
 	// Render

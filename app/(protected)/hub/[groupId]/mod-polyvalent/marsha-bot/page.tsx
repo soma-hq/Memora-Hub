@@ -4,7 +4,16 @@
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/marsha-bot",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Configuration du bot Marsha pour Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "manage" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -33,7 +42,7 @@ const MODERATION_COMMANDS: BotCommand[] = [
 	},
 	{
 		name: "/tempmute",
-		description: "Rendre muet un membre pour une duree determinee. Le mute est automatiquement leve a expiration.",
+		description: "Rendre muet un membre pour une duree determinee. Le mute est automatiquement leve à expiration.",
 		usage: "/tempmute <@utilisateur> <duree> [raison]",
 		example: "/tempmute @Jean 2h Provocation en vocal",
 	},
@@ -53,7 +62,7 @@ const MODERATION_COMMANDS: BotCommand[] = [
 	{
 		name: "/tempban",
 		description:
-			"Bannir temporairement un membre pour une duree determinee. Le ban est automatiquement leve a expiration.",
+			"Bannir temporairement un membre pour une duree determinee. Le ban est automatiquement leve à expiration.",
 		usage: "/tempban <@utilisateur> <duree> [raison]",
 		example: "/tempban @Jean 7d Contenu NSFW en recidive",
 	},
@@ -65,7 +74,7 @@ const MODERATION_COMMANDS: BotCommand[] = [
 	},
 	{
 		name: "/kick",
-		description: "Expulser un membre du serveur Discord. Le membre peut rejoindre a nouveau avec une invitation.",
+		description: "Expulser un membre du serveur Discord. Le membre peut rejoindre à nouveau avec une invitation.",
 		usage: "/kick <@utilisateur> [raison]",
 		example: "/kick @Jean Compte suspect, verification necessaire",
 	},
@@ -122,7 +131,7 @@ const UTILITY_COMMANDS: BotCommand[] = [
 	},
 	{
 		name: "/slowmode",
-		description: "Activer ou modifier le mode lent d'un salon. Definir a 0 pour desactiver.",
+		description: "Activer ou modifier le mode lent d'un salon. Definir à 0 pour desactiver.",
 		usage: "/slowmode <duree>",
 		example: "/slowmode 10s",
 	},
@@ -142,7 +151,7 @@ const UTILITY_COMMANDS: BotCommand[] = [
 		name: "/announce",
 		description: "Envoyer une annonce formatee dans un salon specifique avec un embed personnalise.",
 		usage: "/announce <salon> <message>",
-		example: "/announce #annonces Maintenance prevue demain a 14h",
+		example: "/announce #annonces Maintenance prévue demain à 14h",
 	},
 ];
 
@@ -168,7 +177,7 @@ function Code({ children, className }: { children: React.ReactNode; className?: 
 }
 
 /**
- * Displays a bot command card with name, description, usage and example.
+ * Displays à bot command card with name, description, usage and example.
  * @param props - Component props
  * @param props.command - The bot command data to display
  * @returns A styled command reference card

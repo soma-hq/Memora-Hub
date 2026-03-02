@@ -3,9 +3,18 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Tag } from "@/components/ui";
+import { Card, Badge, Icon, Tag, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/moderation/consignes",
+	section: "protected",
+	module: "moderation_discord",
+	description: "Consignes de modération Discord.",
+	requiredPermissions: [{ module: "moderation_discord", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 type Priority = "Haute" | "Moyenne" | "Standard";
@@ -72,10 +81,10 @@ export default function ConsignesPage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-6 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<div>
-					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone a acces restreint</p>
+					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone à accès restreint</p>
 					<p className="text-info-600 dark:text-info-500 mt-1 text-xs">
 						Seuls les membres de la Legacy peuvent creer ou modifier les consignes. Les autres equipes ont
-						un acces en lecture seule.
+						un accès en lecture seule.
 					</p>
 				</div>
 			</div>
@@ -114,10 +123,11 @@ export default function ConsignesPage() {
 			{/* ----------------------------------------------------------------- */}
 			<div className="space-y-4">
 				{consignes.length === 0 && (
-					<div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 py-16 dark:border-gray-600">
-						<Icon name="flag" size="xl" className="mb-3 text-gray-300 dark:text-gray-600" />
-						<p className="text-sm text-gray-500 dark:text-gray-400">Aucune consigne active.</p>
-					</div>
+					<StyledEmptyState
+						icon="flag"
+						title="Aucune consigne active"
+						description="Les consignes de modération apparaîtront ici."
+					/>
 				)}
 
 				{consignes.map((consigne) => {
@@ -230,7 +240,7 @@ export default function ConsignesPage() {
 			<div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
 				{consignes.length} consigne{consignes.length > 1 ? "s" : ""} active
 				{consignes.length > 1 ? "s" : ""}
-				{" — "}Derniere mise a jour par la Legacy
+				{" — "}Derniere mise à jour par la Legacy
 			</div>
 		</PageContainer>
 	);

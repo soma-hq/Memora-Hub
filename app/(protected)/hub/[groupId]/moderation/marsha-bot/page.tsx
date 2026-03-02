@@ -4,7 +4,16 @@
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/moderation/marsha-bot",
+	section: "protected",
+	module: "moderation_discord",
+	description: "Configuration du bot Marsha pour Discord.",
+	requiredPermissions: [{ module: "moderation_discord", action: "manage" }],
+	entityScoped: true,
+});
 
 // Constants & types
 interface ModerationCommand {

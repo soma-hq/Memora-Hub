@@ -5,7 +5,16 @@ import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Tag } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/moderation/sanctions",
+	section: "protected",
+	module: "moderation_discord",
+	description: "Gestion des sanctions Discord.",
+	requiredPermissions: [{ module: "moderation_discord", action: "view" }],
+	entityScoped: true,
+});
 
 // Types
 
@@ -62,7 +71,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Contenu NSFW",
 		icon: "eye",
 		color: "error",
-		defaultReason: "Diffusion de contenu a caractere explicite ou inapproprie",
+		defaultReason: "Diffusion de contenu à caractere explicite ou inapproprie",
 		sanctions: {
 			3: { first: "Warn", repeat: "Tempban 7d", multi: "Ban" },
 			2: { first: "Tempban 7d", repeat: "Ban", multi: "Ban" },
@@ -122,7 +131,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Raid / Attaque coordonnee",
 		icon: "users",
 		color: "error",
-		defaultReason: "Participation a une attaque coordonnee contre le serveur",
+		defaultReason: "Participation à une attaque coordonnee contre le serveur",
 		fixed: true,
 		sanctions: {
 			3: { first: "Ban", repeat: "Ban", multi: "Ban" },

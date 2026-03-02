@@ -11,7 +11,7 @@ import { MeetingTypeLabel } from "../types";
 import type { Meeting } from "../types";
 
 
-/** Type filter options including a "show all" entry */
+/** Type filter options including à "show all" entry */
 const TYPE_OPTIONS: SelectMenuOption[] = [
 	{ label: "Tous les types", value: "", icon: "filter" },
 	...Object.entries(MeetingTypeLabel).map(
@@ -46,7 +46,7 @@ export function MeetingList({ onMeetingClick, className }: MeetingListProps) {
 			<div className="flex flex-col gap-3 sm:flex-row sm:items-end">
 				<div className="flex-1">
 					<Input
-						placeholder="Rechercher une reunion..."
+						placeholder="Rechercher une réunion..."
 						value={search}
 						onChange={(e) => setSearch(e.target.value)}
 						icon={<Icon name="search" size="sm" />}
@@ -57,7 +57,7 @@ export function MeetingList({ onMeetingClick, className }: MeetingListProps) {
 						options={TYPE_OPTIONS}
 						value={typeFilter}
 						onChange={(val) => setTypeFilter(val as typeof typeFilter)}
-						placeholder="Type de reunion"
+						placeholder="Type de réunion"
 					/>
 				</div>
 			</div>
@@ -78,13 +78,13 @@ export function MeetingList({ onMeetingClick, className }: MeetingListProps) {
 			) : displayedMeetings.length === 0 ? (
 				<EmptyState
 					icon="calendar"
-					title={activeTab === "upcoming" ? "Aucune reunion a venir" : "Aucune reunion passee"}
+					title={activeTab === "upcoming" ? "Aucune réunion à venir" : "Aucune réunion passee"}
 					description={
 						search || typeFilter
 							? "Essayez de modifier vos filtres de recherche."
 							: activeTab === "upcoming"
-								? "Planifiez votre prochaine reunion pour la voir ici."
-								: "Les reunions passees apparaitront ici."
+								? "Planifiez votre prochaine réunion pour la voir ici."
+								: "Les réunions passees apparaitront ici."
 					}
 				/>
 			) : (

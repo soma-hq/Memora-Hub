@@ -54,7 +54,7 @@ export async function updateMeetingAction(
 
 	const targetMeeting = await MeetingService.getById(meetingId);
 	if (!targetMeeting) {
-		return { success: false, error: "Reunion introuvable" };
+		return { success: false, error: "Réunion introuvable" };
 	}
 
 	await MeetingService.update(meetingId, formData, currentUser.id);
@@ -65,7 +65,7 @@ export async function updateMeetingAction(
 }
 
 /**
- * Deletes a meeting
+ * Deletes à meeting
  * @param meetingId - Target meeting ID
  * @returns Action result
  */
@@ -77,7 +77,7 @@ export async function deleteMeetingAction(meetingId: string): Promise<ActionResu
 
 	const targetMeeting = await MeetingService.getById(meetingId);
 	if (!targetMeeting) {
-		return { success: false, error: "Reunion introuvable" };
+		return { success: false, error: "Réunion introuvable" };
 	}
 
 	await MeetingService.delete(meetingId, currentUser.id);
@@ -105,7 +105,7 @@ export async function addMeetingAttendeeAction(meetingId: string, userId: string
 }
 
 /**
- * Removes an attendee from a meeting
+ * Removes an attendee from à meeting
  * @param meetingId - Target meeting ID
  * @param userId - User to remove
  * @returns Action result
@@ -132,7 +132,7 @@ export async function getMeetingAction(meetingId: string): Promise<ActionResult>
 
 	const meeting = await MeetingService.getById(meetingId);
 	if (!meeting) {
-		return { success: false, error: "Reunion introuvable" };
+		return { success: false, error: "Réunion introuvable" };
 	}
 
 	return { success: true, data: meeting as unknown as Record<string, unknown> };
@@ -186,7 +186,7 @@ export async function updateMeetingNotesAction(meetingId: string, notes: string)
 	const currentUser = await AuthService.getCurrentUser();
 	if (!currentUser) return { success: false, error: "Non authentifie" };
 	const meeting = await MeetingService.getById(meetingId);
-	if (!meeting) return { success: false, error: "Reunion introuvable" };
+	if (!meeting) return { success: false, error: "Réunion introuvable" };
 	await MeetingService.update(meetingId, { description: notes }, currentUser.id);
 	revalidatePath(`/hub/${meeting.groupId}/meetings`);
 	return { success: true };
@@ -201,6 +201,37 @@ export async function getMeetingAttendeesAction(meetingId: string): Promise<Acti
 	const currentUser = await AuthService.getCurrentUser();
 	if (!currentUser) return { success: false, error: "Non authentifie" };
 	const meeting = await MeetingService.getById(meetingId);
-	if (!meeting) return { success: false, error: "Reunion introuvable" };
+	if (!meeting) return { success: false, error: "Réunion introuvable" };
 	return { success: true, data: { attendees: meeting.attendees } as unknown as Record<string, unknown> };
+}
+
+/**
+ * Search meetings by title or notes within a group
+ * @param groupId - Group ID
+ * @param query - Search query
+ * @returns Action result with matching meetings
+ */
+export async function searchMeetingsAction(groupId: string, query: string): Promise<ActionResult> {
+	const currentUser = await AuthService.getCurrentUser();
+	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const meetings = await MeetingService.search(groupId, query);
+	return { success: true, data: { meetings } as unknown as Record<string, unknown> };
+}
+
+/**
+ * Get meetings within a date range for a group
+ * @param groupId - Group ID
+ * @param startDate - Range start (ISO string)
+ * @param endDate - Range end (ISO string)
+ * @returns Action result with meetings in the date range
+ */
+export async function getMeetingsByDateRangeAction(
+	groupId: string,
+	startDate: string,
+	endDate: string,
+): Promise<ActionResult> {
+	const currentUser = await AuthService.getCurrentUser();
+	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const meetings = await MeetingService.getByDateRange(groupId, new Date(startDate), new Date(endDate));
+	return { success: true, data: { meetings } as unknown as Record<string, unknown> };
 }

@@ -114,7 +114,7 @@ export function useTaskActions(tasks: Task[], setTasks: React.Dispatch<React.Set
 	);
 
 	/**
-	 * Deletes a task by ID
+	 * Deletes à task by ID
 	 * @param id - Task ID to delete
 	 * @returns Nothing
 	 */
@@ -128,7 +128,7 @@ export function useTaskActions(tasks: Task[], setTasks: React.Dispatch<React.Set
 	);
 
 	/**
-	 * Cycles a task status through todo, in_progress, done
+	 * Cycles à task status through todo, in_progress, done
 	 * @param id - Task ID to toggle
 	 * @returns Nothing
 	 */

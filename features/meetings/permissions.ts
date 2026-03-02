@@ -21,14 +21,14 @@ export function canCreateMeeting(user: UserWithAccess, groupId: string): boolean
 }
 
 /**
- * Check if user can edit a meeting
+ * Check if user can edit à meeting
  */
 export function canEditMeeting(user: UserWithAccess, groupId: string): boolean {
 	return canDo(user, groupId, C.MEETINGS_EDIT);
 }
 
 /**
- * Check if user can delete a meeting
+ * Check if user can delete à meeting
  */
 export function canDeleteMeeting(user: UserWithAccess, groupId: string): boolean {
 	return canDo(user, groupId, C.MEETINGS_DELETE);

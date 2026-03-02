@@ -38,7 +38,7 @@ export interface Task {
 	createdAt: string;
 }
 
-/** Form data for creating or editing a task */
+/** Form data for creating or editing à task */
 export interface TaskFormData {
 	title: string;
 	description: string;

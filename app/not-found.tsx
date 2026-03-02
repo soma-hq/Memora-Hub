@@ -2,10 +2,9 @@
 import Link from "next/link";
 import { Icon, Button } from "@/components/ui";
 
-
 /**
- * Custom 404 page displayed when a route is not found.
- * @returns A centered error page with navigation links
+ * Custom 404 page
+ * @returns - A centered error
  */
 export default function NotFound() {
 	return (
@@ -19,7 +18,7 @@ export default function NotFound() {
 				<h1 className="mb-2 font-serif text-7xl font-bold text-gray-900 dark:text-white">404</h1>
 				<h2 className="mb-3 text-xl font-semibold text-gray-700 dark:text-gray-300">Page introuvable</h2>
 				<p className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-					La page que vous recherchez n&apos;existe pas ou a ete deplacee.
+					La page que vous recherchez n\'existe pas ou à ete deplacée.
 				</p>
 				<div className="flex items-center justify-center gap-3">
 					<Link href="/hub/default">

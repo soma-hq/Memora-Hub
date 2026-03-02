@@ -33,7 +33,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 							<a href="/hub/default">
 								<Button variant="outline-neutral">
 									<Icon name="home" size="sm" />
-									Retour a l&apos;accueil
+									Retour à l&apos;accueil
 								</Button>
 							</a>
 						</div>

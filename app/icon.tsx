@@ -1,14 +1,13 @@
 // Next.js
 import { ImageResponse } from "next/og";
 
-
 // Icon dimensions
 export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 /**
- * Generates the app favicon as a pink gradient square with the letter M.
- * @returns An ImageResponse containing the generated icon
+ * Generates the app favicon
+ * @returns - ImageResponse
  */
 export default function Icon() {
 	return new ImageResponse(

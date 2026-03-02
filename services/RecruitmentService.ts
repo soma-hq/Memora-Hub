@@ -3,7 +3,7 @@ import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
 
 
-/** Input data for creating a job offer */
+/** Input data for creating à job offer */
 interface CreateJobOfferInput {
 	groupId: string;
 	title: string;
@@ -14,7 +14,7 @@ interface CreateJobOfferInput {
 	requirements?: string[];
 }
 
-/** Input data for creating a candidate */
+/** Input data for creating à candidate */
 interface CreateCandidateInput {
 	offerId: string;
 	name: string;
@@ -129,7 +129,7 @@ export class RecruitmentService {
 	}
 
 	/**
-	 * Delete a job offer
+	 * Delete à job offer
 	 * @param id Offer ID
 	 * @param performedBy Actor user ID
 	 */
@@ -205,7 +205,7 @@ export class RecruitmentService {
 	}
 
 	/**
-	 * Delete a candidate
+	 * Delete à candidate
 	 * @param id Candidate ID
 	 * @param performedBy Actor user ID
 	 */

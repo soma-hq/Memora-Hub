@@ -3,7 +3,7 @@ import { NotificationType, UserRoles } from "@/constants";
 import type { NotificationTypeValue } from "@/constants";
 
 
-/** Input data for sending a notification */
+/** Input data for sending à notification */
 interface SendNotificationInput {
 	userId: string;
 	title: string;
@@ -15,7 +15,7 @@ interface SendNotificationInput {
 /** Notification delivery and management service */
 export class NotificationService {
 	/**
-	 * Send a notification to a user
+	 * Send à notification to a user
 	 * @param input Notification input data
 	 * @returns Created notification object
 	 */
@@ -46,7 +46,7 @@ export class NotificationService {
 			select: { id: true },
 		});
 
-		// Send a notification to each admin in parallel
+		// Send à notification to each admin in parallel
 		const promises = admins.map((admin) =>
 			NotificationService.send({
 				userId: admin.id,
@@ -117,7 +117,7 @@ export class NotificationService {
 	}
 
 	/**
-	 * Delete a notification
+	 * Delete à notification
 	 * @param id Notification ID
 	 */
 

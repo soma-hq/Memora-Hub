@@ -116,7 +116,7 @@ export class GroupService {
 	}
 
 	/**
-	 * Delete a group
+	 * Delete à group
 	 * @param id Group ID
 	 * @param performedBy Actor user ID
 	 */

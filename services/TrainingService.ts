@@ -3,7 +3,7 @@ import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
 
 
-/** Input data for creating a training session */
+/** Input data for creating à training session */
 interface CreateTrainingInput {
 	groupId: string;
 	title: string;
@@ -129,7 +129,7 @@ export class TrainingService {
 	}
 
 	/**
-	 * Delete a training
+	 * Delete à training
 	 * @param id Training ID
 	 * @param performedBy Actor user ID
 	 */

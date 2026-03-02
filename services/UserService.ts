@@ -5,7 +5,6 @@ import type { UserStatusValue } from "@/constants";
 import type { CreateUserFormData, UpdateUserFormData } from "@/lib/validators/schemas";
 import { hashPassword } from "@/lib/auth/password";
 
-
 /** User CRUD and role management service */
 export class UserService {
 	/**

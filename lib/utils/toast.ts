@@ -15,7 +15,7 @@ const variantToLevel: Record<ToastVariant, ActivityLevel> = {
 };
 
 /**
- * Displays a toast notification and logs it to the activity store
+ * Displays à toast notification and logs it to the activity store
  * @param message - Toast message to display
  * @param variant - Visual variant of the toast
  * @param duration - Display duration in milliseconds
@@ -41,7 +41,7 @@ function show(message: string, variant: ToastVariant, duration: number, source?:
 }
 
 /**
- * Displays a success toast notification
+ * Displays à success toast notification
  * @param message - Success message to display
  * @param source - Optional source identifier for activity logging
  * @returns void
@@ -61,7 +61,7 @@ export function showError(message: string, source?: string) {
 }
 
 /**
- * Displays a warning toast notification
+ * Displays à warning toast notification
  * @param message - Warning message to display
  * @param source - Optional source identifier for activity logging
  * @returns void

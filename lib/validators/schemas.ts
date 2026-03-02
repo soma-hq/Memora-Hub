@@ -2,7 +2,7 @@
 import { z } from "zod";
 import { UserRoles, TaskStatus, TaskPriority, ProjectStatus, AbsenceType } from "@/constants";
 
-// Converts an enum-like object to a Zod-compatible tuple [T, ...T[]]
+// Converts an enum-like object to à Zod-compatible tuple [T, ...T[]]
 const toZodEnum = <T extends string>(obj: Record<string, T>): [T, ...T[]] => Object.values(obj) as [T, ...T[]];
 
 /** Schema de validation pour le formulaire de connexion */
@@ -14,7 +14,7 @@ export const loginSchema = z.object({
 
 export type LoginFormData = z.infer<typeof loginSchema>;
 
-/** Schema de validation pour le code d'authentification a deux facteurs */
+/** Schema de validation pour le code d'authentification à deux facteurs */
 export const a2fSchema = z.object({
 	code: z
 		.string()
@@ -40,12 +40,12 @@ export const createUserSchema = z.object({
 				permissions: z.array(z.string()),
 			}),
 		)
-		.min(1, "Au moins une entite requise"),
+		.min(1, "Au moins une entité requise"),
 });
 
 export type CreateUserFormData = z.infer<typeof createUserSchema>;
 
-/** Schema de validation pour la mise a jour d'un utilisateur (mot de passe exclu, tous les champs optionnels) */
+/** Schema de validation pour la mise à jour d'un utilisateur (mot de passe exclu, tous les champs optionnels) */
 export const updateUserSchema = createUserSchema.omit({ password: true }).partial();
 
 export type UpdateUserFormData = z.infer<typeof updateUserSchema>;
@@ -61,12 +61,12 @@ export const createProjectSchema = z.object({
 
 export type CreateProjectFormData = z.infer<typeof createProjectSchema>;
 
-/** Schema de validation pour la mise a jour d'un projet (tous les champs optionnels) */
+/** Schema de validation pour la mise à jour d'un projet (tous les champs optionnels) */
 export const updateProjectSchema = createProjectSchema.partial();
 
 export type UpdateProjectFormData = z.infer<typeof updateProjectSchema>;
 
-/** Schema de validation pour la creation d'une tache */
+/** Schema de validation pour la creation d'une tâche */
 export const createTaskSchema = z.object({
 	title: z.string().min(2, "Minimum 2 caracteres"),
 	description: z.string().optional(),
@@ -79,12 +79,12 @@ export const createTaskSchema = z.object({
 
 export type CreateTaskFormData = z.infer<typeof createTaskSchema>;
 
-/** Schema de validation pour la mise a jour d'une tache (tous les champs optionnels) */
+/** Schema de validation pour la mise à jour d'une tâche (tous les champs optionnels) */
 export const updateTaskSchema = createTaskSchema.partial();
 
 export type UpdateTaskFormData = z.infer<typeof updateTaskSchema>;
 
-/** Schema de validation pour la creation d'une reunion */
+/** Schema de validation pour la creation d'une réunion */
 export const createMeetingSchema = z.object({
 	title: z.string().min(2, "Minimum 2 caracteres"),
 	description: z.string().optional(),
@@ -100,7 +100,7 @@ export const createMeetingSchema = z.object({
 
 export type CreateMeetingFormData = z.infer<typeof createMeetingSchema>;
 
-/** Schema de validation pour la mise a jour d'une reunion (tous les champs optionnels) */
+/** Schema de validation pour la mise à jour d'une réunion (tous les champs optionnels) */
 export const updateMeetingSchema = createMeetingSchema.partial();
 
 export type UpdateMeetingFormData = z.infer<typeof updateMeetingSchema>;
@@ -129,7 +129,7 @@ export const changePasswordSchema = z
 
 export type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
-/** Schema de validation pour l'acces a un groupe */
+/** Schema de validation pour l'accès à un groupe */
 export const groupAccessSchema = z.object({
 	groupId: z.string(),
 	groupName: z.string(),
@@ -148,7 +148,7 @@ export const createGroupSchema = z.object({
 
 export type CreateGroupFormData = z.infer<typeof createGroupSchema>;
 
-/** Schema de validation pour la mise a jour d'un groupement */
+/** Schema de validation pour la mise à jour d'un groupement */
 export const updateGroupSchema = createGroupSchema.partial();
 
 export type UpdateGroupFormData = z.infer<typeof updateGroupSchema>;

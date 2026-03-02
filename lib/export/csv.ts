@@ -28,7 +28,7 @@ export async function exportToCsv(options: CsvExportOptions): Promise<Blob> {
 }
 
 /**
- * Exports data as CSV and triggers a browser download
+ * Exports data as CSV and triggers à browser download
  * @param options - CSV export configuration
  * @returns Resolves when the download is triggered
  */

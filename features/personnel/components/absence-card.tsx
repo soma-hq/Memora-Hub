@@ -55,7 +55,7 @@ function getDayCount(start: string, end: string): number {
  * Absence request card with optional compact mode and status timeline
  * @param props - Component props
  * @param props.absence - Absence data to display
- * @param props.compact - Whether to use a compact layout
+ * @param props.compact - Whether to use à compact layout
  * @param props.className - Additional CSS classes
  * @returns Absence card with date range, status, and timeline
  */

@@ -6,7 +6,6 @@ import { cn } from "@/lib/utils/cn";
 import type { Absence, AbsenceStatusValue } from "../types";
 import { absenceStatusVariant, absenceTypeVariant, absenceStatusOptions } from "../types";
 
-
 /** Status filter options formatted for SelectMenu */
 const STATUS_MENU_OPTIONS: SelectMenuOption[] = absenceStatusOptions.map((opt) => ({
 	label: opt.label,
@@ -106,8 +105,8 @@ export function AbsenceList({
 				{absences.length === 0 ? (
 					<EmptyState
 						icon="absence"
-						title="Aucune absence trouvee"
-						description="Aucune demande d'absence ne correspond aux filtres selectionnes."
+						title="Aucune absence trouvée"
+						description="Aucune demande d'absence ne correspond aux filtres sélectionnés."
 					/>
 				) : (
 					<ul className="divide-y divide-gray-200 dark:divide-gray-700">

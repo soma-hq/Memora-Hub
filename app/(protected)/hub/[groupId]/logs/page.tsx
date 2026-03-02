@@ -1,15 +1,25 @@
 "use client";
 
-// React
 import { useState, useMemo, useCallback } from "react";
-import { Icon } from "@/components/ui";
+import { PageContainer } from "@/components/layout/page-container";
+import { Icon, Button, SelectMenu, Pagination } from "@/components/ui";
+import type { SelectMenuOption } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { DEMO_LOGS } from "@/features/logs/data/demo-logs";
 import type { LogLevel, LogSource, LogEntry } from "@/features/logs/types";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/logs",
+	section: "protected",
+	module: "logs",
+	description: "Journal d'activité et logs du groupe.",
+	requiredPermissions: [{ module: "logs", action: "view" }],
+	entityScoped: true,
+});
 
-// Number of log entries displayed per page
+// Number of log
 const LOGS_PER_PAGE = 10;
 
 // Display config for each log level
@@ -65,18 +75,26 @@ const SOURCE_CONFIG: Record<LogSource, { label: string; icon: IconName }> = {
 	notification: { label: "Notification", icon: "bell" },
 };
 
-// Available source filter options
-const SOURCES: LogSource[] = ["system", "moderation", "project", "user", "security", "notification"];
+// Filter options for SelectMenu
+const LEVEL_OPTIONS: SelectMenuOption[] = [
+	{ label: "Tous les niveaux", value: "", icon: "filter" },
+	{ label: "Info", value: "info", icon: "info" },
+	{ label: "Alerte", value: "warning", icon: "warning" },
+	{ label: "Erreur", value: "error", icon: "error" },
+	{ label: "Succes", value: "success", icon: "success" },
+];
 
-// Available level filter options
-const LEVELS: LogLevel[] = ["info", "warning", "error", "success"];
+const SOURCE_OPTIONS: SelectMenuOption[] = [
+	{ label: "Toutes les sources", value: "", icon: "filter" },
+	{ label: "Systeme", value: "system", icon: "tools" },
+	{ label: "Moderation", value: "moderation", icon: "shield" },
+	{ label: "Projet", value: "project", icon: "folder" },
+	{ label: "Utilisateur", value: "user", icon: "profile" },
+	{ label: "Securite", value: "security", icon: "lock" },
+	{ label: "Notification", value: "notification", icon: "bell" },
+];
 
-/**
- * Format a date string into a human-readable French day label
- * @param dateStr ISO date string
- * @returns Formatted day label (Aujourd'hui, Hier, or full date)
- */
-
+// Format a date string
 function formatDayLabel(dateStr: string): string {
 	const date = new Date(dateStr);
 	const today = new Date("2025-02-27T23:59:59Z");
@@ -95,21 +113,9 @@ function formatDayLabel(dateStr: string): string {
 	});
 }
 
-/**
- * Extract the date key from a timestamp for grouping purposes
- * @param timestamp ISO date string
- * @returns Date-only string (YYYY-MM-DD)
- */
-
 function getDateKey(timestamp: string): string {
 	return timestamp.split("T")[0];
 }
-
-/**
- * Format a timestamp to a short time string
- * @param timestamp ISO date string
- * @returns Time string (HH:MM)
- */
 
 function formatTime(timestamp: string): string {
 	return new Date(timestamp).toLocaleTimeString("fr-FR", {
@@ -117,12 +123,6 @@ function formatTime(timestamp: string): string {
 		minute: "2-digit",
 	});
 }
-
-/**
- * Group log entries by their date, preserving chronological order
- * @param logs Array of log entries to group
- * @returns Array of date groups, each with a label and its logs
- */
 
 function groupLogsByDate(logs: LogEntry[]): { dateKey: string; label: string; logs: LogEntry[] }[] {
 	const groups: Map<string, LogEntry[]> = new Map();
@@ -142,74 +142,20 @@ function groupLogsByDate(logs: LogEntry[]): { dateKey: string; label: string; lo
 	}));
 }
 
-/**
- * Full logs page with filtering, pagination, date grouping, and summary stats.
- * Displays logs in a toast-adapted card format with colored left borders.
- * @returns {JSX.Element} Logs page
- */
-
+// Full logs page with filtering
 export default function LogsPage() {
 	// State
 	const [search, setSearch] = useState("");
-	const [activeLevels, setActiveLevels] = useState<LogLevel[]>([]);
-	const [activeSources, setActiveSources] = useState<LogSource[]>([]);
+	const [levelFilter, setLevelFilter] = useState("");
+	const [sourceFilter, setSourceFilter] = useState("");
 	const [expandedLog, setExpandedLog] = useState<string | null>(null);
 	const [currentPage, setCurrentPage] = useState(1);
 
-	// Handlers
-
-	/**
-	 * Toggle a log level filter on or off, resetting to page 1
-	 * @param {LogLevel} level Level to toggle
-	 * @returns {void}
-	 */
-
-	const toggleLevel = useCallback((level: LogLevel) => {
-		setActiveLevels((prev) => (prev.includes(level) ? prev.filter((l) => l !== level) : [...prev, level]));
-		setCurrentPage(1);
-	}, []);
-
-	/**
-	 * Toggle a log source filter on or off, resetting to page 1
-	 * @param {LogSource} source Source to toggle
-	 * @returns {void}
-	 */
-
-	const toggleSource = useCallback((source: LogSource) => {
-		setActiveSources((prev) => (prev.includes(source) ? prev.filter((s) => s !== source) : [...prev, source]));
-		setCurrentPage(1);
-	}, []);
-
-	/**
-	 * Clear all active filters and reset to page 1
-	 * @returns {void}
-	 */
-
-	const clearFilters = useCallback(() => {
-		setSearch("");
-		setActiveLevels([]);
-		setActiveSources([]);
-		setCurrentPage(1);
-	}, []);
-
-	/**
-	 * Navigate to a specific page
-	 * @param {number} page Target page number
-	 * @returns {void}
-	 */
-
-	const goToPage = useCallback((page: number) => {
-		setCurrentPage(page);
-		setExpandedLog(null);
-	}, []);
-
 	// Computed
-
-	/** Filtered logs based on active level, source, and search filters */
 	const filteredLogs = useMemo(() => {
 		return DEMO_LOGS.filter((log) => {
-			if (activeLevels.length > 0 && !activeLevels.includes(log.level)) return false;
-			if (activeSources.length > 0 && !activeSources.includes(log.source)) return false;
+			if (levelFilter && log.level !== levelFilter) return false;
+			if (sourceFilter && log.source !== sourceFilter) return false;
 			if (search) {
 				const q = search.toLowerCase();
 				return (
@@ -220,9 +166,8 @@ export default function LogsPage() {
 			}
 			return true;
 		});
-	}, [search, activeLevels, activeSources]);
+	}, [search, levelFilter, sourceFilter]);
 
-	/** Count of logs per level for the summary cards */
 	const levelCounts = useMemo(() => {
 		const counts: Record<LogLevel, number> = { info: 0, warning: 0, error: 0, success: 0 };
 		for (const log of filteredLogs) {
@@ -231,87 +176,60 @@ export default function LogsPage() {
 		return counts;
 	}, [filteredLogs]);
 
-	/** Total number of pages */
 	const totalPages = Math.max(1, Math.ceil(filteredLogs.length / LOGS_PER_PAGE));
 
-	/** Logs for the current page only */
 	const paginatedLogs = useMemo(() => {
 		const start = (currentPage - 1) * LOGS_PER_PAGE;
 		return filteredLogs.slice(start, start + LOGS_PER_PAGE);
 	}, [filteredLogs, currentPage]);
 
-	/** Paginated logs grouped by date */
 	const dateGroups = useMemo(() => groupLogsByDate(paginatedLogs), [paginatedLogs]);
 
-	/** Page numbers to display in the pagination bar */
-	const pageNumbers = useMemo(() => {
-		const pages: number[] = [];
-		const maxVisible = 5;
-		let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
-		const end = Math.min(totalPages, start + maxVisible - 1);
-		start = Math.max(1, end - maxVisible + 1);
-		for (let i = start; i <= end; i++) {
-			pages.push(i);
-		}
-		return pages;
-	}, [currentPage, totalPages]);
+	const hasFilters = levelFilter !== "" || sourceFilter !== "" || search.length > 0;
 
-	const hasFilters = activeLevels.length > 0 || activeSources.length > 0 || search.length > 0;
+	const clearFilters = useCallback(() => {
+		setSearch("");
+		setLevelFilter("");
+		setSourceFilter("");
+		setCurrentPage(1);
+	}, []);
 
 	// Render
 	return (
-		<div className="mx-auto max-w-5xl px-4 py-8">
-			{/* Page header */}
-			<div className="mb-8 flex items-center justify-between">
-				<div className="flex items-center gap-3">
-					<div className="bg-primary-100 dark:bg-primary-900/30 flex h-11 w-11 items-center justify-center rounded-2xl">
-						<Icon name="logs" size="md" className="text-primary-600 dark:text-primary-400" />
-					</div>
-					<div>
-						<h1 className="text-2xl font-bold text-gray-900 dark:text-white">Logs</h1>
-						<p className="text-sm text-gray-400 dark:text-gray-400">
-							Historique complet de toutes les activites
-						</p>
-					</div>
-				</div>
-
-				{/* Export button placeholder */}
-				<button
-					type="button"
-					className={cn(
-						"flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700",
-						"transition-all duration-200",
-						"hover:border-gray-400 hover:bg-gray-50",
-						"dark:border-gray-600 dark:bg-gray-800 dark:text-gray-300 dark:hover:border-gray-500 dark:hover:bg-gray-700",
-					)}
-				>
+		<PageContainer
+			title="Logs"
+			description="Historique complet de toutes les activités"
+			actions={
+				<Button variant="outline-neutral" onClick={() => {}}>
 					<Icon name="download" size="sm" />
 					Exporter
-				</button>
-			</div>
-
+				</Button>
+			}
+		>
 			{/* Summary stats */}
 			<div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
-				{LEVELS.map((level) => {
+				{(["info", "warning", "error", "success"] as LogLevel[]).map((level) => {
 					const config = LEVEL_CONFIG[level];
 					const count = levelCounts[level];
+					const isActive = levelFilter === level;
 					return (
 						<button
 							key={level}
 							type="button"
-							onClick={() => toggleLevel(level)}
+							onClick={() => {
+								setLevelFilter(isActive ? "" : level);
+								setCurrentPage(1);
+							}}
 							className={cn(
 								"group relative flex items-center gap-3 overflow-hidden rounded-xl border p-4 transition-all duration-200",
-								activeLevels.includes(level)
+								isActive
 									? cn(config.statBg, "border-current/20 ring-1 ring-current/10", config.statText)
 									: "border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600",
 							)}
 						>
-							{/* Ghost icon */}
 							<div className="absolute -right-2 -bottom-2 opacity-[0.06]">
 								<Icon name={config.icon} size="xl" className="h-16 w-16" />
 							</div>
-
 							<div
 								className={cn(
 									"flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
@@ -325,7 +243,7 @@ export default function LogsPage() {
 									className={cn(
 										"text-xl font-bold",
 										config.statText,
-										!activeLevels.includes(level) && "text-gray-900 dark:text-white",
+										!isActive && "text-gray-900 dark:text-white",
 									)}
 								>
 									{count}
@@ -338,9 +256,9 @@ export default function LogsPage() {
 			</div>
 
 			{/* Filter bar */}
-			<div className="mb-6 space-y-3 rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800">
+			<div className="mb-6 flex flex-wrap items-center gap-3">
 				{/* Search */}
-				<div className="relative">
+				<div className="relative min-w-[240px] flex-1">
 					<Icon name="search" size="sm" className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400" />
 					<input
 						type="text"
@@ -351,85 +269,59 @@ export default function LogsPage() {
 							setCurrentPage(1);
 						}}
 						className={cn(
-							"w-full rounded-lg border border-gray-200 bg-gray-50 py-2.5 pr-4 pl-10 text-sm text-gray-700",
+							"w-full rounded-lg border border-gray-300 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-700",
 							"transition-all duration-200 outline-none placeholder:text-gray-400",
 							"focus:border-primary-300 focus:ring-primary-100 focus:ring-2",
-							"dark:border-gray-600 dark:bg-gray-700 dark:text-gray-200 dark:placeholder:text-gray-500",
+							"dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200 dark:placeholder:text-gray-500",
 							"dark:focus:border-primary-600 dark:focus:ring-primary-900/30",
 						)}
 					/>
 				</div>
 
-				{/* Level filters */}
-				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-						Niveau
-					</span>
-					{LEVELS.map((level) => {
-						const config = LEVEL_CONFIG[level];
-						const isActive = activeLevels.includes(level);
-						return (
-							<button
-								key={level}
-								type="button"
-								onClick={() => toggleLevel(level)}
-								className={cn(
-									"flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-200",
-									isActive
-										? cn(config.bg, config.color, "ring-1 ring-current/20")
-										: "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600",
-								)}
-							>
-								<Icon name={config.icon} size="xs" />
-								{config.label}
-							</button>
-						);
-					})}
-				</div>
+				{/* Level filter */}
+				<SelectMenu
+					options={LEVEL_OPTIONS}
+					value={levelFilter}
+					onChange={(v) => {
+						setLevelFilter(v as string);
+						setCurrentPage(1);
+					}}
+					placeholder="Niveau"
+					triggerIcon="filter"
+					className="w-[180px]"
+				/>
 
-				{/* Source filters */}
-				<div className="flex flex-wrap items-center gap-2">
-					<span className="text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-						Source
-					</span>
-					{SOURCES.map((source) => {
-						const config = SOURCE_CONFIG[source];
-						const isActive = activeSources.includes(source);
-						return (
-							<button
-								key={source}
-								type="button"
-								onClick={() => toggleSource(source)}
-								className={cn(
-									"flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-xs font-medium transition-all duration-200",
-									isActive
-										? "bg-primary-100 text-primary-700 ring-primary-200 dark:bg-primary-900/30 dark:text-primary-400 dark:ring-primary-800 ring-1"
-										: "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-400 dark:hover:bg-gray-600",
-								)}
-							>
-								<Icon name={config.icon} size="xs" />
-								{config.label}
-							</button>
-						);
-					})}
-				</div>
+				{/* Source filter */}
+				<SelectMenu
+					options={SOURCE_OPTIONS}
+					value={sourceFilter}
+					onChange={(v) => {
+						setSourceFilter(v as string);
+						setCurrentPage(1);
+					}}
+					placeholder="Source"
+					triggerIcon="folder"
+					className="w-[200px]"
+				/>
 
-				{/* Active filter summary */}
+				{/* Clear filters */}
 				{hasFilters && (
-					<div className="flex items-center justify-between border-t border-gray-100 pt-3 dark:border-gray-700">
-						<span className="text-xs text-gray-500 dark:text-gray-400">
-							{filteredLogs.length} resultat{filteredLogs.length !== 1 ? "s" : ""}
-						</span>
-						<button
-							type="button"
-							onClick={clearFilters}
-							className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-xs font-medium transition-all duration-200"
-						>
-							Effacer les filtres
-						</button>
-					</div>
+					<button
+						type="button"
+						onClick={clearFilters}
+						className="text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 text-xs font-medium transition-all duration-200"
+					>
+						Effacer les filtres
+					</button>
 				)}
 			</div>
+
+			{/* Result count */}
+			{hasFilters && (
+				<p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
+					{filteredLogs.length} resultat{filteredLogs.length !== 1 ? "s" : ""}
+				</p>
+			)}
 
 			{/* Log entries */}
 			{filteredLogs.length === 0 ? (
@@ -574,7 +466,6 @@ export default function LogsPage() {
 															{log.user}
 														</span>
 													)}
-													{/* Expand indicator */}
 													<Icon
 														name="chevronDown"
 														size="xs"
@@ -597,101 +488,17 @@ export default function LogsPage() {
 
 			{/* Pagination */}
 			{filteredLogs.length > LOGS_PER_PAGE && (
-				<div className="mt-8 flex items-center justify-between rounded-xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800">
-					{/* Page info */}
-					<p className="text-xs text-gray-400 dark:text-gray-500">
-						Page {currentPage} sur {totalPages}
-						<span className="ml-2 text-gray-300 dark:text-gray-600">|</span>
-						<span className="ml-2">
-							{filteredLogs.length} log{filteredLogs.length !== 1 ? "s" : ""} au total
-						</span>
-					</p>
-
-					{/* Page controls */}
-					<div className="flex items-center gap-1">
-						{/* Previous */}
-						<button
-							type="button"
-							onClick={() => goToPage(currentPage - 1)}
-							disabled={currentPage === 1}
-							className={cn(
-								"flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200",
-								currentPage === 1
-									? "cursor-not-allowed text-gray-300 dark:text-gray-600"
-									: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200",
-							)}
-						>
-							<Icon name="chevronLeft" size="sm" />
-						</button>
-
-						{/* Page numbers */}
-						{pageNumbers[0] > 1 && (
-							<>
-								<button
-									type="button"
-									onClick={() => goToPage(1)}
-									className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-								>
-									1
-								</button>
-								{pageNumbers[0] > 2 && (
-									<span className="flex h-8 w-8 items-center justify-center text-xs text-gray-400 dark:text-gray-500">
-										...
-									</span>
-								)}
-							</>
-						)}
-
-						{pageNumbers.map((page) => (
-							<button
-								key={page}
-								type="button"
-								onClick={() => goToPage(page)}
-								className={cn(
-									"flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium transition-all duration-200",
-									page === currentPage
-										? "bg-primary-500 text-white shadow-sm"
-										: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200",
-								)}
-							>
-								{page}
-							</button>
-						))}
-
-						{pageNumbers[pageNumbers.length - 1] < totalPages && (
-							<>
-								{pageNumbers[pageNumbers.length - 1] < totalPages - 1 && (
-									<span className="flex h-8 w-8 items-center justify-center text-xs text-gray-400 dark:text-gray-500">
-										...
-									</span>
-								)}
-								<button
-									type="button"
-									onClick={() => goToPage(totalPages)}
-									className="flex h-8 w-8 items-center justify-center rounded-lg text-xs font-medium text-gray-500 transition-all duration-200 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200"
-								>
-									{totalPages}
-								</button>
-							</>
-						)}
-
-						{/* Next */}
-						<button
-							type="button"
-							onClick={() => goToPage(currentPage + 1)}
-							disabled={currentPage === totalPages}
-							className={cn(
-								"flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200",
-								currentPage === totalPages
-									? "cursor-not-allowed text-gray-300 dark:text-gray-600"
-									: "text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-200",
-							)}
-						>
-							<Icon name="chevronRight" size="sm" />
-						</button>
-					</div>
+				<div className="mt-8">
+					<Pagination
+						currentPage={currentPage}
+						totalPages={totalPages}
+						onPageChange={(page) => {
+							setCurrentPage(page);
+							setExpandedLog(null);
+						}}
+					/>
 				</div>
 			)}
-		</div>
+		</PageContainer>
 	);
 }

@@ -8,7 +8,14 @@ import { useChatStore } from "@/store/chat.store";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo, showWarning } from "@/lib/utils/toast";
 import type { ChatMessage, ContextMenuPosition, MentionOption } from "@/features/chat/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/chat",
+	section: "protected",
+	description: "Chat d'équipe du groupe.",
+	entityScoped: true,
+});
 
 // Constants
 const MAX_MESSAGE_LENGTH = 2000;
@@ -591,7 +598,7 @@ export default function ChatPage() {
 	}, []);
 
 	/**
-	 * Inserts a selected mention into the message input.
+	 * Inserts à selected mention into the message input.
 	 * @param option - Selected mention option
 	 * @returns {void}
 	 */
@@ -854,7 +861,7 @@ export default function ChatPage() {
 					</div>
 				</div>
 
-				{/* Access notice */}
+				{/* Accèss notice */}
 				<div className="border-t border-gray-200 px-3 py-2.5 dark:border-gray-700">
 					<div className="flex items-start gap-2 rounded-lg bg-amber-50 px-2.5 py-2 dark:bg-amber-900/10">
 						<Icon name="lock" size="xs" className="mt-0.5 flex-shrink-0 text-amber-500" />

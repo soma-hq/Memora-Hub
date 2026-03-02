@@ -3,13 +3,23 @@
 // React
 import { useState, useMemo } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Button, Icon, Modal, ModalFooter } from "@/components/ui";
+import { Button, Icon, Modal, ModalFooter, WizardModal } from "@/components/ui";
+import type { WizardStep } from "@/components/ui";
 import { usePlanning } from "@/features/personnel/hooks";
 import { PLANNING_EVENT_TYPES, planningEventTypeLabels } from "@/features/personnel/types";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { PlanningEvent, PlanningEventType } from "@/features/personnel/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/personnel/planning",
+	section: "protected",
+	module: "personnel",
+	description: "Planning du personnel.",
+	requiredPermissions: [{ module: "personnel", action: "view" }],
+	entityScoped: true,
+});
 
 // ─── Types ──────────────────────────────────────────────────────────────────────
 
@@ -80,6 +90,28 @@ const TEMPLATES: {
 	{ label: "Processus de dérank", type: "meeting", durationMinutes: 45, isPublic: false },
 	{ label: "Entrevue Référent / Junior", type: "meeting", durationMinutes: 30, isPublic: false },
 	{ label: "Entrevue Resp. / Réf. / Junior", type: "meeting", durationMinutes: 45, isPublic: false },
+];
+
+/** Wizard steps definition for planning event creation */
+const PLANNING_STEPS: WizardStep[] = [
+	{
+		id: "template",
+		title: "Template",
+		description: "Sélectionne un template pour pré-remplir le formulaire.",
+		icon: "sparkles",
+	},
+	{
+		id: "details",
+		title: "Détails",
+		description: "Renseigne les informations principales de l'événement.",
+		icon: "document",
+	},
+	{
+		id: "schedule",
+		title: "Date & Horaire",
+		description: "Choisis la date et les horaires de l'événement.",
+		icon: "clock",
+	},
 ];
 
 const VIEW_MODE_OPTIONS: { value: ViewMode; label: string }[] = [
@@ -201,6 +233,7 @@ export default function PlanningPage() {
 
 	// ─── Modal State ─────────────────────────────────────────────────────────
 	const [modalOpen, setModalOpen] = useState(false);
+	const [wizardStep, setWizardStep] = useState(0);
 	const [detailEvent, setDetailEvent] = useState<PlanningEvent | null>(null);
 	const [formTitle, setFormTitle] = useState("");
 	const [formDescription, setFormDescription] = useState("");
@@ -223,6 +256,7 @@ export default function PlanningPage() {
 		setFormType("meeting");
 		setFormIsPublic(true);
 		setFormLocation("");
+		setWizardStep(0);
 	}
 
 	function openModal(prefillDate?: string) {
@@ -528,173 +562,188 @@ export default function PlanningPage() {
 				</Modal>
 			)}
 
-			{/* ─── New Event Modal ─── */}
-			<Modal
+			{/* ─── New Event Wizard Modal ─── */}
+			<WizardModal
 				isOpen={modalOpen}
 				onClose={() => setModalOpen(false)}
-				title="Nouvel événement"
-				description="Créez un nouvel événement dans votre planning."
+				steps={PLANNING_STEPS}
+				currentStep={wizardStep}
+				onStepChange={setWizardStep}
+				onSubmit={handleSubmit}
+				submitLabel="Créer l'événement"
 				size="lg"
 			>
-				{/* Templates */}
-				<div className="mb-5">
-					<p className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
-						Templates
-					</p>
-					<div className="flex flex-wrap gap-1.5">
-						{TEMPLATES.map((tpl) => {
-							const isActive = formTitle === tpl.label;
-							return (
-								<button
-									key={tpl.label}
-									type="button"
-									onClick={() => applyTemplate(tpl)}
-									className={cn(
-										"rounded-full border px-2.5 py-1 text-xs font-medium transition-colors duration-150",
-										isActive
-											? "border-primary-300 bg-primary-50 text-primary-700 dark:border-primary-600 dark:bg-primary-900/20 dark:text-primary-400"
-											: cn(
-													"border-gray-200 text-gray-600 dark:border-gray-600 dark:text-gray-300",
-													"hover:border-primary-200 hover:bg-primary-50/60 hover:text-primary-600",
-													"dark:hover:border-primary-700 dark:hover:bg-primary-900/15 dark:hover:text-primary-400",
-												),
-									)}
-								>
-									{tpl.label}
-								</button>
-							);
-						})}
-					</div>
-				</div>
-
-				{/* Form */}
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-					{/* Title */}
-					<div className="sm:col-span-2">
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Titre *
-						</label>
-						<input
-							type="text"
-							value={formTitle}
-							onChange={(e) => setFormTitle(e.target.value)}
-							placeholder="Nom de l'événement"
-							className={inputClasses}
-						/>
-					</div>
-
-					{/* Description */}
-					<div className="sm:col-span-2">
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Description
-						</label>
-						<textarea
-							value={formDescription}
-							onChange={(e) => setFormDescription(e.target.value)}
-							rows={2}
-							placeholder="Description optionnelle..."
-							className={cn(inputClasses, "resize-none")}
-						/>
-					</div>
-
-					{/* Date */}
+				{/* Step 1: Template selection */}
+				{wizardStep === 0 && (
 					<div>
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Date *
-						</label>
-						<input
-							type="date"
-							value={formDate}
-							onChange={(e) => setFormDate(e.target.value)}
-							className={inputClasses}
-						/>
+						<div className="flex flex-wrap gap-2">
+							{TEMPLATES.map((tpl) => {
+								const isActive = formTitle === tpl.label;
+								return (
+									<button
+										key={tpl.label}
+										type="button"
+										onClick={() => applyTemplate(tpl)}
+										className={cn(
+											"rounded-xl border-2 px-4 py-3 text-left transition-all duration-200",
+											isActive
+												? "border-primary-400 bg-primary-50 dark:border-primary-600 dark:bg-primary-900/20"
+												: cn(
+														"border-gray-200 bg-white hover:border-gray-300",
+														"dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600",
+													),
+										)}
+									>
+										<span
+											className={cn(
+												"text-sm font-semibold",
+												isActive
+													? "text-primary-700 dark:text-primary-400"
+													: "text-gray-700 dark:text-gray-300",
+											)}
+										>
+											{tpl.label}
+										</span>
+										<p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+											{planningEventTypeLabels[tpl.type]} &middot; {tpl.durationMinutes} min
+											{tpl.isPublic ? " · Public" : ""}
+										</p>
+									</button>
+								);
+							})}
+						</div>
+						<p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
+							Tu peux aussi passer cette étape et remplir manuellement.
+						</p>
 					</div>
+				)}
 
-					{/* Type */}
-					<div>
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Type
-						</label>
-						<select
-							value={formType}
-							onChange={(e) => setFormType(e.target.value as PlanningEventType)}
-							className={inputClasses}
-						>
-							{PLANNING_EVENT_TYPES.map((type) => (
-								<option key={type} value={type}>
-									{planningEventTypeLabels[type]}
-								</option>
-							))}
-						</select>
-					</div>
-
-					{/* Start time */}
-					<div>
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Heure de début *
-						</label>
-						<input
-							type="time"
-							value={formStartTime}
-							onChange={(e) => setFormStartTime(e.target.value)}
-							className={inputClasses}
-						/>
-					</div>
-
-					{/* End time */}
-					<div>
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Heure de fin *
-						</label>
-						<input
-							type="time"
-							value={formEndTime}
-							onChange={(e) => setFormEndTime(e.target.value)}
-							className={inputClasses}
-						/>
-					</div>
-
-					{/* Location */}
-					<div>
-						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Lieu
-						</label>
-						<input
-							type="text"
-							value={formLocation}
-							onChange={(e) => setFormLocation(e.target.value)}
-							placeholder="Salle, lien visio..."
-							className={inputClasses}
-						/>
-					</div>
-
-					{/* Public checkbox */}
-					<div className="flex items-end pb-2">
-						<label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+				{/* Step 2: Event details */}
+				{wizardStep === 1 && (
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+						{/* Title */}
+						<div className="sm:col-span-2">
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Titre *
+							</label>
 							<input
-								type="checkbox"
-								checked={formIsPublic}
-								onChange={(e) => setFormIsPublic(e.target.checked)}
-								className={cn(
-									"h-4 w-4 rounded border-gray-300",
-									"text-primary-500 focus:ring-primary-500",
-									"dark:border-gray-600 dark:bg-gray-800",
-								)}
+								type="text"
+								value={formTitle}
+								onChange={(e) => setFormTitle(e.target.value)}
+								placeholder="Nom de l'événement"
+								className={inputClasses}
 							/>
-							Événement public
-						</label>
-					</div>
-				</div>
+						</div>
 
-				<ModalFooter className="-mx-6 mt-4 -mb-4">
-					<Button variant="cancel" size="sm" onClick={() => setModalOpen(false)}>
-						Annuler
-					</Button>
-					<Button size="sm" onClick={handleSubmit} isLoading={isSubmitting}>
-						Créer l&apos;événement
-					</Button>
-				</ModalFooter>
-			</Modal>
+						{/* Type */}
+						<div>
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Type
+							</label>
+							<select
+								value={formType}
+								onChange={(e) => setFormType(e.target.value as PlanningEventType)}
+								className={inputClasses}
+							>
+								{PLANNING_EVENT_TYPES.map((type) => (
+									<option key={type} value={type}>
+										{planningEventTypeLabels[type]}
+									</option>
+								))}
+							</select>
+						</div>
+
+						{/* Location */}
+						<div>
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Lieu
+							</label>
+							<input
+								type="text"
+								value={formLocation}
+								onChange={(e) => setFormLocation(e.target.value)}
+								placeholder="Salle, lien visio..."
+								className={inputClasses}
+							/>
+						</div>
+
+						{/* Description */}
+						<div className="sm:col-span-2">
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Description
+							</label>
+							<textarea
+								value={formDescription}
+								onChange={(e) => setFormDescription(e.target.value)}
+								rows={2}
+								placeholder="Description optionnelle..."
+								className={cn(inputClasses, "resize-none")}
+							/>
+						</div>
+
+						{/* Public checkbox */}
+						<div className="sm:col-span-2">
+							<label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+								<input
+									type="checkbox"
+									checked={formIsPublic}
+									onChange={(e) => setFormIsPublic(e.target.checked)}
+									className={cn(
+										"h-4 w-4 rounded border-gray-300",
+										"text-primary-500 focus:ring-primary-500",
+										"dark:border-gray-600 dark:bg-gray-800",
+									)}
+								/>
+								Événement public
+							</label>
+						</div>
+					</div>
+				)}
+
+				{/* Step 3: Date & Time */}
+				{wizardStep === 2 && (
+					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+						{/* Date */}
+						<div>
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Date *
+							</label>
+							<input
+								type="date"
+								value={formDate}
+								onChange={(e) => setFormDate(e.target.value)}
+								className={inputClasses}
+							/>
+						</div>
+
+						{/* Start time */}
+						<div>
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Début *
+							</label>
+							<input
+								type="time"
+								value={formStartTime}
+								onChange={(e) => setFormStartTime(e.target.value)}
+								className={inputClasses}
+							/>
+						</div>
+
+						{/* End time */}
+						<div>
+							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+								Fin *
+							</label>
+							<input
+								type="time"
+								value={formEndTime}
+								onChange={(e) => setFormEndTime(e.target.value)}
+								className={inputClasses}
+							/>
+						</div>
+					</div>
+				)}
+			</WizardModal>
 		</PageContainer>
 	);
 }

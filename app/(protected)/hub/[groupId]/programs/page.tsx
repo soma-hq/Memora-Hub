@@ -15,7 +15,12 @@ import {
 	programPhaseVariantMap,
 } from "@/features/programs/types";
 import type { ProgramEnrollment, ProgramDefinition, ProgramTrack } from "@/features/programs/types";
-import programsData from "@/core/data/programs.json";
+// Static fallback data (programs.json is gitignored — will be replaced with server actions)
+const programsData = {
+	programs: [] as any[],
+	enrollments: [] as any[],
+	trainingSpaces: [] as any[],
+};
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/programs",

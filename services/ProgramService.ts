@@ -8,8 +8,13 @@ import type {
 	TrainingSpace,
 } from "@/features/programs/types";
 
-// Static data imports (used until DB migration for programs is in place)
-import programsData from "@/core/data/programs.json";
+// Static fallback data (programs.json is gitignored — replace with DB queries when Prisma model is ready)
+const programsData = {
+	programs: [] as any[],
+	enrollments: [] as any[],
+	invitations: [] as any[],
+	trainingSpaces: [] as any[],
+};
 
 /**
  * Service for managing training programs, enrollments, and invitations.

@@ -5,13 +5,23 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge } from "@/components/ui";
+import { Card, Icon, Badge, StyledEmptyState } from "@/components/ui";
 import { TEAM_TEXT_COLORS, type Team } from "@/core/config/teams";
 import { getEntities } from "@/features/users/data";
 import { DIVISION_ICONS } from "@/features/users/types";
 import type { UserProfile } from "@/features/users/types";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "users",
+	section: "owner",
+	module: "admin",
+	description: "Gestion des utilisateurs de la plateforme.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
 const ENTITIES = ["Toutes", ...getEntities()] as const;
 const TEAMS = ["Toutes", "Owner", "Executive", "Marsha Team", "Legacy", "Talent", "Momentum", "Squad"] as const;
@@ -202,10 +212,11 @@ export default function UsersPage() {
 
 			{/* Empty state */}
 			{filteredUsers.length === 0 ? (
-				<div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 py-16 dark:border-gray-600">
-					<Icon name="users" size="xl" className="mb-3 text-gray-300 dark:text-gray-600" />
-					<p className="text-sm text-gray-500 dark:text-gray-400">Aucun utilisateur trouvé.</p>
-				</div>
+				<StyledEmptyState
+					icon="users"
+					title="Aucun utilisateur trouvé"
+					description="Aucun utilisateur ne correspond aux critères de recherche."
+				/>
 			) : isSingleEntity ? (
 				// Single entity: flat grid
 				<div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">

@@ -6,7 +6,17 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Button } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showWarning } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "admin/trash",
+	section: "owner",
+	module: "admin",
+	description: "Corbeille et éléments supprimés.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
 interface TrashedMember {
 	id: string;

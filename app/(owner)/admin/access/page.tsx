@@ -1,141 +1,43 @@
 "use client";
 
-// React
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button, Tag, Tabs } from "@/components/ui";
-import { TEAMS, TEAM_DESCRIPTIONS, TEAM_TEXT_COLORS, TEAM_SCOPE, TEAM_HIERARCHY, type Team } from "@/core/config/teams";
-
-const accessUsers: Record<string, Record<string, unknown>> = {};
-
-// Utils & hooks
+import { Card, Badge, Icon, Button, Tag, Tabs, SectionHeaderBanner } from "@/components/ui";
+import { useDataStore } from "@/store/data.store";
+import {
+	ROLES_LIST,
+	ROLE_LABELS,
+	ROLE_BADGE_CLASSES,
+	ROLE_DESCRIPTIONS,
+	type RoleId,
+} from "@/core/config/roles";
+import {
+	MODULE_LABELS,
+	ALL_MODULES,
+	PERMISSION_LABELS,
+	type Module,
+} from "@/core/config/capabilities";
+import {
+	getPermissionsForModule,
+	getAccessibleModules,
+} from "@/core/permissions/capabilityMap";
+import { ENTITIES, resolveEntityAccess } from "@/core/data/entities";
+import { getTeamForRole } from "@/core/config/teams";
 import { cn } from "@/lib/utils/cn";
-import { showSuccess, showWarning, showError } from "@/lib/utils/toast";
+import { showSuccess } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
-type AccessLevel = "owner" | "marsha_teams" | "legacy" | "talent_momentum" | "standard";
-type PageAccessMode = "read_only" | "editable" | "full_access";
+const PAGE_CONFIG = definePageConfig({
+	name: "admin/access",
+	section: "owner",
+	module: "admin",
+	description: "Gestion des accès et permissions.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
-interface AccessUser {
-	id: string;
-	pseudo: string;
-	team: string;
-	accessLevel: AccessLevel;
-	role?: string;
-	entities: string[];
-	pages: Record<string, PageAccessMode>;
-}
-
-interface CorbeilleEntry {
-	user: AccessUser;
-	type: "archived" | "restricted" | "deleted";
-	duration?: string;
-	date: Date;
-}
-
-interface MockUser {
-	id: string;
-	name: string;
-	entity: string;
-	team: Team;
-	status: "active" | "inactive";
-}
-
-const parsedUsers: AccessUser[] = Object.entries(accessUsers).map(([id, user]) => ({
-	id,
-	pseudo: (user as Record<string, unknown>).pseudo as string,
-	team: (user as Record<string, unknown>).team as string,
-	accessLevel: (user as Record<string, unknown>).accessLevel as AccessLevel,
-	role: (user as Record<string, unknown>).role as string | undefined,
-	entities: (user as Record<string, unknown>).entities as string[],
-	pages: (user as Record<string, unknown>).pages as Record<string, PageAccessMode>,
-}));
-
-const teamSortOrder: Record<string, number> = {
-	"Marsha Team": 0,
-	Legacy: 1,
-	Talent: 2,
-	Momentum: 3,
-	Squad: 4,
-	Owner: 5,
-};
-
-const accessLevelColors: Record<AccessLevel, { row: string; badge: string; label: string }> = {
-	owner: {
-		row: "border-l-4 border-l-red-500",
-		badge: "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400",
-		label: "Owner",
-	},
-	marsha_teams: {
-		row: "border-l-4 border-l-purple-500",
-		badge: "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400",
-		label: "Marsha Teams",
-	},
-	legacy: {
-		row: "border-l-4 border-l-amber-500",
-		badge: "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
-		label: "Legacy",
-	},
-	talent_momentum: {
-		row: "border-l-4 border-l-emerald-500",
-		badge: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
-		label: "Talent / Momentum",
-	},
-	standard: {
-		row: "border-l-4 border-l-gray-400",
-		badge: "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300",
-		label: "Standard",
-	},
-};
-
-const pageAccessConfig: Record<PageAccessMode, { color: "gray" | "info" | "success"; label: string }> = {
-	read_only: { color: "gray", label: "Lecture seule" },
-	editable: { color: "info", label: "Editable" },
-	full_access: { color: "success", label: "Accès complet" },
-};
-
-const permissionCycle: Record<PageAccessMode, PageAccessMode> = {
-	read_only: "editable",
-	editable: "full_access",
-	full_access: "read_only",
-};
-
-const allTeams = ["Tous", ...Array.from(new Set(parsedUsers.map((u) => u.team)))];
-const allAccessLevels: { value: string; label: string }[] = [
-	{ value: "all", label: "Tous les niveaux" },
-	{ value: "marsha_teams", label: "Marsha Teams" },
-	{ value: "legacy", label: "Legacy" },
-	{ value: "talent_momentum", label: "Talent / Momentum" },
-	{ value: "standard", label: "Standard" },
-	{ value: "owner", label: "Owner" },
-];
-
-// Restriction duration options
-const restrictDurations = [
-	{ value: "24h", label: "24 heures" },
-	{ value: "7j", label: "7 jours" },
-	{ value: "30j", label: "30 jours" },
-	{ value: "indefini", label: "Indéfini" },
-];
-
-// Shared select classes with red accent
-const selectClasses = cn(
-	"rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm",
-	"text-gray-700 shadow-sm transition-all duration-200",
-	"focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500",
-	"dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200",
-);
-
-// --- Teams section constants ---
-const TEAM_DOT: Record<Team, string> = {
-	Owner: "bg-primary-500",
-	Executive: "bg-red-500",
-	"Marsha Team": "bg-purple-500",
-	Legacy: "bg-amber-500",
-	Talent: "bg-emerald-500",
-	Momentum: "bg-blue-500",
-	Squad: "bg-gray-400",
-};
-
+// --- Avatar background helper ---
 const AVATAR_BG: Record<string, string> = {
 	A: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 	B: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
@@ -144,290 +46,208 @@ const AVATAR_BG: Record<string, string> = {
 	E: "bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-400",
 	F: "bg-teal-100 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400",
 	G: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-	H: "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
 	I: "bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-400",
 	J: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
-	K: "bg-lime-100 text-lime-700 dark:bg-lime-900/30 dark:text-lime-400",
 	L: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
 	M: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-	N: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
-	R: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-400",
-	T: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+	P: "bg-sky-100 text-sky-700 dark:bg-sky-900/30 dark:text-sky-400",
+	S: "bg-fuchsia-100 text-fuchsia-700 dark:bg-fuchsia-900/30 dark:text-fuchsia-400",
+	W: "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
 };
 
 function getAvatarBg(name: string) {
 	const letter = name.charAt(0).toUpperCase();
-	return AVATAR_BG[letter] || "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
+	return AVATAR_BG[letter] ?? "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
 }
 
-const ORDERED_TEAMS = Object.values(TEAMS).sort((a, b) => TEAM_HIERARCHY[b] - TEAM_HIERARCHY[a]);
+// --- Role border colors for user rows ---
+const ROLE_BORDER: Record<RoleId, string> = {
+	owner: "border-l-red-500",
+	marsha_teams: "border-l-primary-500",
+	legacy_resp_live: "border-l-amber-500",
+	legacy_resp_discord: "border-l-amber-500",
+	legacy_resp_polyvalent: "border-l-amber-500",
+	momentum_talent: "border-l-purple-500",
+};
 
-// View tabs
+// --- Permission badge colors ---
+const PERM_COLORS: Record<string, string> = {
+	view: "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
+	create: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
+	edit: "bg-amber-100 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400",
+	delete: "bg-red-100 text-red-700 dark:bg-red-900/20 dark:text-red-400",
+	manage: "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400",
+};
+
+// --- View tabs ---
 const VIEW_TABS = [
-	{ id: "access" as const, label: "Accès" },
-	{ id: "teams" as const, label: "Teams" },
+	{ id: "members" as const, label: "Membres" },
+	{ id: "roles" as const, label: "Rôles" },
+	{ id: "matrix" as const, label: "Matrice" },
 ];
 
+// --- Select classes ---
+const selectClasses = cn(
+	"rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm",
+	"text-gray-700 shadow-sm transition-all duration-200",
+	"focus:border-red-500 focus:outline-none focus:ring-1 focus:ring-red-500",
+	"dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200",
+);
+
 /**
- * Unified permissions page: user access management + team hierarchy.
- * @returns The admin access control page
+ * Owner Access Management page with Discord-style permission system.
+ * Three views: Members (user management), Roles (role overview), Matrix (permission matrix).
+ * @returns {JSX.Element} Access management page
  */
 export default function AdminAccessPage() {
-	// View state
-	const [activeView, setActiveView] = useState<"access" | "teams">("access");
-
-	// Access state
-	const [teamFilter, setTeamFilter] = useState("Tous");
-	const [levelFilter, setLevelFilter] = useState("all");
+	// State
+	const [activeView, setActiveView] = useState<"members" | "roles" | "matrix">("members");
+	const [roleFilter, setRoleFilter] = useState<string>("all");
+	const [entityFilter, setEntityFilter] = useState<string>("all");
 	const [expandedUser, setExpandedUser] = useState<string | null>(null);
+	const [expandedRole, setExpandedRole] = useState<string | null>(null);
 
-	// Editable permissions state
-	const [userPermissions, setUserPermissions] = useState<Record<string, Record<string, PageAccessMode>>>(() => {
-		const initial: Record<string, Record<string, PageAccessMode>> = {};
-		for (const user of parsedUsers) {
-			initial[user.id] = { ...user.pages };
-		}
-		return initial;
-	});
+	// Data store
+	const users = useDataStore((s) => s.users);
+	const updateUser = useDataStore((s) => s.updateUser);
 
-	// Corbeille state
-	const [corbeille, setCorbeille] = useState<CorbeilleEntry[]>([]);
-	const corbeilleIds = useMemo(() => new Set(corbeille.map((e) => e.user.id)), [corbeille]);
-
-	// Restrict UI state
-	const [restrictingUser, setRestrictingUser] = useState<string | null>(null);
-
-	// Delete confirm UI state
-	const [confirmDeleteUser, setConfirmDeleteUser] = useState<string | null>(null);
-
-	// Teams state
-	const [teamMembers] = useState<MockUser[]>([]);
-	const [expandedTeam, setExpandedTeam] = useState<Team | null>(null);
-
-	const membersByTeam = useMemo(() => {
-		const map: Record<string, MockUser[]> = {};
-		for (const team of ORDERED_TEAMS) {
-			map[team] = teamMembers.filter((u) => u.team === team);
-		}
-		return map;
-	}, [teamMembers]);
-
-	const toggleTeam = (team: Team) => {
-		setExpandedTeam((prev) => (prev === team ? null : team));
-	};
-
-	const cyclePermission = useCallback((userId: string, page: string) => {
-		setUserPermissions((prev) => {
-			const current = prev[userId]?.[page];
-			if (!current) return prev;
-			const next = permissionCycle[current];
-			return {
-				...prev,
-				[userId]: {
-					...prev[userId],
-					[page]: next,
-				},
-			};
-		});
-		showSuccess("Permission mise à jour");
-	}, []);
-
-	const handleArchive = useCallback((user: AccessUser) => {
-		setCorbeille((prev) => [...prev, { user, type: "archived", date: new Date() }]);
-		setExpandedUser(null);
-		showWarning(`${user.pseudo} a été archivé`);
-	}, []);
-
-	const handleRestrict = useCallback((user: AccessUser, duration: string) => {
-		setCorbeille((prev) => [...prev, { user, type: "restricted", duration, date: new Date() }]);
-		setRestrictingUser(null);
-		setExpandedUser(null);
-		showWarning(`${user.pseudo} a été restreint (${duration})`);
-	}, []);
-
-	const handleDelete = useCallback((user: AccessUser) => {
-		setCorbeille((prev) => [...prev, { user, type: "deleted", date: new Date() }]);
-		setConfirmDeleteUser(null);
-		setExpandedUser(null);
-		showError(`${user.pseudo} a été supprimé (réversible 30 jours)`);
-	}, []);
-
+	// Filtered users
 	const filteredUsers = useMemo(() => {
-		return parsedUsers
+		return users
 			.filter((u) => {
-				if (corbeilleIds.has(u.id)) return false;
-				if (teamFilter !== "Tous" && u.team !== teamFilter) return false;
-				if (levelFilter !== "all" && u.accessLevel !== levelFilter) return false;
+				if (roleFilter !== "all" && u.roleId !== roleFilter) return false;
+				if (entityFilter !== "all") {
+					if (!u.entityAccess.includes("*") && !u.entityAccess.includes(entityFilter)) return false;
+				}
 				return true;
 			})
 			.sort((a, b) => {
-				const orderA = teamSortOrder[a.team] ?? 99;
-				const orderB = teamSortOrder[b.team] ?? 99;
-				if (orderA !== orderB) return orderA - orderB;
+				const levelA = ROLES_LIST.find((r) => r.id === a.roleId)?.level ?? 0;
+				const levelB = ROLES_LIST.find((r) => r.id === b.roleId)?.level ?? 0;
+				if (levelB !== levelA) return levelB - levelA;
 				return a.pseudo.localeCompare(b.pseudo);
 			});
-	}, [teamFilter, levelFilter, corbeilleIds]);
+	}, [users, roleFilter, entityFilter]);
 
+	// Role filter options
+	const roleFilterOptions = useMemo(
+		() => [
+			{ value: "all", label: "Rôle : Tous" },
+			...ROLES_LIST.map((r) => ({ value: r.id, label: r.label })),
+		],
+		[],
+	);
+
+	// Entity filter options
+	const entityFilterOptions = useMemo(
+		() => [
+			{ value: "all", label: "Entité : Toutes" },
+			...ENTITIES.map((e) => ({ value: e.id, label: e.name })),
+		],
+		[],
+	);
+
+	// Users per role count
+	const usersPerRole = useMemo(() => {
+		const map: Record<string, number> = {};
+		for (const role of ROLES_LIST) {
+			map[role.id] = users.filter((u) => u.roleId === role.id).length;
+		}
+		return map;
+	}, [users]);
+
+	// Handlers
+	const handleRoleChange = (userId: string, newRoleId: RoleId) => {
+		updateUser(userId, { roleId: newRoleId });
+		showSuccess(`Rôle mis à jour`);
+	};
+
+	const toggleEntityAccess = (userId: string, entityId: string) => {
+		const user = users.find((u) => u.id === userId);
+		if (!user) return;
+
+		let newAccess: string[];
+		if (user.entityAccess.includes("*")) {
+			// Wildcard: switching to specific entities, remove the target one
+			newAccess = ENTITIES.map((e) => e.id).filter((id) => id !== entityId);
+		} else if (user.entityAccess.includes(entityId)) {
+			newAccess = user.entityAccess.filter((id) => id !== entityId);
+		} else {
+			newAccess = [...user.entityAccess, entityId];
+		}
+
+		updateUser(userId, { entityAccess: newAccess });
+		showSuccess(`Accès entité mis à jour`);
+	};
+
+	const setWildcardAccess = (userId: string) => {
+		updateUser(userId, { entityAccess: ["*"] });
+		showSuccess(`Accès toutes entités activé`);
+	};
+
+	const toggle2FA = (userId: string) => {
+		const user = users.find((u) => u.id === userId);
+		if (!user) return;
+		updateUser(userId, { twoFactorEnabled: !user.twoFactorEnabled });
+		showSuccess(`2FA ${user.twoFactorEnabled ? "désactivé" : "activé"}`);
+	};
+
+	// Render
 	return (
-		<PageContainer title="Permissions & Accès" description="Gestion des rôles, teams et accès détaillés">
+		<PageContainer title="Gestion des accès" description="Système de permissions Discord-style. Rôles, entités et modules.">
 			{/* View tabs */}
 			<div className="mb-6 border-b border-gray-200 dark:border-gray-700">
 				<Tabs
 					tabs={VIEW_TABS}
 					activeTab={activeView}
-					onTabChange={(id) => setActiveView(id as "access" | "teams")}
+					onTabChange={(id) => setActiveView(id as "members" | "roles" | "matrix")}
 					variant="underline"
 				/>
 			</div>
 
-			{activeView === "teams" ? (
-				/* ═══ Teams hierarchy section ═══ */
-				<Card padding="lg">
-					<div className="mb-4 flex items-center gap-2">
-						<Icon name="shield" size="md" className="text-gray-500 dark:text-gray-400" />
-						<h3 className="text-base font-semibold text-gray-900 dark:text-white">Teams</h3>
-					</div>
-
-					<div className="divide-y divide-gray-100 dark:divide-gray-700/50">
-						{ORDERED_TEAMS.map((team) => {
-							const members = membersByTeam[team] || [];
-							const isOpen = expandedTeam === team;
-
-							return (
-								<div key={team}>
-									{/* Team row */}
-									<div className="flex items-center gap-4 py-3.5">
-										{/* Color dot */}
-										<span className={cn("h-3 w-3 shrink-0 rounded-full", TEAM_DOT[team])} />
-
-										{/* Name + description */}
-										<div className="min-w-0 flex-1">
-											<p className={cn("text-sm font-semibold", TEAM_TEXT_COLORS[team])}>
-												{team}
-											</p>
-											<p className="truncate text-xs text-gray-500 dark:text-gray-400">
-												{TEAM_DESCRIPTIONS[team]}
-											</p>
-										</div>
-
-										{/* Scope badge */}
-										<span className="hidden shrink-0 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs text-gray-500 sm:inline dark:bg-gray-700 dark:text-gray-400">
-											{TEAM_SCOPE[team] === "all" ? "Toutes entités" : "Entité spécifique"}
-										</span>
-
-										{/* Member count */}
-										<span className="shrink-0 text-xs text-gray-500 dark:text-gray-400">
-											{members.length} membre{members.length !== 1 ? "s" : ""}
-										</span>
-
-										{/* View members button */}
-										<Button
-											variant="ghost"
-											size="sm"
-											onClick={() => toggleTeam(team)}
-											className="shrink-0"
-										>
-											<Icon name={isOpen ? "chevronDown" : "chevronRight"} size="xs" />
-											{isOpen ? "Masquer" : "Voir"}
-										</Button>
-									</div>
-
-									{/* Expanded members list */}
-									{isOpen && (
-										<div className="mb-3 ml-7 rounded-xl border border-gray-100 bg-gray-50/50 p-3 dark:border-gray-700/50 dark:bg-gray-800/30">
-											{members.length === 0 ? (
-												<p className="py-2 text-center text-sm text-gray-500 dark:text-gray-400">
-													Aucun membre dans cette team.
-												</p>
-											) : (
-												<div className="space-y-1">
-													{members.map((user) => (
-														<div
-															key={user.id}
-															className="flex items-center gap-3 rounded-lg px-3 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-700/40"
-														>
-															{/* Avatar initial */}
-															<span
-																className={cn(
-																	"flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-																	getAvatarBg(user.name),
-																)}
-															>
-																{user.name.charAt(0)}
-															</span>
-
-															{/* Name + entity */}
-															<div className="min-w-0 flex-1">
-																<p className="truncate text-sm font-medium text-gray-900 dark:text-white">
-																	{user.name}
-																</p>
-																<p className="text-xs text-gray-500 dark:text-gray-400">
-																	{user.entity}
-																</p>
-															</div>
-
-															{/* Status dot */}
-															<span
-																className={cn(
-																	"h-2 w-2 shrink-0 rounded-full",
-																	user.status === "active"
-																		? "bg-emerald-400"
-																		: "bg-gray-300 dark:bg-gray-600",
-																)}
-															/>
-														</div>
-													))}
-												</div>
-											)}
-										</div>
-									)}
-								</div>
-							);
-						})}
-					</div>
-				</Card>
-			) : (
-				/* ═══ Access management section ═══ */
+			{/* ═══════════════════════════════════════════════════════ */}
+			{/* TAB: MEMBERS                                          */}
+			{/* ═══════════════════════════════════════════════════════ */}
+			{activeView === "members" && (
 				<>
 					{/* Filters */}
 					<div
 						className={cn(
-							"mb-6 flex flex-wrap items-center gap-3 rounded-xl border bg-white p-4 shadow-sm",
-							"border-red-200 dark:border-red-900/40 dark:bg-gray-800",
+							"mb-6 flex flex-wrap items-center gap-3 rounded-xl border bg-transparent p-4",
+							"border-red-200 dark:border-red-900/40",
 						)}
 					>
 						<select
-							value={teamFilter}
-							onChange={(e) => setTeamFilter(e.target.value)}
-							className={cn(selectClasses, teamFilter !== "Tous" && "border-red-400 ring-1 ring-red-400")}
-							aria-label="Filtrer par team"
+							value={roleFilter}
+							onChange={(e) => setRoleFilter(e.target.value)}
+							className={cn(selectClasses, roleFilter !== "all" && "border-red-400 ring-1 ring-red-400")}
+							aria-label="Filtrer par rôle"
 						>
-							{allTeams.map((t) => (
-								<option key={t} value={t}>
-									{t === "Tous" ? "Team : Toutes" : t}
+							{roleFilterOptions.map((opt) => (
+								<option key={opt.value} value={opt.value}>
+									{opt.label}
 								</option>
 							))}
 						</select>
 
 						<select
-							value={levelFilter}
-							onChange={(e) => setLevelFilter(e.target.value)}
-							className={cn(selectClasses, levelFilter !== "all" && "border-red-400 ring-1 ring-red-400")}
-							aria-label="Filtrer par niveau d'accès"
+							value={entityFilter}
+							onChange={(e) => setEntityFilter(e.target.value)}
+							className={cn(selectClasses, entityFilter !== "all" && "border-red-400 ring-1 ring-red-400")}
+							aria-label="Filtrer par entité"
 						>
-							{allAccessLevels.map((l) => (
-								<option key={l.value} value={l.value}>
-									{l.value === "all" ? "Niveau : Tous" : l.label}
+							{entityFilterOptions.map((opt) => (
+								<option key={opt.value} value={opt.value}>
+									{opt.label}
 								</option>
 							))}
 						</select>
 
-						{/* Reset filters */}
-						{(teamFilter !== "Tous" || levelFilter !== "all") && (
+						{(roleFilter !== "all" || entityFilter !== "all") && (
 							<button
 								onClick={() => {
-									setTeamFilter("Tous");
-									setLevelFilter("all");
+									setRoleFilter("all");
+									setEntityFilter("all");
 								}}
 								className="rounded-md px-2 py-1 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20"
 							>
@@ -436,7 +256,7 @@ export default function AdminAccessPage() {
 						)}
 
 						<span className="ml-auto text-sm text-gray-400">
-							{filteredUsers.length} utilisateur{filteredUsers.length !== 1 ? "s" : ""}
+							{filteredUsers.length} membre{filteredUsers.length !== 1 ? "s" : ""}
 						</span>
 					</div>
 
@@ -448,20 +268,20 @@ export default function AdminAccessPage() {
 						)}
 					>
 						<span className="w-36">Pseudo</span>
-						<span className="w-28">Team</span>
-						<span className="w-36">Niveau d&apos;accès</span>
-						<span className="w-40">Entités</span>
-						<span className="w-24 text-center"># Pages</span>
+						<span className="w-36">Rôle</span>
+						<span className="w-44">Entités</span>
+						<span className="w-28 text-center">Modules</span>
+						<span className="w-20 text-center">2FA</span>
 						<span className="flex-1 text-right">Détails</span>
 					</div>
 
 					{/* User rows */}
 					<div className="space-y-2">
 						{filteredUsers.map((user) => {
-							const colors = accessLevelColors[user.accessLevel];
 							const isExpanded = expandedUser === user.id;
-							const permissions = userPermissions[user.id] ?? user.pages;
-							const pageCount = Object.keys(permissions).length;
+							const resolvedEntities = resolveEntityAccess(user.entityAccess);
+							const isWildcard = user.entityAccess.includes("*");
+							const accessibleModules = getAccessibleModules(user.roleId);
 
 							return (
 								<div key={user.id}>
@@ -470,8 +290,8 @@ export default function AdminAccessPage() {
 										padding="md"
 										hover
 										className={cn(
-											colors.row,
-											"cursor-pointer border border-red-100 dark:border-red-900/20",
+											"border-l-4 cursor-pointer border border-red-100 dark:border-red-900/20",
+											ROLE_BORDER[user.roleId],
 										)}
 										onClick={() => setExpandedUser(isExpanded ? null : user.id)}
 									>
@@ -481,50 +301,78 @@ export default function AdminAccessPage() {
 												<div
 													className={cn(
 														"flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold",
-														colors.badge,
+														getAvatarBg(user.pseudo),
 													)}
 												>
 													{user.pseudo.charAt(0)}
 												</div>
-												<span className="font-semibold text-gray-900 dark:text-white">
-													{user.pseudo}
-												</span>
+												<div className="min-w-0">
+													<span className="block truncate font-semibold text-gray-900 dark:text-white">
+														{user.pseudo}
+													</span>
+													<span className="block truncate text-[10px] text-gray-400">
+														{user.email}
+													</span>
+												</div>
 											</div>
 
-											{/* Team */}
-											<span className="w-28 text-sm text-gray-600 dark:text-gray-400">
-												{user.team}
-											</span>
-
-											{/* Access level */}
+											{/* Role badge */}
 											<div className="w-36">
 												<span
 													className={cn(
 														"inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium",
-														colors.badge,
+														ROLE_BADGE_CLASSES[user.roleId],
 													)}
 												>
-													{colors.label}
+													{ROLE_LABELS[user.roleId]}
 												</span>
 											</div>
 
 											{/* Entities */}
-											<div className="flex w-40 flex-wrap gap-1">
-												{user.entities.map((entity) => (
-													<span
-														key={entity}
-														className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-gray-700 dark:text-gray-300"
-													>
-														{entity}
+											<div className="flex w-44 flex-wrap gap-1">
+												{isWildcard ? (
+													<span className="rounded bg-purple-100 px-1.5 py-0.5 text-xs font-medium text-purple-700 dark:bg-purple-900/20 dark:text-purple-400">
+														Toutes les entités
 													</span>
-												))}
+												) : (
+													resolvedEntities.map((entity) => (
+														<span
+															key={entity.id}
+															className="flex items-center gap-1 rounded px-1.5 py-0.5 text-xs"
+															style={{
+																backgroundColor: entity.color + "20",
+																color: entity.color,
+															}}
+														>
+															<span
+																className="h-1.5 w-1.5 rounded-full"
+																style={{ backgroundColor: entity.color }}
+															/>
+															{entity.name}
+														</span>
+													))
+												)}
 											</div>
 
-											{/* Page count */}
-											<div className="w-24 text-center">
+											{/* Module count */}
+											<div className="w-28 text-center">
 												<Badge variant="neutral" showDot={false}>
-													{pageCount} pages
+													{accessibleModules.length} modules
 												</Badge>
+											</div>
+
+											{/* 2FA status */}
+											<div className="w-20 text-center">
+												<span
+													className={cn(
+														"inline-flex h-6 w-6 items-center justify-center rounded-full text-xs",
+														user.twoFactorEnabled
+															? "bg-emerald-100 text-emerald-600 dark:bg-emerald-900/20 dark:text-emerald-400"
+															: "bg-gray-100 text-gray-400 dark:bg-gray-700 dark:text-gray-500",
+													)}
+												>
+													<Icon name={user.twoFactorEnabled ? "check" : "close"} size="xs" />
+												</span>
 											</div>
 
 											{/* Expand chevron */}
@@ -542,183 +390,193 @@ export default function AdminAccessPage() {
 									{isExpanded && (
 										<div
 											className={cn(
-												"mt-1 rounded-lg border border-red-100 bg-gray-50 p-4",
+												"mt-1 rounded-lg border border-red-100 bg-gray-50 p-5",
 												"dark:border-red-900/30 dark:bg-gray-800/50",
 											)}
 										>
-											{/* Permissions section */}
-											<p className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-												Permissions par page
-												<span className="ml-2 font-normal text-gray-400 normal-case">
-													(cliquer pour modifier)
-												</span>
-											</p>
-											<div className="flex flex-wrap gap-2">
-												{Object.entries(permissions).map(([page, mode]) => {
-													const access = pageAccessConfig[mode];
-													return (
+											{/* Section: Role */}
+											<div className="mb-5">
+												<p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+													Rôle
+												</p>
+												<div className="flex flex-wrap items-center gap-2">
+													{ROLES_LIST.map((role) => (
 														<button
-															key={page}
+															key={role.id}
 															type="button"
 															onClick={(e) => {
 																e.stopPropagation();
-																cyclePermission(user.id, page);
+																handleRoleChange(user.id, role.id);
 															}}
-															className="cursor-pointer transition-transform hover:scale-105 active:scale-95"
+															className={cn(
+																"rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
+																user.roleId === role.id
+																	? cn(ROLE_BADGE_CLASSES[role.id], "border-current ring-1 ring-current")
+																	: "border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500",
+															)}
 														>
-															<Tag color={access.color} className="pointer-events-none">
-																<span className="font-medium">{page}</span>
-																<span className="ml-1 opacity-70">
-																	({access.label})
-																</span>
-															</Tag>
+															{role.label}
 														</button>
-													);
-												})}
-											</div>
-
-											{/* Role info */}
-											{user.role && (
-												<p className="mt-3 text-xs text-gray-400">
-													Role :{" "}
-													<span className="font-medium text-gray-600 dark:text-gray-300">
-														{user.role}
-													</span>
+													))}
+												</div>
+												<p className="mt-1.5 text-xs text-gray-400">
+													{ROLE_DESCRIPTIONS[user.roleId]}
 												</p>
-											)}
+											</div>
 
 											{/* Divider */}
 											<div className="my-4 border-t border-gray-200 dark:border-gray-700" />
 
-											{/* Squad actions */}
-											<p className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-												Actions
-											</p>
-											<div className="flex flex-wrap items-start gap-3">
-												{/* Archiver */}
-												<Button
-													variant="ghost"
-													size="sm"
-													className={cn(
-														"gap-1.5 border border-amber-300 bg-amber-50 text-amber-700",
-														"hover:bg-amber-100 dark:border-amber-700 dark:bg-amber-900/20 dark:text-amber-400 dark:hover:bg-amber-900/40",
+											{/* Section: Entity Access */}
+											<div className="mb-5">
+												<div className="mb-2 flex items-center gap-2">
+													<p className="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+														Accès aux entités
+													</p>
+													{!isWildcard && (
+														<button
+															type="button"
+															onClick={(e) => {
+																e.stopPropagation();
+																setWildcardAccess(user.id);
+															}}
+															className="rounded-md px-2 py-0.5 text-[10px] font-medium text-purple-600 transition-colors hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20"
+														>
+														Activer toutes les entités
+														</button>
 													)}
-													onClick={(e) => {
-														e.stopPropagation();
-														handleArchive(user);
-													}}
-												>
-													<Icon name="folder" size="sm" />
-													Archiver
-												</Button>
-
-												{/* Restreindre */}
-												{restrictingUser === user.id ? (
-													<div
-														className={cn(
-															"flex items-center gap-2 rounded-lg border border-orange-300 bg-orange-50 p-2",
-															"dark:border-orange-700 dark:bg-orange-900/20",
-														)}
-														onClick={(e) => e.stopPropagation()}
-													>
-														<span className="text-xs font-medium text-orange-700 dark:text-orange-400">
-															Durée :
-														</span>
-														{restrictDurations.map((d) => (
+												</div>
+												<div className="flex flex-wrap gap-2">
+													{ENTITIES.map((entity) => {
+														const hasAccess = isWildcard || user.entityAccess.includes(entity.id);
+														return (
 															<button
-																key={d.value}
+																key={entity.id}
 																type="button"
 																onClick={(e) => {
 																	e.stopPropagation();
-																	handleRestrict(user, d.label);
+																	toggleEntityAccess(user.id, entity.id);
 																}}
 																className={cn(
-																	"rounded-md px-2 py-1 text-xs font-medium transition-colors",
-																	"bg-orange-100 text-orange-700 hover:bg-orange-200",
-																	"dark:bg-orange-900/30 dark:text-orange-300 dark:hover:bg-orange-900/50",
+																	"flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all",
+																	hasAccess
+																		? "border-current"
+																		: "border-gray-200 text-gray-400 opacity-50 dark:border-gray-600",
+																)}
+																style={
+																	hasAccess
+																		? {
+																				backgroundColor: entity.color + "15",
+																				color: entity.color,
+																				borderColor: entity.color + "60",
+																			}
+																		: undefined
+																}
+															>
+																<span
+																	className={cn(
+																		"h-3 w-3 rounded-full",
+																		!hasAccess && "bg-gray-300 dark:bg-gray-600",
+																	)}
+																	style={hasAccess ? { backgroundColor: entity.color } : undefined}
+																/>
+																{entity.name}
+																{hasAccess && (
+																	<Icon name="check" size="xs" />
+																)}
+															</button>
+														);
+													})}
+												</div>
+											</div>
+
+											{/* Divider */}
+											<div className="my-4 border-t border-gray-200 dark:border-gray-700" />
+
+											{/* Section: Module Permissions */}
+											<div className="mb-5">
+												<p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+													Permissions par module ({ROLE_LABELS[user.roleId]})
+												</p>
+												<div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+													{ALL_MODULES.map((mod) => {
+														const perms = getPermissionsForModule(user.roleId, mod);
+														const hasAccess = perms.length > 0;
+
+														return (
+															<div
+																key={mod}
+																className={cn(
+																	"flex items-center gap-3 rounded-lg border px-3 py-2",
+																	hasAccess
+																		? "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+																		: "border-gray-100 bg-gray-50/50 opacity-40 dark:border-gray-800 dark:bg-gray-900/30",
 																)}
 															>
-																{d.label}
-															</button>
-														))}
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																setRestrictingUser(null);
-															}}
-															className="ml-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-														>
-															<Icon name="close" size="xs" />
-														</button>
-													</div>
-												) : (
-													<Button
-														variant="ghost"
-														size="sm"
-														className={cn(
-															"gap-1.5 border border-orange-300 bg-orange-50 text-orange-700",
-															"hover:bg-orange-100 dark:border-orange-700 dark:bg-orange-900/20 dark:text-orange-400 dark:hover:bg-orange-900/40",
-														)}
-														onClick={(e) => {
-															e.stopPropagation();
-															setRestrictingUser(user.id);
-															setConfirmDeleteUser(null);
-														}}
-													>
-														<Icon name="lock" size="sm" />
-														Restreindre
-													</Button>
-												)}
+																<span
+																	className={cn(
+																		"h-2 w-2 shrink-0 rounded-full",
+																		hasAccess ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600",
+																	)}
+																/>
+																<span
+																	className={cn(
+																		"min-w-[120px] text-xs font-medium",
+																		hasAccess
+																			? "text-gray-900 dark:text-white"
+																			: "text-gray-400",
+																	)}
+																>
+																	{MODULE_LABELS[mod]}
+																</span>
+																<div className="flex flex-wrap gap-1">
+																	{perms.map((p) => (
+																		<span
+																			key={p}
+																			className={cn(
+																				"rounded px-1.5 py-0.5 text-[10px] font-medium",
+																				PERM_COLORS[p],
+																			)}
+																		>
+																			{PERMISSION_LABELS[p]}
+																		</span>
+																	))}
+																</div>
+															</div>
+														);
+													})}
+												</div>
+											</div>
 
-												{/* Supprimer */}
-												{confirmDeleteUser === user.id ? (
-													<div
-														className={cn(
-															"flex items-center gap-2 rounded-lg border border-red-300 bg-red-50 p-2",
-															"dark:border-red-700 dark:bg-red-900/20",
-														)}
-														onClick={(e) => e.stopPropagation()}
-													>
-														<span className="text-xs font-medium text-red-700 dark:text-red-400">
-															Confirmer la suppression ?
-														</span>
-														<Button
-															variant="outline-danger"
-															size="sm"
-															onClick={(e) => {
-																e.stopPropagation();
-																handleDelete(user);
-															}}
-														>
-															Oui, supprimer
-														</Button>
-														<button
-															type="button"
-															onClick={(e) => {
-																e.stopPropagation();
-																setConfirmDeleteUser(null);
-															}}
-															className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-														>
-															<Icon name="close" size="xs" />
-														</button>
-													</div>
-												) : (
-													<Button
-														variant="outline-danger"
-														size="sm"
-														className="gap-1.5"
+											{/* Divider */}
+											<div className="my-4 border-t border-gray-200 dark:border-gray-700" />
+
+											{/* Section: Security */}
+											<div>
+												<p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+													Sécurité
+												</p>
+												<div className="flex items-center gap-4">
+													<button
+														type="button"
 														onClick={(e) => {
 															e.stopPropagation();
-															setConfirmDeleteUser(user.id);
-															setRestrictingUser(null);
+															toggle2FA(user.id);
 														}}
+														className={cn(
+															"flex items-center gap-2 rounded-lg border px-3 py-2 text-sm font-medium transition-all",
+															user.twoFactorEnabled
+																? "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400"
+																: "border-gray-200 text-gray-500 dark:border-gray-600 dark:text-gray-400",
+														)}
 													>
-														<Icon name="close" size="sm" />
-														Supprimer
-													</Button>
-												)}
+														<Icon name={user.twoFactorEnabled ? "lock" : "lock"} size="sm" />
+														2FA {user.twoFactorEnabled ? "Activé" : "Désactivé"}
+													</button>
+													<span className="text-xs text-gray-400">
+														Team : {getTeamForRole(user.roleId)}
+													</span>
+												</div>
 											</div>
 										</div>
 									)}
@@ -732,74 +590,342 @@ export default function AdminAccessPage() {
 						<div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 py-16 dark:border-gray-600">
 							<Icon name="shield" size="xl" className="mb-3 text-gray-300 dark:text-gray-600" />
 							<p className="text-sm text-gray-500 dark:text-gray-400">
-								Aucun utilisateur ne correspond aux filtres.
+								Aucun membre ne correspond aux filtres.
 							</p>
 						</div>
 					)}
-
-					{/* Corbeille section */}
-					{corbeille.length > 0 && (
-						<div className="mt-8">
-							<div className="mb-3 flex items-center gap-2">
-								<Icon name="folder" size="sm" className="text-red-500" />
-								<h2 className="text-sm font-semibold tracking-wider text-red-600 uppercase dark:text-red-400">
-									Corbeille
-								</h2>
-								<span className="text-xs text-gray-400">({corbeille.length})</span>
-							</div>
-							<div className="space-y-2">
-								{corbeille.map((entry, idx) => {
-									const typeConfig = {
-										archived: {
-											label: "Archivé",
-											tagColor: "warning" as const,
-											icon: "folder" as const,
-										},
-										restricted: {
-											label: `Restreint${entry.duration ? ` (${entry.duration})` : ""}`,
-											tagColor: "error" as const,
-											icon: "lock" as const,
-										},
-										deleted: {
-											label: "Supprimé (réversible 30j)",
-											tagColor: "error" as const,
-											icon: "close" as const,
-										},
-									};
-									const config = typeConfig[entry.type];
-
-									return (
-										<Card
-											key={`${entry.user.id}-${idx}`}
-											padding="sm"
-											className="border border-gray-200 opacity-60 dark:border-gray-700"
-										>
-											<div className="flex items-center gap-3">
-												<Icon name={config.icon} size="sm" className="text-gray-400" />
-												<span className="font-medium text-gray-600 dark:text-gray-300">
-													{entry.user.pseudo}
-												</span>
-												<Tag color={config.tagColor}>{config.label}</Tag>
-												<span className="ml-auto text-xs text-gray-400">{entry.user.team}</span>
-												<Button
-													variant="ghost"
-													size="sm"
-													className="text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-													onClick={() => {
-														setCorbeille((prev) => prev.filter((_, i) => i !== idx));
-														showSuccess(`${entry.user.pseudo} a été restauré`);
-													}}
-												>
-													Restaurer
-												</Button>
-											</div>
-										</Card>
-									);
-								})}
-							</div>
-						</div>
-					)}
 				</>
+			)}
+
+			{/* ═══════════════════════════════════════════════════════ */}
+			{/* TAB: ROLES                                            */}
+			{/* ═══════════════════════════════════════════════════════ */}
+			{activeView === "roles" && (
+				<div className="space-y-3">
+					{ROLES_LIST.map((role) => {
+						const isExpanded = expandedRole === role.id;
+						const memberCount = usersPerRole[role.id] ?? 0;
+						const modules = getAccessibleModules(role.id);
+
+						return (
+							<div key={role.id}>
+								<Card
+									padding="md"
+									hover
+									className={cn(
+										"cursor-pointer border-l-4",
+										ROLE_BORDER[role.id],
+										"border border-gray-200 dark:border-gray-700",
+									)}
+									onClick={() => setExpandedRole(isExpanded ? null : role.id)}
+								>
+									<div className="flex items-center gap-4">
+										{/* Role badge */}
+										<span
+											className={cn(
+												"inline-flex items-center rounded-full px-3 py-1 text-sm font-semibold",
+												ROLE_BADGE_CLASSES[role.id],
+											)}
+										>
+											{role.label}
+										</span>
+
+										{/* Level */}
+										<span className="hidden rounded bg-gray-100 px-2 py-0.5 text-xs font-mono text-gray-500 sm:inline dark:bg-gray-700 dark:text-gray-400">
+											Lvl {role.level}
+										</span>
+
+										{/* Description */}
+										<p className="hidden flex-1 truncate text-xs text-gray-500 md:block dark:text-gray-400">
+											{ROLE_DESCRIPTIONS[role.id]}
+										</p>
+
+										{/* Module count */}
+										<Badge variant="neutral" showDot={false}>
+											{modules.length} modules
+										</Badge>
+
+										{/* Member count */}
+										<span className="text-xs text-gray-500 dark:text-gray-400">
+											{memberCount} membre{memberCount !== 1 ? "s" : ""}
+										</span>
+
+										{/* Chevron */}
+										<Icon
+											name={isExpanded ? "chevronUp" : "chevronDown"}
+											size="sm"
+											className="text-gray-400"
+										/>
+									</div>
+								</Card>
+
+								{/* Expanded: modules + permissions */}
+								{isExpanded && (
+									<div
+										className={cn(
+											"mt-1 rounded-lg border bg-gray-50 p-5",
+											"border-gray-200 dark:border-gray-700 dark:bg-gray-800/50",
+										)}
+									>
+										{/* Description */}
+										<p className="mb-4 text-sm text-gray-600 dark:text-gray-300">
+											{ROLE_DESCRIPTIONS[role.id]}
+										</p>
+
+										{/* Members */}
+										<div className="mb-4">
+											<p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+												Membres ({memberCount})
+											</p>
+											<div className="flex flex-wrap gap-2">
+												{users
+													.filter((u) => u.roleId === role.id)
+													.map((u) => (
+														<span
+															key={u.id}
+															className="flex items-center gap-1.5 rounded-lg bg-white px-2.5 py-1 text-xs font-medium text-gray-700 shadow-sm dark:bg-gray-700 dark:text-gray-200"
+														>
+															<span
+																className={cn(
+																	"flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold",
+																	getAvatarBg(u.pseudo),
+																)}
+															>
+																{u.pseudo.charAt(0)}
+															</span>
+															{u.pseudo}
+														</span>
+													))}
+												{memberCount === 0 && (
+													<span className="text-xs text-gray-400">Aucun membre</span>
+												)}
+											</div>
+										</div>
+
+										{/* Module permissions grid */}
+										<p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+											Permissions par module
+										</p>
+										<div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+											{ALL_MODULES.map((mod) => {
+												const perms = getPermissionsForModule(role.id, mod);
+												const hasAccess = perms.length > 0;
+
+												return (
+													<div
+														key={mod}
+														className={cn(
+															"flex items-center gap-3 rounded-lg border px-3 py-2",
+															hasAccess
+																? "border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800"
+																: "border-gray-100 bg-gray-50/50 opacity-40 dark:border-gray-800 dark:bg-gray-900/30",
+														)}
+													>
+														<span
+															className={cn(
+																"h-2 w-2 shrink-0 rounded-full",
+																hasAccess ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600",
+															)}
+														/>
+														<span
+															className={cn(
+																"min-w-[120px] text-xs font-medium",
+																hasAccess
+																	? "text-gray-900 dark:text-white"
+																	: "text-gray-400",
+															)}
+														>
+															{MODULE_LABELS[mod]}
+														</span>
+														<div className="flex flex-wrap gap-1">
+															{perms.map((p) => (
+																<span
+																	key={p}
+																	className={cn(
+																		"rounded px-1.5 py-0.5 text-[10px] font-medium",
+																		PERM_COLORS[p],
+																	)}
+																>
+																	{PERMISSION_LABELS[p]}
+																</span>
+															))}
+														</div>
+													</div>
+												);
+											})}
+										</div>
+									</div>
+								)}
+							</div>
+						);
+					})}
+				</div>
+			)}
+
+			{/* ═══════════════════════════════════════════════════════ */}
+			{/* TAB: PERMISSION MATRIX                                */}
+			{/* ═══════════════════════════════════════════════════════ */}
+			{activeView === "matrix" && (
+				<Card padding="lg">
+					<SectionHeaderBanner icon="shield" title="Matrice des permissions" accentColor="red" className="mb-4" />
+
+					{/* Legend */}
+					<div className="mb-4 flex flex-wrap gap-3">
+						{Object.entries(PERM_COLORS).map(([perm, cls]) => (
+							<span key={perm} className={cn("rounded px-2 py-0.5 text-[10px] font-medium", cls)}>
+								{PERMISSION_LABELS[perm as keyof typeof PERMISSION_LABELS]}
+							</span>
+						))}
+						<span className="rounded bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-400 dark:bg-gray-700">
+							Aucun acces
+						</span>
+					</div>
+
+					{/* Matrix table */}
+					<div className="overflow-x-auto">
+						<table className="w-full border-collapse text-xs">
+							{/* Header: Roles */}
+							<thead>
+								<tr>
+									<th className="sticky left-0 z-10 min-w-[140px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2 text-left font-semibold text-gray-500 dark:border-gray-700 dark:bg-gray-800">
+										Module
+									</th>
+									{ROLES_LIST.map((role) => (
+										<th
+											key={role.id}
+											className="min-w-[120px] border-b border-gray-200 px-2 py-2 text-center dark:border-gray-700"
+										>
+											<span
+												className={cn(
+													"inline-flex rounded-full px-2 py-0.5 text-[10px] font-semibold",
+													ROLE_BADGE_CLASSES[role.id],
+												)}
+											>
+												{role.label}
+											</span>
+										</th>
+									))}
+								</tr>
+							</thead>
+
+							{/* Body: Modules x Roles */}
+							<tbody>
+								{ALL_MODULES.map((mod, idx) => (
+									<tr
+										key={mod}
+										className={cn(
+											idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50/50 dark:bg-gray-800/50",
+										)}
+									>
+										{/* Module name */}
+										<td className="sticky left-0 z-10 border-r border-gray-200 bg-inherit px-3 py-2.5 font-medium text-gray-700 dark:border-gray-700 dark:text-gray-200">
+											{MODULE_LABELS[mod]}
+										</td>
+
+										{/* Permission cells per role */}
+										{ROLES_LIST.map((role) => {
+											const perms = getPermissionsForModule(role.id, mod);
+											const hasManage = perms.includes("manage");
+
+											return (
+												<td
+													key={role.id}
+													className="border-gray-200 px-2 py-2.5 text-center dark:border-gray-700"
+												>
+													{perms.length === 0 ? (
+														<span className="text-gray-300 dark:text-gray-600">--</span>
+													) : hasManage ? (
+														<span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", PERM_COLORS.manage)}>
+															Tout
+														</span>
+													) : (
+														<div className="flex flex-wrap justify-center gap-0.5">
+															{perms.map((p) => (
+																<span
+																	key={p}
+																	className={cn(
+																		"rounded px-1 py-0.5 text-[9px] font-medium",
+																		PERM_COLORS[p],
+																	)}
+																	title={PERMISSION_LABELS[p]}
+																>
+																	{p.charAt(0).toUpperCase()}
+																</span>
+															))}
+														</div>
+													)}
+												</td>
+											);
+										})}
+									</tr>
+								))}
+							</tbody>
+						</table>
+					</div>
+
+					{/* Entity access summary */}
+					<div className="mt-6 border-t border-gray-200 pt-4 dark:border-gray-700">
+						<SectionHeaderBanner icon="shield" title="Accès aux entités par rôle" accentColor="red" className="mb-3" />
+						<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
+							{ROLES_LIST.map((role) => {
+								const roleUsers = users.filter((u) => u.roleId === role.id);
+								const hasWildcard = roleUsers.some((u) => u.entityAccess.includes("*"));
+
+								return (
+									<div
+										key={role.id}
+										className="rounded-lg border border-gray-200 p-3 dark:border-gray-700"
+									>
+										<div className="mb-2 flex items-center gap-2">
+											<span
+												className={cn(
+													"rounded-full px-2 py-0.5 text-[10px] font-semibold",
+													ROLE_BADGE_CLASSES[role.id],
+												)}
+											>
+												{role.label}
+											</span>
+										</div>
+										{hasWildcard ? (
+											<span className="text-xs text-purple-500">
+												Toutes les entités
+											</span>
+										) : (
+											<div className="flex flex-wrap gap-1">
+												{ENTITIES.map((entity) => {
+													const usersWithAccess = roleUsers.filter(
+														(u) => u.entityAccess.includes(entity.id),
+													);
+													if (usersWithAccess.length === 0) return null;
+
+													return (
+														<span
+															key={entity.id}
+															className="flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium"
+															style={{
+																backgroundColor: entity.color + "20",
+																color: entity.color,
+															}}
+														>
+															<span
+																className="h-1.5 w-1.5 rounded-full"
+																style={{ backgroundColor: entity.color }}
+															/>
+															{entity.name}
+															<span className="ml-0.5 opacity-60">
+																({usersWithAccess.length})
+															</span>
+														</span>
+													);
+												})}
+											</div>
+										)}
+									</div>
+								);
+							})}
+						</div>
+					</div>
+				</Card>
 			)}
 		</PageContainer>
 	);

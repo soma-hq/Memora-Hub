@@ -6,7 +6,17 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Button, Tag } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "admin/links",
+	section: "owner",
+	module: "admin",
+	description: "Gestion des liens d'accès et invitations.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
 interface GeneratedLink {
 	id: string;

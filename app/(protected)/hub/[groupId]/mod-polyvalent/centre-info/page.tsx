@@ -7,7 +7,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/centre-info",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Centre d'informations de la modération Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 interface InfoSection {
 	title: string;

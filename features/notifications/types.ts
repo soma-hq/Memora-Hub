@@ -48,8 +48,8 @@ export const notificationTypeIconColor: Record<NotificationType, string> = {
 
 /** Localized labels for notification types */
 export const notificationTypeLabel: Record<NotificationType, string> = {
-	task: "Tache",
-	meeting: "Reunion",
+	task: "Tâche",
+	meeting: "Réunion",
 	absence: "Absence",
 	project: "Projet",
 	system: "Systeme",

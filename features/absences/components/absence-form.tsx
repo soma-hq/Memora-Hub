@@ -114,7 +114,7 @@ export function AbsenceForm({ onSubmit, onCancel, isLoading = false, className }
 								value={endDate}
 								onChange={(e) => setEndDate(e.target.value)}
 								error={errors.endDate}
-								hint="Identique a la date de debut pour un seul jour"
+								hint="Identique à la date de debut pour un seul jour"
 							/>
 						</div>
 

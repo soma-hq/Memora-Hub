@@ -5,7 +5,16 @@ import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Tableau de bord de la modération Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -38,9 +47,9 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 	{
 		level: 3,
 		label: "Livecon 3",
-		subtitle: "Periode Normale",
+		subtitle: "Période Normale",
 		description:
-			"Tout est normal sur Discord et Twitch, gestion habituelle. Mobilisation standard, reponses classiques, panel de sanction inchange sur les deux plateformes.",
+			"Tout est normal sur Discord et Twitch, gestion habituelle. Mobilisation standard, réponses classiques, panel de sanction inchangé sur les deux plateformes.",
 		color: {
 			ring: "ring-emerald-500/30",
 			bg: "bg-emerald-500",
@@ -59,17 +68,17 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 		consignes: [
 			"Panel de sanction standard en vigueur sur Discord et Twitch.",
 			"Gestion habituelle des conflits entre membres sur les deux plateformes.",
-			"Les moderateurs suivent la procedure classique pour les infractions Discord et les timeouts Twitch.",
-			"Les membres de l'equipe peuvent apparaitre normalement sur le serveur Discord et le chat Twitch.",
-			"Reponses dans un delai classique (24h max).",
+			"Les modérateurs suivent la procédure classique pour les infractions Discord et les timeouts Twitch.",
+			"Les membres de l'équipe peuvent apparaître normalement sur le serveur Discord et le chat Twitch.",
+			"Réponses dans un délai classique (24h max).",
 		],
 	},
 	{
 		level: 2,
 		label: "Livecon 2",
-		subtitle: "Vigilance renforcee",
+		subtitle: "Vigilance renforcée",
 		description:
-			"Periode instable, drama a petite echelle sur Discord et/ou Twitch. Moderation plus stricte, panel durci, reduction d'apparition de l'equipe sur les deux plateformes.",
+			"Période instable, drama à petite échelle sur Discord et/ou Twitch. Modération plus stricte, panel durci, réduction d'apparition de l'équipe sur les deux plateformes.",
 		color: {
 			ring: "ring-amber-500/30",
 			bg: "bg-amber-500",
@@ -86,20 +95,20 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 			badgeDot: "bg-amber-500",
 		},
 		consignes: [
-			"Panel de sanction durci — tolerances reduites, sanctions plus rapides sur Discord et Twitch.",
+			"Panel de sanction durci — tolérances réduites, sanctions plus rapides sur Discord et Twitch.",
 			"Surveillance accrue des salons Discord (textuels et vocaux) et du chat Twitch.",
-			"Reduction drastique de l'apparition de l'equipe sur les deux plateformes.",
-			"Les moderateurs doivent prioriser la deescalade et eviter de nourrir le drama cross-plateforme.",
-			"Signalement immediat de tout incident a la hierarchie, quelle que soit la plateforme d'origine.",
-			"Reponses aux situations critiques en moins de 2 heures.",
+			"Réduction drastique de l'apparition de l'équipe sur les deux plateformes.",
+			"Les modérateurs doivent prioriser la désescalade et éviter de nourrir le drama cross-plateforme.",
+			"Signalement immédiat de tout incident à la hiérarchie, quelle que soit la plateforme d'origine.",
+			"Réponses aux situations critiques en moins de 2 heures.",
 		],
 	},
 	{
 		level: 1,
 		label: "Livecon 1",
-		subtitle: "Periode critique",
+		subtitle: "Période critique",
 		description:
-			"Harcelement, drama a grande echelle affectant Discord et Twitch. Moderation tres stricte, bannissements definitifs frequents, interdiction totale d'apparition de l'equipe.",
+			"Harcèlement, drama à grande échelle affectant Discord et Twitch. Modération très stricte, bannissements définitifs fréquents, interdiction totale d'apparition de l'équipe.",
 		color: {
 			ring: "ring-red-500/30",
 			bg: "bg-red-500",
@@ -116,13 +125,13 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 			badgeDot: "bg-red-500",
 		},
 		consignes: [
-			"Tolerance zero — tout manquement entraine un bannissement definitif sur les deux plateformes.",
-			"Interdiction totale d'apparition de l'equipe de moderation sur Discord et Twitch.",
-			"Les discussions liees au drama sont immediatement supprimees sur Discord et le chat Twitch.",
-			"Les membres impliques dans le harcelement sont bannis sans avertissement, cross-plateforme.",
+			"Tolérance zéro — tout manquement entraîne un bannissement définitif sur les deux plateformes.",
+			"Interdiction totale d'apparition de l'équipe de modération sur Discord et Twitch.",
+			"Les discussions liées au drama sont immédiatement supprimées sur Discord et le chat Twitch.",
+			"Les membres impliqués dans le harcèlement sont bannis sans avertissement, cross-plateforme.",
 			"Verrouillage possible de certains salons Discord et activation du mode emote-only sur Twitch.",
-			"Communication uniquement via les canaux officiels. Aucune declaration personnelle.",
-			"Rapport detaille de chaque incident a Legacy dans l'heure, incluant la plateforme d'origine.",
+			"Communication uniquement via les canaux officiels. Aucune déclaration personnelle.",
+			"Rapport détaillé de chaque incident à Legacy dans l'heure, incluant la plateforme d'origine.",
 		],
 	},
 ];
@@ -147,7 +156,7 @@ export default function ModPolyvalentPanelPage() {
 	};
 
 	return (
-		<PageContainer title="Panel Polyvalent" description="Systeme Livecon — Niveaux de vigilance Twitch & Discord">
+		<PageContainer title="Panel Polyvalent" description="Système Livecon — Niveaux de vigilance Twitch & Discord">
 			{/* ------------------------------------------------------------------ */}
 			{/* Platform indicator                                                 */}
 			{/* ------------------------------------------------------------------ */}
@@ -159,7 +168,7 @@ export default function ModPolyvalentPanelPage() {
 					Twitch
 				</Badge>
 				<span className="text-xs text-gray-400 dark:text-gray-500">
-					Ce panel couvre la moderation sur les deux plateformes simultanement.
+					Ce panel couvre la modération sur les deux plateformes simultanément.
 				</span>
 			</div>
 
@@ -349,9 +358,9 @@ export default function ModPolyvalentPanelPage() {
 							{currentLevel === 3 &&
 								"Situation stable — Aucune mesure extraordinaire requise sur Discord ni Twitch."}
 							{currentLevel === 2 &&
-								"Vigilance requise — Les moderateurs doivent appliquer les consignes renforcees immediatement sur les deux plateformes."}
+								"Vigilance requise — Les modérateurs doivent appliquer les consignes renforcées immédiatement sur les deux plateformes."}
 							{currentLevel === 1 &&
-								"Situation critique — Toutes les mesures d'urgence sont en vigueur sur Discord et Twitch. Aucune exception toleree."}
+								"Situation critique — Toutes les mesures d'urgence sont en vigueur sur Discord et Twitch. Aucune exception tolérée."}
 						</p>
 					</div>
 				</Card>
@@ -359,7 +368,7 @@ export default function ModPolyvalentPanelPage() {
 
 			{/* All levels reference */}
 			<div className="mt-8">
-				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Reference des niveaux</h2>
+				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Référence des niveaux</h2>
 				<div className="space-y-4">
 					{LIVECON_LEVELS.map((config) => (
 						<Card key={config.level} padding="md">

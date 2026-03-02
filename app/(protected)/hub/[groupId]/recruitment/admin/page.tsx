@@ -8,7 +8,16 @@ import { decisionVariantMap, avisRoleVariantMap } from "@/features/recruitment/t
 import { PageContainer } from "@/components/layout/page-container";
 import { StatCard, Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/recruitment/admin",
+	section: "protected",
+	module: "talent",
+	description: "Administration du recrutement.",
+	requiredPermissions: [{ module: "talent", action: "manage" }],
+	entityScoped: true,
+});
 
 /**
  * Recruitment admin dashboard with session stats, decision charts and activity.
@@ -82,7 +91,7 @@ export default function AdminPage() {
 
 	return (
 		<PageContainer title="Admin" description="Espace d'administration du recrutement">
-			{/* Access banner */}
+			{/* Accèss banner */}
 			<div className="border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-900/10 mb-6 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="shield" size="md" className="text-warning-500 mt-0.5 shrink-0" />
 				<div>
@@ -90,7 +99,7 @@ export default function AdminPage() {
 						Espace d&apos;administration du recrutement
 					</p>
 					<p className="text-warning-600 dark:text-warning-500 mt-1 text-xs">
-						Cet espace est reserve aux Responsables (Legacy) et Marsha Teams. Vous avez acces a
+						Cet espace est reserve aux Responsables (Legacy) et Marsha Teams. Vous avez accès a
 						l&apos;ensemble des donnees de recrutement et aux outils de gestion.
 					</p>
 				</div>
@@ -152,7 +161,7 @@ export default function AdminPage() {
 									</div>
 									<div className="min-w-0 flex-1">
 										<p className="text-sm text-gray-900 dark:text-white">
-											<span className="font-medium">{activity.author}</span> a donne un avis{" "}
+											<span className="font-medium">{activity.author}</span> à donne un avis{" "}
 											<Badge variant={decisionVariantMap[activity.decision]} showDot={false}>
 												{activity.decision}
 											</Badge>{" "}
@@ -168,7 +177,7 @@ export default function AdminPage() {
 								</div>
 							))}
 							{recentActivity.length === 0 && (
-								<div className="py-8 text-center text-sm text-gray-400">Aucune activite recente.</div>
+								<div className="py-8 text-center text-sm text-gray-400">Aucune activité récente.</div>
 							)}
 						</div>
 					</Card>
@@ -176,7 +185,7 @@ export default function AdminPage() {
 
 				{/* Quick links */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Acces rapide</h2>
+					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Accès rapide</h2>
 					<div className="space-y-2">
 						{quickLinks.map((link) => (
 							<a

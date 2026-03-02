@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Badge, Button, Icon, Tabs, Divider } from "@/components/ui";
+import { Badge, Button, Icon, Tabs, Divider, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { Candidate, CandidateAvis, CandidateDecision, AvisAuthorRole } from "../types";
 import { decisionVariantMap, avisRoleVariantMap, TALENT_DECISIONS, LEADER_DECISIONS } from "../types";
-
 
 /** Props for the CandidateDetail component */
 interface CandidateDetailProps {
@@ -50,7 +49,7 @@ export function CandidateDetail({ candidate, sessionName, onAddAvis, className }
 
 	const handleSubmitAvis = () => {
 		if (!avisDecision) {
-			showError("Veuillez selectionner une decision");
+			showError("Veuillez sélectionner une décision");
 			return;
 		}
 		if (onAddAvis) {
@@ -121,7 +120,7 @@ export function CandidateDetail({ candidate, sessionName, onAddAvis, className }
 							<p className="mb-1 text-xs text-gray-400">Date d&apos;entretien</p>
 							<p className="text-sm font-medium text-gray-900 dark:text-white">
 								{candidate.interviewDate || "Non planifie"}{" "}
-								{candidate.interviewTime && `a ${candidate.interviewTime}`}
+								{candidate.interviewTime && `à ${candidate.interviewTime}`}
 							</p>
 						</div>
 					</div>
@@ -240,9 +239,7 @@ export function CandidateDetail({ candidate, sessionName, onAddAvis, className }
 							))}
 						</div>
 					) : (
-						<p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">
-							Aucun avis pour le moment.
-						</p>
+						<StyledEmptyState icon="chat" title="Aucun avis" description="Aucun avis n'a encore été partagé sur ce candidat." />
 					)}
 				</div>
 			)}
@@ -275,7 +272,7 @@ export function CandidateDetail({ candidate, sessionName, onAddAvis, className }
 								{candidate.finalDecision}
 							</Badge>
 						) : (
-							<p className="text-sm text-gray-400">En attente de decision</p>
+							<p className="text-sm text-gray-400">En attente de décision</p>
 						)}
 					</div>
 

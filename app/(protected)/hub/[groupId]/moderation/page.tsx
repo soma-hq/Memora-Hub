@@ -3,9 +3,18 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon } from "@/components/ui";
+import { Card, Badge, Icon, SectionCard } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/moderation",
+	section: "protected",
+	module: "moderation_discord",
+	description: "Tableau de bord de la modération Discord.",
+	requiredPermissions: [{ module: "moderation_discord", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -69,7 +78,7 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 		label: "Livecon 2",
 		subtitle: "Vigilance renforcee",
 		description:
-			"Periode instable, drama a petite echelle. Moderation plus stricte, panel durci, reduction d'apparition de l'equipe.",
+			"Periode instable, drama à petite echelle. Moderation plus stricte, panel durci, reduction d'apparition de l'equipe.",
 		color: {
 			ring: "ring-amber-500/30",
 			bg: "bg-amber-500",
@@ -90,7 +99,7 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 			"Surveillance accrue des salons textuels et vocaux.",
 			"Reduction drastique de l'apparition de l'equipe sur le serveur.",
 			"Les moderateurs doivent prioriser la deescalade et eviter de nourrir le drama.",
-			"Signalement immediat de tout incident a la hierarchie.",
+			"Signalement immediat de tout incident à la hierarchie.",
 			"Reponses aux situations critiques en moins de 2 heures.",
 		],
 	},
@@ -99,7 +108,7 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 		label: "Livecon 1",
 		subtitle: "Periode critique",
 		description:
-			"Harcelement, drama a grande echelle. Moderation tres stricte, bannissements definitifs frequents, interdiction totale d'apparition de l'equipe.",
+			"Harcelement, drama à grande echelle. Moderation tres stricte, bannissements definitifs frequents, interdiction totale d'apparition de l'equipe.",
 		color: {
 			ring: "ring-red-500/30",
 			bg: "bg-red-500",
@@ -122,7 +131,7 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 			"Les membres impliques dans le harcelement sont bannis sans avertissement.",
 			"Verrouillage possible de certains salons si necessaire.",
 			"Communication uniquement via les canaux officiels. Aucune declaration personnelle.",
-			"Rapport detaille de chaque incident a Legacy dans l'heure.",
+			"Rapport detaille de chaque incident à Legacy dans l'heure.",
 		],
 	},
 ];
@@ -296,54 +305,56 @@ export default function ModerationPanelPage() {
 			</div>
 
 			{/* Active consignes */}
-			<div>
-				<div className="mb-4 flex items-center gap-2">
-					<Icon name="flag" style="solid" size="md" className={activeConfig.color.iconText} />
-					<h2 className="text-lg font-semibold text-gray-900 dark:text-white">Consignes actives</h2>
-					<Badge variant={currentLevel === 3 ? "success" : currentLevel === 2 ? "warning" : "error"}>
+			<SectionCard
+				title="Consignes actives"
+				icon="flag"
+				color={currentLevel === 3 ? "success" : currentLevel === 2 ? "warning" : "error"}
+				padding="lg"
+				badge={
+					<Badge
+						variant={currentLevel === 3 ? "success" : currentLevel === 2 ? "warning" : "error"}
+						showDot={false}
+					>
 						{activeConfig.label}
 					</Badge>
+				}
+			>
+				<div className="space-y-3">
+					{activeConfig.consignes.map((consigne, index) => (
+						<div key={index} className="flex items-start gap-3">
+							<div className="mt-1.5 shrink-0">
+								<span className={cn("block h-2 w-2 rounded-full", activeConfig.color.dot)} />
+							</div>
+							<p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{consigne}</p>
+						</div>
+					))}
 				</div>
 
-				<Card padding="lg">
-					<div className="space-y-3">
-						{activeConfig.consignes.map((consigne, index) => (
-							<div key={index} className="flex items-start gap-3">
-								<div className="mt-1.5 shrink-0">
-									<span className={cn("block h-2 w-2 rounded-full", activeConfig.color.dot)} />
-								</div>
-								<p className="text-sm leading-relaxed text-gray-700 dark:text-gray-300">{consigne}</p>
-							</div>
-						))}
-					</div>
-
-					{/* Severity footer */}
-					<div
-						className={cn(
-							"mt-6 flex items-center gap-3 rounded-lg border p-3",
-							activeConfig.color.border,
-							activeConfig.color.bgSoft,
-						)}
-					>
-						<Icon
-							name={currentLevel === 3 ? "info" : currentLevel === 2 ? "warning" : "error"}
-							size="sm"
-							className={activeConfig.color.iconText}
-						/>
-						<p className={cn("text-xs font-medium", activeConfig.color.text)}>
-							{currentLevel === 3 && "Situation stable — Aucune mesure extraordinaire requise."}
-							{currentLevel === 2 &&
-								"Vigilance requise — Les moderateurs doivent appliquer les consignes renforcees immediatement."}
-							{currentLevel === 1 &&
-								"Situation critique — Toutes les mesures d'urgence sont en vigueur. Aucune exception toleree."}
-						</p>
-					</div>
-				</Card>
-			</div>
+				{/* Severity footer */}
+				<div
+					className={cn(
+						"mt-6 flex items-center gap-3 rounded-lg border p-3",
+						activeConfig.color.border,
+						activeConfig.color.bgSoft,
+					)}
+				>
+					<Icon
+						name={currentLevel === 3 ? "info" : currentLevel === 2 ? "warning" : "error"}
+						size="sm"
+						className={activeConfig.color.iconText}
+					/>
+					<p className={cn("text-xs font-medium", activeConfig.color.text)}>
+						{currentLevel === 3 && "Situation stable — Aucune mesure extraordinaire requise."}
+						{currentLevel === 2 &&
+							"Vigilance requise — Les modérateurs doivent appliquer les consignes renforcées immédiatement."}
+						{currentLevel === 1 &&
+							"Situation critique — Toutes les mesures d'urgence sont en vigueur. Aucune exception tolérée."}
+					</p>
+				</div>
+			</SectionCard>
 
 			{/* All levels reference */}
-			<div className="mt-8">
-				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Reference des niveaux</h2>
+			<SectionCard title="Référence des niveaux" icon="info" color="neutral" padding="md">
 				<div className="space-y-4">
 					{LIVECON_LEVELS.map((config) => (
 						<Card key={config.level} padding="md">
@@ -383,7 +394,7 @@ export default function ModerationPanelPage() {
 						</Card>
 					))}
 				</div>
-			</div>
+			</SectionCard>
 		</PageContainer>
 	);
 }

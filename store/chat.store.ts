@@ -70,7 +70,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 		})),
 
 	/**
-	 * Deletes a message from a channel.
+	 * Deletes à message from à channel.
 	 * @param channelId - Channel containing the message
 	 * @param messageId - Message to delete
 	 * @returns {void}
@@ -84,7 +84,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 		})),
 
 	/**
-	 * Toggles the pinned state of a message.
+	 * Toggles the pinned state of à message.
 	 * @param channelId - Channel containing the message
 	 * @param messageId - Message to toggle
 	 * @returns {void}

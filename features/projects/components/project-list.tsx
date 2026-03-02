@@ -12,7 +12,7 @@ import type { Project, ProjectStatusValue, ProjectPriorityValue, ProjectViewMode
 import { ProjectStatusLabel, ProjectPriorityLabel } from "../types";
 
 
-/** Status filter options including a "show all" entry */
+/** Status filter options including à "show all" entry */
 const STATUS_OPTIONS: SelectMenuOption[] = [
 	{ label: "Tous les statuts", value: "all", icon: "filter" },
 	...Object.entries(ProjectStatusLabel).map(

@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils/cn";
 import { MeetingTypeLabel } from "../types";
 import type { Meeting, MeetingFormData, MeetingTypeValue } from "../types";
 
-
 /** Props for the MeetingForm component */
 interface MeetingFormProps {
 	meeting?: Meeting;
@@ -27,7 +26,7 @@ const defaultFormData: MeetingFormData = {
 	startTime: "",
 	endTime: "",
 	location: "",
-	type: "reunion",
+	type: "réunion",
 	participants: [],
 	notes: "",
 	isOnline: false,
@@ -55,7 +54,7 @@ function meetingToFormData(meeting: Meeting): MeetingFormData {
 }
 
 /**
- * Form for creating or editing a meeting with participant management
+ * Form for creating or editing à meeting with participant management
  * @param props - Component props
  * @param props.meeting - Existing meeting for edit mode, undefined for create mode
  * @param props.onSubmit - Callback triggered on valid form submission
@@ -127,7 +126,7 @@ export function MeetingForm({ meeting, onSubmit, onCancel, isLoading, className 
 		if (!formData.endTime) newErrors.endTime = "L'heure de fin est requise.";
 		if (!formData.location.trim()) newErrors.location = "Le lieu est requis.";
 		if (formData.isOnline && !formData.link.trim())
-			newErrors.link = "Le lien est requis pour une reunion en ligne.";
+			newErrors.link = "Le lien est requis pour une réunion en ligne.";
 		if (formData.startTime && formData.endTime && formData.startTime >= formData.endTime) {
 			newErrors.endTime = "L'heure de fin doit etre apres l'heure de debut.";
 		}
@@ -151,7 +150,7 @@ export function MeetingForm({ meeting, onSubmit, onCancel, isLoading, className 
 		<form onSubmit={handleSubmit} className={cn("flex flex-col gap-5", className)}>
 			<Input
 				label="Titre"
-				placeholder="Nom de la reunion"
+				placeholder="Nom de la réunion"
 				value={formData.title}
 				onChange={(e) => updateField("title", e.target.value)}
 				error={errors.title}
@@ -183,7 +182,7 @@ export function MeetingForm({ meeting, onSubmit, onCancel, isLoading, className 
 
 			<div className="grid gap-4 sm:grid-cols-2">
 				<Select
-					label="Type de reunion"
+					label="Type de réunion"
 					options={typeOptions}
 					value={formData.type}
 					onChange={(e) => updateField("type", e.target.value as MeetingTypeValue)}
@@ -206,11 +205,11 @@ export function MeetingForm({ meeting, onSubmit, onCancel, isLoading, className 
 						onChange={(e) => updateField("isOnline", e.target.checked)}
 						className="text-primary-500 focus:ring-primary-500 h-4 w-4 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-800"
 					/>
-					<span className="text-sm font-medium text-gray-700 dark:text-gray-300">Reunion en ligne</span>
+					<span className="text-sm font-medium text-gray-700 dark:text-gray-300">Réunion en ligne</span>
 				</label>
 				{formData.isOnline && (
 					<Input
-						label="Lien de la reunion"
+						label="Lien de la réunion"
 						placeholder="https://meet.google.com/..."
 						value={formData.link}
 						onChange={(e) => updateField("link", e.target.value)}
@@ -275,7 +274,7 @@ export function MeetingForm({ meeting, onSubmit, onCancel, isLoading, className 
 				)}
 				<Button type="submit" isLoading={isLoading}>
 					<Icon name="check" size="sm" />
-					{isEditing ? "Enregistrer" : "Creer la reunion"}
+					{isEditing ? "Enregistrer" : "Créer la réunion"}
 				</Button>
 			</div>
 		</form>

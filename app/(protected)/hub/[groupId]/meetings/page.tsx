@@ -1,13 +1,21 @@
 "use client";
 
-// React
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge, Button } from "@/components/ui";
+import { Card, Icon, Badge, Button, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/meetings",
+	section: "protected",
+	module: "meetings",
+	description: "Calendrier et liste des réunions.",
+	requiredPermissions: [{ module: "meetings", action: "view" }],
+	entityScoped: true,
+});
 
 type MeetingStatus = "planifiee" | "en_cours" | "terminee";
 
@@ -97,7 +105,7 @@ const UPCOMING_MEETINGS: UpcomingMeeting[] = [
 	},
 	{
 		id: "m4",
-		title: "Reunion client — Bilan mensuel",
+		title: "Réunion client — Bilan mensuel",
 		description: "Presentation des livrables du mois et recueil du feedback client.",
 		date: new Date("2026-03-10T10:00:00"),
 		duration: "2h",
@@ -174,7 +182,7 @@ interface TabItem {
 }
 
 const TABS: TabItem[] = [
-	{ key: "upcoming", label: "Prochaines reunions", icon: "calendar" },
+	{ key: "upcoming", label: "Prochaines réunions", icon: "calendar" },
 	{ key: "history", label: "Historique", icon: "clock" },
 ];
 
@@ -182,9 +190,21 @@ const TABS: TabItem[] = [
 
 const MONTHS_SHORT = ["Jan", "Fev", "Mar", "Avr", "Mai", "Jui", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec"];
 
+/**
+ * Formats a Date to a short time string (HH:MM).
+ * @param {Date} d - Date to format
+ * @returns {string} Formatted time string
+ */
+
 function formatTime(d: Date): string {
 	return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 }
+
+/**
+ * Formats a Date to a full French date string.
+ * @param {Date} d - Date to format
+ * @returns {string} Full French date string
+ */
 
 function formatFullDate(d: Date): string {
 	return d.toLocaleDateString("fr-FR", {
@@ -213,6 +233,12 @@ const dateCircleColors: Record<number, string> = {
 
 // Sub-components
 
+/**
+ * Displays a stack of participant avatar circles with overflow count.
+ * @param {{ participants: Participant[] }} props - Component props
+ * @returns {JSX.Element} Avatar stack
+ */
+
 function ParticipantAvatars({ participants }: { participants: Participant[] }) {
 	const maxVisible = 4;
 	const visible = participants.slice(0, maxVisible);
@@ -240,6 +266,12 @@ function ParticipantAvatars({ participants }: { participants: Participant[] }) {
 		</div>
 	);
 }
+
+/**
+ * Card component for an upcoming meeting with date badge, details, and join action.
+ * @param {{ meeting: UpcomingMeeting }} props - Component props
+ * @returns {JSX.Element} Meeting card
+ */
 
 function UpcomingMeetingCard({ meeting }: { meeting: UpcomingMeeting }) {
 	const day = meeting.date.getDate();
@@ -302,7 +334,7 @@ function UpcomingMeetingCard({ meeting }: { meeting: UpcomingMeeting }) {
 							<Button
 								variant="soft-primary"
 								size="sm"
-								onClick={() => showSuccess(`Vous avez rejoint la reunion "${meeting.title}".`)}
+								onClick={() => showSuccess(`Vous avez rejoint la réunion "${meeting.title}".`)}
 							>
 								<Icon name="video" size="sm" />
 								Rejoindre
@@ -313,7 +345,7 @@ function UpcomingMeetingCard({ meeting }: { meeting: UpcomingMeeting }) {
 							<Button
 								variant="soft-warning"
 								size="sm"
-								onClick={() => showSuccess(`Vous avez rejoint la reunion "${meeting.title}".`)}
+								onClick={() => showSuccess(`Vous avez rejoint la réunion "${meeting.title}".`)}
 							>
 								<Icon name="video" size="sm" />
 								Rejoindre maintenant
@@ -325,6 +357,12 @@ function UpcomingMeetingCard({ meeting }: { meeting: UpcomingMeeting }) {
 		</Card>
 	);
 }
+
+/**
+ * Compact row for a past meeting entry.
+ * @param {{ meeting: PastMeeting }} props - Component props
+ * @returns {JSX.Element} Past meeting row
+ */
 
 function PastMeetingRow({ meeting }: { meeting: PastMeeting }) {
 	return (
@@ -365,9 +403,10 @@ function PastMeetingRow({ meeting }: { meeting: PastMeeting }) {
 // Main page
 
 /**
- * Meetings page with upcoming and past meetings, creation and notes.
- * @returns The meetings management page
+ * Meetings page with tabbed upcoming and past meetings, join actions and history.
+ * @returns {JSX.Element} The meetings management page
  */
+
 export default function MeetingsPage() {
 	const params = useParams();
 	const _groupId = params.groupId as string;
@@ -382,15 +421,15 @@ export default function MeetingsPage() {
 
 	return (
 		<PageContainer
-			title="Reunions"
-			description="Planifiez et gerez les reunions de votre groupe"
+			title="Réunions"
+			description="Planifiez et gerez les réunions de votre groupe"
 			actions={
 				<Button
 					variant="primary"
-					onClick={() => showInfo("Fonctionnalite a venir : planification de reunion.")}
+					onClick={() => showInfo("Fonctionnalite à venir : planification de réunion.")}
 				>
 					<Icon name="plus" size="sm" />
-					Planifier une reunion
+					Planifier une réunion
 				</Button>
 			}
 		>
@@ -417,10 +456,11 @@ export default function MeetingsPage() {
 			{activeTab === "upcoming" && (
 				<div className="flex flex-col gap-4">
 					{sortedUpcoming.length === 0 ? (
-						<Card className="py-12 text-center">
-							<Icon name="calendar" size="xl" className="mx-auto text-gray-300 dark:text-gray-600" />
-							<p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Aucune reunion a venir.</p>
-						</Card>
+						<StyledEmptyState
+							icon="calendar"
+							title="Aucune réunion à venir"
+							description="Planifiez une réunion pour commencer."
+						/>
 					) : (
 						sortedUpcoming.map((meeting) => <UpcomingMeetingCard key={meeting.id} meeting={meeting} />)
 					)}
@@ -431,10 +471,11 @@ export default function MeetingsPage() {
 			{activeTab === "history" && (
 				<div className="flex flex-col gap-3">
 					{sortedPast.length === 0 ? (
-						<Card className="py-12 text-center">
-							<Icon name="clock" size="xl" className="mx-auto text-gray-300 dark:text-gray-600" />
-							<p className="mt-3 text-sm text-gray-500 dark:text-gray-400">Aucune reunion passee.</p>
-						</Card>
+						<StyledEmptyState
+							icon="clock"
+							title="Aucune réunion passée"
+							description="L'historique de vos réunions apparaîtra ici."
+						/>
 					) : (
 						sortedPast.map((meeting) => <PastMeetingRow key={meeting.id} meeting={meeting} />)
 					)}

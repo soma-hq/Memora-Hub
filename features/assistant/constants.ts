@@ -1,7 +1,6 @@
 // Constants & types
 import type { Suggestion, FlowDefinition, FlowStep } from "./types";
 
-
 /** Default greeting response from the assistant */
 export const ASSISTANT_NAME = "Memora AI";
 
@@ -21,9 +20,9 @@ export const MAX_INPUT_LENGTH = 2000;
 export const GREETING_RESPONSES: string[] = [
 	"Salut ! Comment ca va ? Dis-moi ce dont t'as besoin aujourd'hui.",
 	"Hey ! Qu'est-ce que je peux faire pour toi ?",
-	"Coucou ! Besoin d'un coup de main sur un projet, une tache, ou autre ?",
+	"Coucou ! Besoin d'un coup de main sur un projet, une tâche, ou autre ?",
 	"Salut ! Dis-moi ce que tu veux faire, je m'en occupe.",
-	"Hey ! Pret a avancer ? Dis-moi tout.",
+	"Hey ! Prêt à avancer ? Dis-moi tout.",
 	"Yo ! Qu'est-ce qu'on fait aujourd'hui ?",
 ];
 
@@ -41,34 +40,34 @@ export const WELCOME_MESSAGE =
 export const WELCOME_SUGGESTIONS: Suggestion[] = [
 	{
 		id: "sug-create-task",
-		label: "Creer une tache",
+		label: "Créer une tâche",
 		icon: "tasks",
-		description: "Nouvelle tache rapide",
-		query: "Je veux creer une nouvelle tache",
+		description: "Nouvelle tâche rapide",
+		query: "Je veux créer une nouvelle tâche",
 		category: "task",
 	},
 	{
 		id: "sug-create-project",
 		label: "Nouveau projet",
 		icon: "folder",
-		description: "Demarrer un projet",
-		query: "Creer un nouveau projet",
+		description: "Démarrer un projet",
+		query: "Créer un nouveau projet",
 		category: "project",
 	},
 	{
 		id: "sug-create-meeting",
-		label: "Planifier une reunion",
+		label: "Planifier une réunion",
 		icon: "calendar",
-		description: "Organiser un evenement",
-		query: "Planifier une reunion",
+		description: "Organiser un événement",
+		query: "Planifier une réunion",
 		category: "meeting",
 	},
 	{
 		id: "sug-list-tasks",
-		label: "Mes taches",
+		label: "Mes tâches",
 		icon: "tasks",
-		description: "Voir mes taches en cours",
-		query: "Montre-moi mes taches en cours",
+		description: "Voir mes tâches en cours",
+		query: "Montre-moi mes tâches en cours",
 		category: "task",
 	},
 	{
@@ -84,23 +83,23 @@ export const WELCOME_SUGGESTIONS: Suggestion[] = [
 		label: "Naviguer",
 		icon: "home",
 		description: "Aller quelque part",
-		query: "Emmene-moi vers ",
+		query: "Emmène-moi vers ",
 		category: "navigation",
 	},
 	{
 		id: "sug-absence",
-		label: "Demander un conge",
+		label: "Demander un congé",
 		icon: "calendar",
 		description: "Poser une absence",
-		query: "Je veux poser un conge",
+		query: "Je veux poser un congé",
 		category: "absence",
 	},
 	{
 		id: "sug-help",
 		label: "Aide",
 		icon: "info",
-		description: "Comment ca marche ?",
-		query: "Aide-moi a comprendre ce que tu peux faire",
+		description: "Comment ça marche ?",
+		query: "Aide-moi à comprendre ce que tu peux faire",
 		category: "help",
 	},
 ];
@@ -108,23 +107,23 @@ export const WELCOME_SUGGESTIONS: Suggestion[] = [
 /** Keywords mapped to intent categories for detection */
 export const INTENT_KEYWORDS: Record<string, { category: string; action: string; weight: number }[]> = {
 	// Task keywords
-	tache: [
+	tâche: [
 		{ category: "task", action: "create_task", weight: 0.6 },
 		{ category: "task", action: "list_tasks", weight: 0.3 },
 	],
-	taches: [{ category: "task", action: "list_tasks", weight: 0.8 }],
-	"creer une tache": [{ category: "task", action: "create_task", weight: 0.95 }],
-	"nouvelle tache": [{ category: "task", action: "create_task", weight: 0.95 }],
-	"ajouter une tache": [{ category: "task", action: "create_task", weight: 0.95 }],
-	"modifier la tache": [{ category: "task", action: "update_task", weight: 0.9 }],
-	"supprimer la tache": [{ category: "task", action: "delete_task", weight: 0.9 }],
-	"terminer la tache": [{ category: "task", action: "complete_task", weight: 0.9 }],
-	"finir la tache": [{ category: "task", action: "complete_task", weight: 0.9 }],
-	"assigner la tache": [{ category: "task", action: "assign_task", weight: 0.9 }],
-	"mes taches": [{ category: "task", action: "list_tasks", weight: 0.95 }],
-	"liste des taches": [{ category: "task", action: "list_tasks", weight: 0.95 }],
-	"taches en cours": [{ category: "task", action: "list_tasks", weight: 0.9 }],
-	"taches a faire": [{ category: "task", action: "list_tasks", weight: 0.9 }],
+	tâches: [{ category: "task", action: "list_tasks", weight: 0.8 }],
+	"creer une tâche": [{ category: "task", action: "create_task", weight: 0.95 }],
+	"nouvelle tâche": [{ category: "task", action: "create_task", weight: 0.95 }],
+	"ajouter une tâche": [{ category: "task", action: "create_task", weight: 0.95 }],
+	"modifier la tâche": [{ category: "task", action: "update_task", weight: 0.9 }],
+	"supprimer la tâche": [{ category: "task", action: "delete_task", weight: 0.9 }],
+	"terminer la tâche": [{ category: "task", action: "complete_task", weight: 0.9 }],
+	"finir la tâche": [{ category: "task", action: "complete_task", weight: 0.9 }],
+	"assigner la tâche": [{ category: "task", action: "assign_task", weight: 0.9 }],
+	"mes tâches": [{ category: "task", action: "list_tasks", weight: 0.95 }],
+	"liste des tâches": [{ category: "task", action: "list_tasks", weight: 0.95 }],
+	"tâches en cours": [{ category: "task", action: "list_tasks", weight: 0.9 }],
+	"tâches à faire": [{ category: "task", action: "list_tasks", weight: 0.9 }],
 	todo: [{ category: "task", action: "list_tasks", weight: 0.7 }],
 
 	// Project keywords
@@ -142,18 +141,18 @@ export const INTENT_KEYWORDS: Record<string, { category: string; action: string;
 	"liste des projets": [{ category: "project", action: "list_projects", weight: 0.95 }],
 
 	// Meeting keywords
-	reunion: [
+	réunion: [
 		{ category: "meeting", action: "create_meeting", weight: 0.5 },
 		{ category: "meeting", action: "list_meetings", weight: 0.4 },
 	],
-	reunions: [{ category: "meeting", action: "list_meetings", weight: 0.8 }],
-	"creer une reunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
-	"planifier une reunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
-	"organiser une reunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
-	"nouvelle reunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
-	"annuler la reunion": [{ category: "meeting", action: "cancel_meeting", weight: 0.9 }],
-	"mes reunions": [{ category: "meeting", action: "list_meetings", weight: 0.95 }],
-	"prochaines reunions": [{ category: "meeting", action: "list_meetings", weight: 0.9 }],
+	réunions: [{ category: "meeting", action: "list_meetings", weight: 0.8 }],
+	"creer une réunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
+	"planifier une réunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
+	"organiser une réunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
+	"nouvelle réunion": [{ category: "meeting", action: "create_meeting", weight: 0.95 }],
+	"annuler la réunion": [{ category: "meeting", action: "cancel_meeting", weight: 0.9 }],
+	"mes réunions": [{ category: "meeting", action: "list_meetings", weight: 0.95 }],
+	"prochaines réunions": [{ category: "meeting", action: "list_meetings", weight: 0.9 }],
 	standup: [{ category: "meeting", action: "create_meeting", weight: 0.8 }],
 	retrospective: [{ category: "meeting", action: "create_meeting", weight: 0.8 }],
 	entretien: [{ category: "meeting", action: "create_meeting", weight: 0.8 }],
@@ -283,13 +282,13 @@ export const NAVIGATION_TARGETS: Record<string, { path: string; label: string; n
 	"tableau de bord": { path: "/hub/{groupId}", label: "Tableau de bord", needsGroup: true },
 	projets: { path: "/hub/{groupId}/projects", label: "Projets", needsGroup: true },
 	projet: { path: "/hub/{groupId}/projects", label: "Projets", needsGroup: true },
-	taches: { path: "/hub/{groupId}/tasks", label: "Taches", needsGroup: true },
-	tache: { path: "/hub/{groupId}/tasks", label: "Taches", needsGroup: true },
-	reunions: { path: "/hub/{groupId}/meetings", label: "Reunions", needsGroup: true },
-	reunion: { path: "/hub/{groupId}/meetings", label: "Reunions", needsGroup: true },
+	tâches: { path: "/hub/{groupId}/tasks", label: "Tâches", needsGroup: true },
+	tâche: { path: "/hub/{groupId}/tasks", label: "Tâches", needsGroup: true },
+	réunions: { path: "/hub/{groupId}/meetings", label: "Réunions", needsGroup: true },
+	réunion: { path: "/hub/{groupId}/meetings", label: "Réunions", needsGroup: true },
 	calendrier: { path: "/hub/{groupId}/meetings", label: "Calendrier", needsGroup: true },
 	absences: { path: "/hub/{groupId}/absences", label: "Absences", needsGroup: true },
-	conges: { path: "/hub/{groupId}/absences", label: "Conges", needsGroup: true },
+	conges: { path: "/hub/{groupId}/absences", label: "Congés", needsGroup: true },
 	personnel: { path: "/hub/{groupId}/personnel", label: "Personnel", needsGroup: true },
 	recrutement: { path: "/hub/{groupId}/recruitment", label: "Recrutement", needsGroup: true },
 	formations: { path: "/hub/{groupId}/training", label: "Formations", needsGroup: true },
@@ -297,17 +296,17 @@ export const NAVIGATION_TARGETS: Record<string, { path: string; label: string; n
 	momentum: { path: "/hub/{groupId}/momentum", label: "Momentum", needsGroup: true },
 	profil: { path: "/profile", label: "Mon profil", needsGroup: false },
 	"mon profil": { path: "/profile", label: "Mon profil", needsGroup: false },
-	parametres: { path: "/settings/account", label: "Parametres", needsGroup: false },
-	reglages: { path: "/settings/account", label: "Parametres", needsGroup: false },
-	"parametres compte": { path: "/settings/account", label: "Parametres du compte", needsGroup: false },
-	securite: { path: "/settings/security", label: "Securite", needsGroup: false },
-	preferences: { path: "/settings/preferences", label: "Preferences", needsGroup: false },
+	parametres: { path: "/settings/account", label: "Paramètres", needsGroup: false },
+	reglages: { path: "/settings/account", label: "Paramètres", needsGroup: false },
+	"parametres compte": { path: "/settings/account", label: "Paramètres du compte", needsGroup: false },
+	securite: { path: "/settings/security", label: "Sécurité", needsGroup: false },
+	preferences: { path: "/settings/preferences", label: "Préférences", needsGroup: false },
 	"parametres notifications": {
 		path: "/settings/notifications",
-		label: "Parametres de notifications",
+		label: "Paramètres de notifications",
 		needsGroup: false,
 	},
-	donnees: { path: "/settings/data", label: "Donnees", needsGroup: false },
+	donnees: { path: "/settings/data", label: "Données", needsGroup: false },
 	utilisateurs: { path: "/users", label: "Utilisateurs", needsGroup: false },
 	groupes: { path: "/groups", label: "Groupes", needsGroup: false },
 	statistiques: { path: "/stats", label: "Statistiques", needsGroup: false },
@@ -336,7 +335,7 @@ export const VALIDATORS = {
 	minLength:
 		(min: number) =>
 		(value: string): string | null => {
-			if (value.trim().length < min) return `Minimum ${min} caracteres`;
+			if (value.trim().length < min) return `Minimum ${min} caractères`;
 			return null;
 		},
 
@@ -358,9 +357,9 @@ export const CREATE_TASK_STEPS: FlowStep[] = [
 	{
 		id: "task-title",
 		field: "title",
-		label: "C'est quoi le titre de ta tache ?",
+		label: "C'est quoi le titre de ta tâche ?",
 		type: "text",
-		placeholder: "Ex: Implementer le module d'export",
+		placeholder: "Ex: Implémenter le module d'export",
 		required: true,
 		validation: VALIDATORS.minLength(3),
 	},
@@ -369,13 +368,13 @@ export const CREATE_TASK_STEPS: FlowStep[] = [
 		field: "description",
 		label: "Tu veux ajouter une description ? (optionnel)",
 		type: "textarea",
-		placeholder: "Decris la tache en detail...",
+		placeholder: "Décris la tâche en détail...",
 		required: false,
 	},
 	{
 		id: "task-priority",
 		field: "priority",
-		label: "Quelle priorite tu mets ?",
+		label: "Quelle priorité tu mets ?",
 		type: "select",
 		options: [
 			{ value: "Haute", label: "Haute" },
@@ -398,7 +397,7 @@ export const CREATE_TASK_STEPS: FlowStep[] = [
 	{
 		id: "task-assignee",
 		field: "assignee",
-		label: "Tu l'assignes a qui ? (optionnel)",
+		label: "Tu l'assignes à qui ? (optionnel)",
 		type: "text",
 		placeholder: "Nom du collaborateur",
 		required: false,
@@ -414,7 +413,7 @@ export const CREATE_TASK_STEPS: FlowStep[] = [
 	{
 		id: "task-confirm",
 		field: "_confirm",
-		label: "On cree ca ?",
+		label: "On crée ça ?",
 		type: "confirm",
 		required: true,
 	},
@@ -436,13 +435,13 @@ export const CREATE_PROJECT_STEPS: FlowStep[] = [
 		field: "description",
 		label: "Une petite description ? (optionnel)",
 		type: "textarea",
-		placeholder: "Objectifs, perimetre, equipe...",
+		placeholder: "Objectifs, périmètre, équipe...",
 		required: false,
 	},
 	{
 		id: "project-status",
 		field: "status",
-		label: "On le demarre en quel statut ?",
+		label: "On le démarre en quel statut ?",
 		type: "select",
 		options: [
 			{ value: "todo", label: "A faire" },
@@ -453,7 +452,7 @@ export const CREATE_PROJECT_STEPS: FlowStep[] = [
 	{
 		id: "project-startdate",
 		field: "startDate",
-		label: "Date de debut ? (format: AAAA-MM-JJ, optionnel)",
+		label: "Date de début ? (format: AAAA-MM-JJ, optionnel)",
 		type: "date",
 		placeholder: "2026-03-01",
 		required: false,
@@ -461,7 +460,7 @@ export const CREATE_PROJECT_STEPS: FlowStep[] = [
 	{
 		id: "project-enddate",
 		field: "endDate",
-		label: "Date de fin prevue ? (format: AAAA-MM-JJ, optionnel)",
+		label: "Date de fin prévue ? (format: AAAA-MM-JJ, optionnel)",
 		type: "date",
 		placeholder: "2026-06-30",
 		required: false,
@@ -480,9 +479,9 @@ export const CREATE_MEETING_STEPS: FlowStep[] = [
 	{
 		id: "meeting-title",
 		field: "title",
-		label: "C'est quoi le titre de la reunion ?",
+		label: "C'est quoi le titre de la réunion ?",
 		type: "text",
-		placeholder: "Ex: Point d'equipe hebdomadaire",
+		placeholder: "Ex: Point d'équipe hebdomadaire",
 		required: true,
 		validation: VALIDATORS.minLength(3),
 	},
@@ -506,7 +505,7 @@ export const CREATE_MEETING_STEPS: FlowStep[] = [
 	{
 		id: "meeting-duration",
 		field: "duration",
-		label: "Duree prevue ?",
+		label: "Durée prévue ?",
 		type: "select",
 		options: [
 			{ value: "15min", label: "15 minutes" },
@@ -521,7 +520,7 @@ export const CREATE_MEETING_STEPS: FlowStep[] = [
 	{
 		id: "meeting-location",
 		field: "location",
-		label: "Lieu ou lien de la reunion ? (optionnel)",
+		label: "Lieu ou lien de la réunion ? (optionnel)",
 		type: "text",
 		placeholder: "Salle A3 / https://meet.google.com/...",
 		required: false,
@@ -531,13 +530,13 @@ export const CREATE_MEETING_STEPS: FlowStep[] = [
 		field: "description",
 		label: "Notes ou ordre du jour ? (optionnel)",
 		type: "textarea",
-		placeholder: "Points a discuter...",
+		placeholder: "Points à discuter...",
 		required: false,
 	},
 	{
 		id: "meeting-confirm",
 		field: "_confirm",
-		label: "Confirmer la creation de la reunion ?",
+		label: "Confirmer la création de la réunion ?",
 		type: "confirm",
 		required: true,
 	},
@@ -551,7 +550,7 @@ export const REQUEST_ABSENCE_STEPS: FlowStep[] = [
 		label: "Quel type d'absence ?",
 		type: "select",
 		options: [
-			{ value: "conge_paye", label: "Conge paye" },
+			{ value: "conge_paye", label: "Congé payé" },
 			{ value: "rtt", label: "RTT" },
 			{ value: "maladie", label: "Maladie" },
 			{ value: "autre", label: "Autre" },
@@ -561,7 +560,7 @@ export const REQUEST_ABSENCE_STEPS: FlowStep[] = [
 	{
 		id: "absence-start",
 		field: "startDate",
-		label: "Date de debut ? (format: AAAA-MM-JJ)",
+		label: "Date de début ? (format: AAAA-MM-JJ)",
 		type: "date",
 		placeholder: "2026-03-20",
 		required: true,
@@ -598,9 +597,9 @@ export const CREATE_JOB_OFFER_STEPS: FlowStep[] = [
 	{
 		id: "offer-title",
 		field: "title",
-		label: "Intitule du poste ?",
+		label: "Intitulé du poste ?",
 		type: "text",
-		placeholder: "Ex: Developpeur Full-Stack Senior",
+		placeholder: "Ex: Développeur Full-Stack Senior",
 		required: true,
 		validation: VALIDATORS.minLength(3),
 	},
@@ -623,7 +622,7 @@ export const CREATE_JOB_OFFER_STEPS: FlowStep[] = [
 		field: "description",
 		label: "Description du poste",
 		type: "textarea",
-		placeholder: "Missions, competences, avantages...",
+		placeholder: "Missions, compétences, avantages...",
 		required: true,
 		validation: VALIDATORS.minLength(10),
 	},
@@ -643,19 +642,19 @@ export const CREATE_TRAINING_STEPS: FlowStep[] = [
 		field: "title",
 		label: "Titre de la formation ?",
 		type: "text",
-		placeholder: "Ex: Introduction a TypeScript",
+		placeholder: "Ex: Introduction à TypeScript",
 		required: true,
 		validation: VALIDATORS.minLength(3),
 	},
 	{
 		id: "training-category",
 		field: "category",
-		label: "Categorie ?",
+		label: "Catégorie ?",
 		type: "select",
 		options: [
 			{ value: "technique", label: "Technique" },
 			{ value: "management", label: "Management" },
-			{ value: "securite", label: "Securite" },
+			{ value: "securite", label: "Sécurité" },
 			{ value: "soft_skills", label: "Soft Skills" },
 			{ value: "onboarding", label: "Onboarding" },
 		],
@@ -666,13 +665,13 @@ export const CREATE_TRAINING_STEPS: FlowStep[] = [
 		field: "description",
 		label: "Description (optionnel)",
 		type: "textarea",
-		placeholder: "Contenu, objectifs, prerequis...",
+		placeholder: "Contenu, objectifs, prérequis...",
 		required: false,
 	},
 	{
 		id: "training-confirm",
 		field: "_confirm",
-		label: "Creer cette formation ?",
+		label: "Créer cette formation ?",
 		type: "confirm",
 		required: true,
 	},
@@ -683,42 +682,42 @@ export const FLOW_DEFINITIONS: FlowDefinition[] = [
 	{
 		id: "flow-create-task",
 		action: "create_task",
-		title: "Creer une tache",
-		description: "Je vais vous guider pour creer une nouvelle tache.",
+		title: "Créer une tâche",
+		description: "Je vais vous guider pour créer une nouvelle tâche.",
 		steps: CREATE_TASK_STEPS,
 	},
 	{
 		id: "flow-create-project",
 		action: "create_project",
-		title: "Creer un projet",
-		description: "Creons ensemble un nouveau projet.",
+		title: "Créer un projet",
+		description: "Créons ensemble un nouveau projet.",
 		steps: CREATE_PROJECT_STEPS,
 	},
 	{
 		id: "flow-create-meeting",
 		action: "create_meeting",
-		title: "Planifier une reunion",
-		description: "Organisons une nouvelle reunion.",
+		title: "Planifier une réunion",
+		description: "Organisons une nouvelle réunion.",
 		steps: CREATE_MEETING_STEPS,
 	},
 	{
 		id: "flow-request-absence",
 		action: "request_absence",
-		title: "Demander un conge",
-		description: "Je vais vous aider a soumettre votre demande d'absence.",
+		title: "Demander un congé",
+		description: "Je vais vous aider à soumettre votre demande d'absence.",
 		steps: REQUEST_ABSENCE_STEPS,
 	},
 	{
 		id: "flow-create-job-offer",
 		action: "create_job_offer",
-		title: "Creer une offre d'emploi",
+		title: "Créer une offre d'emploi",
 		description: "Publions une nouvelle offre de recrutement.",
 		steps: CREATE_JOB_OFFER_STEPS,
 	},
 	{
 		id: "flow-create-training",
 		action: "create_training",
-		title: "Creer une formation",
+		title: "Créer une formation",
 		description: "Mettons en place une nouvelle formation.",
 		steps: CREATE_TRAINING_STEPS,
 	},
@@ -727,30 +726,30 @@ export const FLOW_DEFINITIONS: FlowDefinition[] = [
 /** Help response content */
 export const HELP_RESPONSE =
 	"Voici tout ce que je peux faire pour vous :\n\n" +
-	"**Taches**\n" +
-	"- Creer, modifier, supprimer des taches\n" +
-	"- Lister vos taches (en cours, a faire, terminees)\n" +
-	"- Assigner et terminer des taches\n\n" +
+	"**Tâches**\n" +
+	"- Créer, modifier, supprimer des tâches\n" +
+	"- Lister vos tâches (en cours, à faire, terminées)\n" +
+	"- Assigner et terminer des tâches\n\n" +
 	"**Projets**\n" +
-	"- Creer et gerer des projets\n" +
+	"- Créer et gérer des projets\n" +
 	"- Voir la liste des projets\n\n" +
-	"**Reunions**\n" +
-	"- Planifier des reunions, standups, retrospectives\n" +
-	"- Voir les prochaines reunions\n\n" +
+	"**Réunions**\n" +
+	"- Planifier des réunions, standups, rétrospectives\n" +
+	"- Voir les prochaines réunions\n\n" +
 	"**Absences**\n" +
-	"- Poser un conge (paye, RTT, maladie)\n" +
+	"- Poser un congé (payé, RTT, maladie)\n" +
 	"- Voir vos demandes d'absence\n\n" +
 	"**Navigation**\n" +
 	"- Naviguer vers n'importe quelle page\n" +
 	'- Ex: *"Emmene-moi vers les projets"*\n\n' +
 	"**Recherche**\n" +
 	"- Rechercher dans toute l'application\n" +
-	"- Trouver des utilisateurs, projets, taches\n\n" +
+	"- Trouver des utilisateurs, projets, tâches\n\n" +
 	"**Recrutement & Formation**\n" +
-	"- Creer des offres d'emploi\n" +
-	"- Gerer les formations\n\n" +
-	"**Parametres**\n" +
-	"- Changer le theme (clair/sombre)\n" +
+	"- Créer des offres d'emploi\n" +
+	"- Gérer les formations\n\n" +
+	"**Paramètres**\n" +
+	"- Changer le thème (clair/sombre)\n" +
 	"- Activer le mode admin\n" +
-	"- Exporter des donnees\n\n" +
+	"- Exporter des données\n\n" +
 	"Essayez simplement de me dire ce que vous voulez faire en langage naturel !";

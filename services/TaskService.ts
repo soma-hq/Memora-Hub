@@ -3,7 +3,6 @@ import { LogService } from "@/services/LogService";
 import { LogAction, TaskStatus, TaskPriority } from "@/constants";
 import type { CreateTaskFormData } from "@/lib/validators/schemas";
 
-
 /** Service responsible for task and subtask CRUD operations */
 export class TaskService {
 	/**
@@ -134,7 +133,7 @@ export class TaskService {
 	}
 
 	/**
-	 * Delete a task
+	 * Delete à task
 	 * @param id Task ID
 	 * @param performedBy Actor user ID
 	 */
@@ -201,7 +200,7 @@ export class TaskService {
 	}
 
 	/**
-	 * Delete a subtask
+	 * Delete à subtask
 	 * @param subtaskId Subtask ID
 	 */
 
@@ -246,5 +245,74 @@ export class TaskService {
 			},
 			{} as Record<string, number>,
 		);
+	}
+
+	/**
+	 * Get tasks by group (through projects)
+	 * @param groupId Group ID
+	 * @param page Page number
+	 * @param pageSize Tasks per page
+	 * @returns Paginated tasks and count
+	 */
+
+	static async getByGroup(groupId: string, page = 1, pageSize = 20) {
+		const skip = (page - 1) * pageSize;
+
+		const [tasks, total] = await Promise.all([
+			prisma.task.findMany({
+				where: { project: { groupId } },
+				skip,
+				take: pageSize,
+				include: {
+					assignee: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+					project: { select: { id: true, name: true, groupId: true } },
+					subtasks: true,
+				},
+				orderBy: { createdAt: "desc" },
+			}),
+			prisma.task.count({ where: { project: { groupId } } }),
+		]);
+
+		return { tasks, total, page, pageSize };
+	}
+
+	/**
+	 * Get overdue tasks (past due date, not done/archived)
+	 * @param groupId Optional group ID filter
+	 * @returns Overdue tasks with project info
+	 */
+
+	static async getOverdue(groupId?: string) {
+		return prisma.task.findMany({
+			where: {
+				dueDate: { lt: new Date() },
+				status: { notIn: ["done", "done"] },
+				...(groupId && { project: { groupId } }),
+			},
+			include: {
+				assignee: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+				project: { select: { id: true, name: true, groupId: true } },
+			},
+			orderBy: { dueDate: "asc" },
+		});
+	}
+
+	/**
+	 * Bulk update task statuses
+	 * @param taskIds Array of task IDs
+	 * @param status New status value
+	 * @param performedBy Actor user ID
+	 * @returns Count of updated tasks
+	 */
+
+	static async bulkUpdateStatus(taskIds: string[], status: string, performedBy?: string) {
+		const result = await prisma.task.updateMany({
+			where: { id: { in: taskIds } },
+			data: { status: status as never },
+		});
+
+		await LogService.log(LogAction.Update, "task", taskIds.join(","), performedBy, `bulk-status:${status}`);
+
+		return result.count;
 	}
 }

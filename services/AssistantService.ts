@@ -23,7 +23,7 @@ import { getFollowUpSuggestions, getAutocompleteSuggestions } from "@/features/a
 import { isSmartCommand, executeSmartCommand } from "@/features/assistant/smart-commands";
 
 
-/** Response from the assistant service after processing a message */
+/** Response from the assistant service after processing à message */
 export interface AssistantResponse {
 	message: ChatMessage;
 	suggestions: Suggestion[];
@@ -164,7 +164,7 @@ export class AssistantService {
 		}
 		content += `**${currentStep.label}**`;
 
-		// Add options if it's a select step
+		// Add options if it's à select step
 		if (currentStep.type === "select" && currentStep.options) {
 			content += "\n\n";
 			currentStep.options.forEach((opt, i) => {
@@ -216,7 +216,7 @@ export class AssistantService {
 				message: {
 					id: `msg-${Date.now()}`,
 					role: "assistant",
-					content: "D'accord, l'action a ete annulee. Que puis-je faire d'autre ?",
+					content: "D'accord, l'action à ete annulee. Que puis-je faire d'autre ?",
 					timestamp: new Date().toISOString(),
 				},
 				suggestions: getContextualSuggestions(context),

@@ -1,6 +1,5 @@
 import type { TranslationKeys } from "./fr";
 
-
 const en: TranslationKeys = {
 	common: {
 		save: "Save",

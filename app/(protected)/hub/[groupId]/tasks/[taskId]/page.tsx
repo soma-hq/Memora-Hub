@@ -9,7 +9,16 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showWarning, showInfo } from "@/lib/utils/toast";
 import type { IconName } from "@/core/design/icons";
 import type { BadgeVariant } from "@/core/design/states";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/tasks/[taskId]",
+	section: "protected",
+	module: "tasks",
+	description: "Détail et édition d'une tâche.",
+	requiredPermissions: [{ module: "tasks", action: "view" }],
+	entityScoped: true,
+});
 
 // ─── Mock data ──────────────────────────────────────────────────────────────
 
@@ -57,7 +66,7 @@ const mockTimelineItems = [
 		icon: "users" as IconName,
 		title: (
 			<>
-				<span className="font-medium">Jeremy Alpha</span> a assigné{" "}
+				<span className="font-medium">Jeremy Alpha</span> à assigné{" "}
 				<span className="font-medium">Lucas Foxtrot</span>
 			</>
 		),
@@ -68,7 +77,7 @@ const mockTimelineItems = [
 		icon: "edit" as IconName,
 		title: (
 			<>
-				<span className="font-medium">Lucas Foxtrot</span> a changé le statut en &ldquo;En cours&rdquo;
+				<span className="font-medium">Lucas Foxtrot</span> à changé le statut en &ldquo;En cours&rdquo;
 			</>
 		),
 		time: "12 Fév 2026 — 14:30",
@@ -88,7 +97,7 @@ const mockTimelineItems = [
 		icon: "flag" as IconName,
 		title: (
 			<>
-				<span className="font-medium">Jeremy Alpha</span> a changé la priorité en &ldquo;Haute&rdquo;
+				<span className="font-medium">Jeremy Alpha</span> à changé la priorité en &ldquo;Haute&rdquo;
 			</>
 		),
 		time: "15 Fév 2026 — 10:00",
@@ -107,19 +116,19 @@ const mockComments: Comment[] = [
 		id: "c1",
 		author: "Jeremy Alpha",
 		content: "On doit absolument finir ça avant la demo de vendredi.",
-		time: "Il y a 2h",
+		time: "Il y à 2h",
 	},
 	{
 		id: "c2",
 		author: "Lucas Foxtrot",
 		content: "C'est en bonne voie, j'ai terminé la partie filtrage. Reste le formatage PDF.",
-		time: "Il y a 1h",
+		time: "Il y à 1h",
 	},
 	{
 		id: "c3",
 		author: "Marie Delta",
 		content: "Je peux aider sur la partie design du PDF si besoin.",
-		time: "Il y a 30min",
+		time: "Il y à 30min",
 	},
 ];
 

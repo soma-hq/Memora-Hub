@@ -36,7 +36,7 @@ export async function exportToExcel(options: ExcelExportOptions): Promise<Blob> 
 }
 
 /**
- * Exports data as Excel and triggers a browser download
+ * Exports data as Excel and triggers à browser download
  * @param options - Excel export configuration
  * @returns Resolves when the download is triggered
  */

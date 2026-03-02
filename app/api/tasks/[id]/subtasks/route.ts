@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 	if (!currentUser) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
 	const { id } = await params;
 	const task = await TaskService.getById(id);
-	if (!task) return NextResponse.json({ error: "Tache introuvable" }, { status: 404 });
+	if (!task) return NextResponse.json({ error: "Tâche introuvable" }, { status: 404 });
 	return NextResponse.json({ subtasks: task.subtasks });
 }
 

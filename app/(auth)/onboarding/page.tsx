@@ -6,7 +6,13 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button, Icon, Input, Checkbox, Toggle } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "onboarding",
+	section: "auth",
+	description: "Processus d'accueil des nouveaux utilisateurs.",
+});
 
 // Types
 
@@ -38,7 +44,7 @@ interface FormErrors {
 
 const TOTAL_STEPS = 9;
 
-const LANGUES_OPTIONS = ["Francais", "Anglais", "Espagnol", "Arabe", "Portugais", "Autre"] as const;
+const LANGUES_OPTIONS = ["Français", "Anglais", "Espagnol", "Arabe", "Portugais", "Autre"] as const;
 
 const DIVISION_LEVELS = [
 	{ src: "/icons/marsha/marshaSquad0.png", label: "Division 0 — Academy", delay: "0ms" },
@@ -48,7 +54,7 @@ const DIVISION_LEVELS = [
 ];
 
 const HUB_FEATURES = [
-	{ icon: "shield" as const, label: "Moderation", desc: "Sanctions, consignes, tickets" },
+	{ icon: "shield" as const, label: "Modération", desc: "Sanctions, consignes, tickets" },
 	{ icon: "stats" as const, label: "Momentum", desc: "Sessions, performances, objectifs" },
 	{ icon: "users" as const, label: "Talent", desc: "Recrutement, formations" },
 	{ icon: "flag" as const, label: "Legacy", desc: "Projets, historique, impact" },
@@ -63,8 +69,8 @@ const PLATFORMS = [
 
 const PIM_PHASE1_ITEMS = [
 	{ icon: "document" as const, label: "Nos standards" },
-	{ icon: "shield" as const, label: "Nos methodes d'intervention" },
-	{ icon: "users" as const, label: "Notre facon de travailler" },
+	{ icon: "shield" as const, label: "Nos méthodes d'intervention" },
+	{ icon: "users" as const, label: "Notre façon de travailler" },
 ];
 
 const PIM_PHASE2_ITEMS = [
@@ -81,7 +87,7 @@ const STEP_LABELS = [
 	"Position",
 	"PIM 1",
 	"PIM 2",
-	"Donnees",
+	"Données",
 	"Formulaire",
 	"Suite",
 	"Celebration",
@@ -106,7 +112,7 @@ const TEAM_STATS = [
 /** Trust indicator badges on the data explanation step */
 const TRUST_BADGES = [
 	{ icon: "lock" as const, label: "Chiffre" },
-	{ icon: "shield" as const, label: "Protege" },
+	{ icon: "shield" as const, label: "Protégé" },
 	{ icon: "check" as const, label: "Conforme" },
 ];
 
@@ -125,8 +131,16 @@ const DASHBOARD_PREVIEW_ICONS = ["stats", "users", "calendar", "settings", "bell
 function ConfettiParticle({ index }: { index: number }) {
 	const style = useMemo(() => {
 		const colors = [
-			"#ec4899", "#f472b6", "#db2777", "#f59e0b", "#22c55e",
-			"#3b82f6", "#8b5cf6", "#ef4444", "#14b8a6", "#f97316",
+			"#ec4899",
+			"#f472b6",
+			"#db2777",
+			"#f59e0b",
+			"#22c55e",
+			"#3b82f6",
+			"#8b5cf6",
+			"#ef4444",
+			"#14b8a6",
+			"#f97316",
 		];
 		const shapes = ["50%", "2px", "0"];
 		const color = colors[index % colors.length];
@@ -155,7 +169,7 @@ function ConfettiParticle({ index }: { index: number }) {
 
 /**
  * Floating particle component for ambient decorative effects.
- * Creates a dot that floats upward with a gentle sway.
+ * Creates à dot that floats upward with à gentle sway.
  * @param {{ index: number; color?: string }} props - Particle index and optional color
  * @returns {JSX.Element} A floating decorative dot
  */
@@ -184,7 +198,7 @@ function FloatingParticle({ index, color = "rgba(236, 72, 153, 0.4)" }: { index:
 
 /**
  * Step overview drawer showing all 9 step names with completion indicators.
- * Collapsible via a toggle button positioned at the right edge of the screen.
+ * Collapsible via à toggle button positioned at the right edge of the screen.
  * @param {{ currentStep: number; isOpen: boolean; onToggle: () => void }} props
  * @returns {JSX.Element} The step overview drawer
  */
@@ -219,7 +233,7 @@ function StepOverviewDrawer({
 				)}
 			>
 				<div className="px-4 pb-3">
-					<p className="text-xs font-bold tracking-wider text-gray-500 uppercase">Etapes</p>
+					<p className="text-xs font-bold tracking-wider text-gray-500 uppercase">Étapes</p>
 				</div>
 				<div className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
 					{STEP_LABELS.map((label, i) => (
@@ -228,7 +242,7 @@ function StepOverviewDrawer({
 							className={cn(
 								"flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
 								i === currentStep
-									? "bg-primary-500/15 font-semibold text-primary-400"
+									? "bg-primary-500/15 text-primary-400 font-semibold"
 									: i < currentStep
 										? "text-gray-400"
 										: "text-gray-600",
@@ -244,11 +258,7 @@ function StepOverviewDrawer({
 											: "bg-gray-800 text-gray-600",
 								)}
 							>
-								{i < currentStep ? (
-									<Icon name="check" size="xs" />
-								) : (
-									<span>{i + 1}</span>
-								)}
+								{i < currentStep ? <Icon name="check" size="xs" /> : <span>{i + 1}</span>}
 							</div>
 							<span className="truncate">{label}</span>
 						</div>
@@ -262,7 +272,7 @@ function StepOverviewDrawer({
 /**
  * Multi-step onboarding wizard with full Marsha narrative for new squad members.
  * Steps: Introduction > Marsha > Position > PIM Phase 1 > PIM Phase 2 > Data Explanation > Form > After Form > Celebration
- * Includes decorative illustrations, smooth transitions, and a step overview drawer.
+ * Includes decorative illustrations, smooth transitions, and à step overview drawer.
  * @returns {JSX.Element} Full-screen onboarding flow
  */
 export default function OnboardingPage() {
@@ -308,7 +318,13 @@ export default function OnboardingPage() {
 			const t3 = setTimeout(() => setSubtitleVisible(true), 1100);
 			const t4 = setTimeout(() => setBodyVisible(true), 1500);
 			const t5 = setTimeout(() => setButtonVisible(true), 2000);
-			return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3); clearTimeout(t4); clearTimeout(t5); };
+			return () => {
+				clearTimeout(t1);
+				clearTimeout(t2);
+				clearTimeout(t3);
+				clearTimeout(t4);
+				clearTimeout(t5);
+			};
 		}
 	}, [currentStep]);
 
@@ -336,7 +352,7 @@ export default function OnboardingPage() {
 	// Navigation
 
 	/**
-	 * Navigates to a specific onboarding step with slide animation.
+	 * Navigates to à specific onboarding step with slide animation.
 	 * @param {number} target - Target step index
 	 * @returns {void}
 	 */
@@ -362,12 +378,15 @@ export default function OnboardingPage() {
 		if (currentStep === 6) {
 			const errors: FormErrors = {};
 			if (!formData.pseudo.trim()) errors.pseudo = "Le pseudo est requis";
-			if (!formData.prenom.trim()) errors.prenom = "Le prenom est requis";
+			if (!formData.prenom.trim()) errors.prenom = "Le prénom est requis";
 			if (!formData.nom.trim()) errors.nom = "Le nom est requis";
 			if (!formData.email.trim()) errors.email = "L'email est requis";
 			else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Email invalide";
 			if (!formData.discordId.trim()) errors.discordId = "Le Discord ID est requis";
-			if (Object.keys(errors).length > 0) { setFormErrors(errors); return; }
+			if (Object.keys(errors).length > 0) {
+				setFormErrors(errors);
+				return;
+			}
 			setFormErrors({});
 		}
 		goToStep(currentStep + 1);
@@ -377,7 +396,9 @@ export default function OnboardingPage() {
 	 * Returns to the previous onboarding step.
 	 * @returns {void}
 	 */
-	const prevStep = useCallback(() => { goToStep(currentStep - 1); }, [goToStep, currentStep]);
+	const prevStep = useCallback(() => {
+		goToStep(currentStep - 1);
+	}, [goToStep, currentStep]);
 
 	/**
 	 * Handles final completion: sets localStorage flags and navigates to the hub.
@@ -393,7 +414,7 @@ export default function OnboardingPage() {
 	// Form helpers
 
 	/**
-	 * Updates a single form field and clears its validation error.
+	 * Updates à single form field and clears its validation error.
 	 * @param {keyof FormData} field - The form field to update
 	 * @param {string | boolean | string[]} value - The new value
 	 * @returns {void}
@@ -404,14 +425,16 @@ export default function OnboardingPage() {
 	}, []);
 
 	/**
-	 * Toggles a language in the selected languages list.
+	 * Toggles à language in the selected languages list.
 	 * @param {string} langue - Language to toggle
 	 * @returns {void}
 	 */
 	const toggleLangue = useCallback((langue: string) => {
 		setFormData((prev) => ({
 			...prev,
-			langues: prev.langues.includes(langue) ? prev.langues.filter((l) => l !== langue) : [...prev.langues, langue],
+			langues: prev.langues.includes(langue)
+				? prev.langues.filter((l) => l !== langue)
+				: [...prev.langues, langue],
 		}));
 	}, []);
 
@@ -433,36 +456,63 @@ export default function OnboardingPage() {
 			{/* Background layers */}
 			<div className="absolute inset-0 bg-gradient-to-b from-gray-950 via-red-950/40 to-gray-950" />
 			<div className="from-primary-500/20 absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br to-transparent blur-[120px]" />
-			<div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1px, transparent 1px)", backgroundSize: "32px 32px" }} />
+			<div
+				className="absolute inset-0 opacity-[0.03]"
+				style={{
+					backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1px, transparent 1px)",
+					backgroundSize: "32px 32px",
+				}}
+			/>
 
 			{/* Floating particles */}
 			<div className="absolute inset-0 overflow-hidden">
 				{Array.from({ length: 20 }).map((_, i) => (
-					<FloatingParticle key={`p-${i}`} index={i} color={i % 2 === 0 ? "rgba(236, 72, 153, 0.3)" : "rgba(139, 92, 246, 0.3)"} />
+					<FloatingParticle
+						key={`p-${i}`}
+						index={i}
+						color={i % 2 === 0 ? "rgba(236, 72, 153, 0.3)" : "rgba(139, 92, 246, 0.3)"}
+					/>
 				))}
 			</div>
 
 			{/* Pulsing rings behind logo */}
 			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-				<div className="absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary-500/10 animate-[pulseRing_3s_ease-out_infinite]" />
-				<div className="absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary-500/10 animate-[pulseRing_3s_ease-out_1s_infinite]" />
-				<div className="absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-primary-500/10 animate-[pulseRing_3s_ease-out_2s_infinite]" />
+				<div className="border-primary-500/10 absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulseRing_3s_ease-out_infinite] rounded-full border" />
+				<div className="border-primary-500/10 absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulseRing_3s_ease-out_1s_infinite] rounded-full border" />
+				<div className="border-primary-500/10 absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulseRing_3s_ease-out_2s_infinite] rounded-full border" />
 			</div>
 
 			<div className="relative z-10 flex max-w-xl flex-col items-center gap-6 text-center">
-				<div className={cn("transition-all duration-1000 ease-out", logoVisible ? "scale-100 opacity-100" : "scale-50 opacity-0")}>
+				<div
+					className={cn(
+						"transition-all duration-1000 ease-out",
+						logoVisible ? "scale-100 opacity-100" : "scale-50 opacity-0",
+					)}
+				>
 					<div className="relative animate-[onboardPulse_3s_ease-in-out_infinite]">
 						<div className="from-primary-500/30 absolute inset-0 rounded-full bg-gradient-to-br to-transparent blur-3xl" />
-						<Image src="/logos/memora-logo.png" alt="Memora" width={120} height={120} className="relative drop-shadow-2xl" priority />
+						<Image
+							src="/logos/memora-logo.png"
+							alt="Memora"
+							width={120}
+							height={120}
+							className="relative drop-shadow-2xl"
+							priority
+						/>
 					</div>
 				</div>
 
 				{/* Animated MEMORA letter text */}
-				<div className={cn("flex items-center gap-1 transition-all duration-700 ease-out", logoVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0")}>
+				<div
+					className={cn(
+						"flex items-center gap-1 transition-all duration-700 ease-out",
+						logoVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0",
+					)}
+				>
 					{"MEMORA".split("").map((char, i) => (
 						<span
 							key={i}
-							className="text-primary-400/60 text-xs font-bold tracking-[0.3em] animate-[letterGlow_2s_ease-in-out_infinite]"
+							className="text-primary-400/60 animate-[letterGlow_2s_ease-in-out_infinite] text-xs font-bold tracking-[0.3em]"
 							style={{ animationDelay: `${i * 200}ms` }}
 						>
 							{char}
@@ -470,24 +520,50 @@ export default function OnboardingPage() {
 					))}
 				</div>
 
-				<h1 className={cn("font-serif text-4xl font-bold text-white transition-all duration-700 ease-out sm:text-5xl", titleVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0")}>
+				<h1
+					className={cn(
+						"font-serif text-4xl font-bold text-white transition-all duration-700 ease-out sm:text-5xl",
+						titleVisible ? "translate-y-0 opacity-100" : "translate-y-8 opacity-0",
+					)}
+				>
 					Bienvenue dans ton espace <span className="text-primary-400">Marsha</span>
 				</h1>
 
-				<p className={cn("text-lg leading-relaxed text-gray-300 transition-all duration-700 ease-out", subtitleVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0")}>
-					Si tu es ici, c&apos;est que tu as deja franchi une premiere etape importante. Tes echanges avec nous ont montre ton potentiel et nous sommes ravis de t&apos;accueillir parmi nous !
+				<p
+					className={cn(
+						"text-lg leading-relaxed text-gray-300 transition-all duration-700 ease-out",
+						subtitleVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+					)}
+				>
+					Si tu es ici, c&apos;est que tu as déjà franchi une première étape importante. Tes échanges avec
+					nous ont montré ton potentiel et nous sommes ravis de t&apos;accueillir parmi nous !
 				</p>
 
-				<div className={cn("max-w-md transition-all duration-700 ease-out", bodyVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0")}>
+				<div
+					className={cn(
+						"max-w-md transition-all duration-700 ease-out",
+						bodyVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+					)}
+				>
 					<p className="text-base text-gray-400">
-						A partir d&apos;ici, ton integration commence pour de vrai. Pas de panique, tu ne seras jamais seul(e).
+						A partir d&apos;ici, ton intégration commence pour de vrai. Pas de panique, tu ne seras jamais
+						seul(e).
 					</p>
 				</div>
 
-				<div className={cn("transition-all duration-700 ease-out", buttonVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0")}>
+				<div
+					className={cn(
+						"transition-all duration-700 ease-out",
+						buttonVisible ? "translate-y-0 opacity-100" : "translate-y-6 opacity-0",
+					)}
+				>
 					<Button variant="primary" size="lg" onClick={nextStep} className="group mt-4 gap-2 px-8">
 						Commencer
-						<Icon name="chevronRight" size="sm" className="transition-transform group-hover:translate-x-1" />
+						<Icon
+							name="chevronRight"
+							size="sm"
+							className="transition-transform group-hover:translate-x-1"
+						/>
 					</Button>
 				</div>
 			</div>
@@ -496,25 +572,26 @@ export default function OnboardingPage() {
 		</div>
 	);
 
-	// ─── Step 1: Marsha, concretement ─────────────────────────────────────
+	// ─── Step 1: Marsha, concrètement ─────────────────────────────────────
 
 	/**
 	 * Renders the Marsha platforms and team overview with hover effects
 	 * on platform cards and animated team stats counters.
 	 * @returns {JSX.Element} Marsha concrete explanation step
 	 */
-	const renderMarshaConcretement = () => (
+	const renderMarshaConcrètement = () => (
 		<div className="flex min-h-screen flex-col items-center justify-center px-6 py-20">
 			<div className="flex max-w-3xl flex-col items-center gap-10">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
 					<div className="from-primary-500 to-primary-700 relative rounded-2xl bg-gradient-to-br p-3">
 						<Icon name="shield" size="lg" className="text-white" />
 						{/* Decorative glow */}
-						<div className="absolute -inset-1 -z-10 rounded-2xl bg-gradient-to-br from-primary-500/30 to-primary-700/30 blur-lg" />
+						<div className="from-primary-500/30 to-primary-700/30 absolute -inset-1 -z-10 rounded-2xl bg-gradient-to-br blur-lg" />
 					</div>
-					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Marsha, concretement</h2>
+					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Marsha, concrètement</h2>
 					<p className="max-w-lg text-lg leading-relaxed text-gray-300">
-						Marsha intervient sur plusieurs plateformes : la ou se retrouvent des communautes actives qui ont besoin d&apos;un cadre sain.
+						Marsha intervient sur plusieurs plateformes : là où se retrouvent des communautés actives qui
+						ont besoin d&apos;un cadre sain.
 					</p>
 				</div>
 
@@ -526,7 +603,12 @@ export default function OnboardingPage() {
 							className="group flex animate-[onboardScaleIn_400ms_ease-out_both] items-center gap-3 rounded-xl border border-gray-700/50 bg-gray-800/60 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-gray-600/60 hover:bg-gray-800/80 hover:shadow-lg hover:shadow-gray-900/50"
 							style={{ animationDelay: `${500 + i * 100}ms` }}
 						>
-							<div className={cn("flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br transition-transform duration-300 group-hover:scale-110", platform.color)}>
+							<div
+								className={cn(
+									"flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br transition-transform duration-300 group-hover:scale-110",
+									platform.color,
+								)}
+							>
 								<Icon name={platform.icon} size="sm" className="text-white" />
 							</div>
 							<span className="text-sm font-semibold text-white">{platform.name}</span>
@@ -545,7 +627,7 @@ export default function OnboardingPage() {
 							)}
 							style={{ transitionDelay: `${i * 150}ms` }}
 						>
-							<Icon name={stat.icon} size="sm" className="mb-1 text-primary-400" />
+							<Icon name={stat.icon} size="sm" className="text-primary-400 mb-1" />
 							<span className="text-xl font-bold text-white">{stat.value}</span>
 							<span className="text-[10px] text-gray-500">{stat.label}</span>
 						</div>
@@ -554,14 +636,17 @@ export default function OnboardingPage() {
 
 				{/* Key points */}
 				<div className="flex max-w-lg animate-[onboardFadeUp_600ms_ease-out_700ms_both] flex-col gap-4">
-					<p className="text-center text-base text-gray-400">Derriere ce travail, il y a :</p>
+					<p className="text-center text-base text-gray-400">Derrière ce travail, il y a :</p>
 					{[
-						"Des equipes organisees et chill",
+						"Des équipes organisées et chill",
 						"Des responsables pour t'accompagner",
-						"Des methodes internes pour faciliter ton quotidien",
+						"Des méthodes internes pour faciliter ton quotidien",
 					].map((item, i) => (
-						<div key={i} className="flex items-center gap-3 rounded-lg border border-gray-700/30 bg-gray-800/40 px-4 py-3">
-							<div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary-500/20">
+						<div
+							key={i}
+							className="flex items-center gap-3 rounded-lg border border-gray-700/30 bg-gray-800/40 px-4 py-3"
+						>
+							<div className="bg-primary-500/20 flex h-6 w-6 shrink-0 items-center justify-center rounded-full">
 								<Icon name="check" size="xs" className="text-primary-400" />
 							</div>
 							<span className="text-sm text-gray-300">{item}</span>
@@ -570,7 +655,8 @@ export default function OnboardingPage() {
 				</div>
 
 				<p className="animate-[onboardFadeUp_600ms_ease-out_1000ms_both] text-center text-sm text-gray-500">
-					Tu n&apos;as pas besoin de tout comprendre maintenant, tu comprendras plus facilement au fil du temps
+					Tu n&apos;as pas besoin de tout comprendre maintenant, tu comprendras plus facilement au fil du
+					temps
 				</p>
 			</div>
 		</div>
@@ -580,7 +666,7 @@ export default function OnboardingPage() {
 
 	/**
 	 * Renders the current position / Marsha Academy explanation
-	 * with a visual hierarchy pyramid showing the Junior to Owner path.
+	 * with à visual hierarchy pyramid showing the Junior to Owner path.
 	 * @returns {JSX.Element} Position step
 	 */
 	const renderPosition = () => (
@@ -594,31 +680,39 @@ export default function OnboardingPage() {
 				</div>
 
 				<p className="text-lg leading-relaxed text-gray-300">
-					Des maintenant, tu entres dans la <span className="font-bold text-amber-400">Marsha Academy</span>, notre programme d&apos;integration
+					Dès maintenant, tu entres dans la <span className="font-bold text-amber-400">Marsha Academy</span>,
+					notre programme d&apos;intégration
 				</p>
 
 				<p className="text-lg leading-relaxed text-gray-400">
-					Pendant cette periode, tu es considere(e) comme <span className="font-semibold text-white">Junior.</span>
+					Pendant cette période, tu es considéré(e) comme{" "}
+					<span className="font-semibold text-white">Junior.</span>
 				</p>
 
 				<div className="rounded-xl border border-gray-700/50 bg-gray-800/60 p-5 backdrop-blur-sm">
 					<p className="text-sm leading-relaxed text-gray-300">
-						Concretement, ca veut dire que tu es en phase d&apos;apprentissage, tu es encadre(e) et tu peux poser toutes tes questions. A noter que tu n&apos;es <span className="font-bold text-amber-400">pas encore</span> moderateur officiel.
+						Concrètement, ça veut dire que tu es en phase d&apos;apprentissage, tu es encadré(e) et tu peux
+						poser toutes tes questions. A noter que tu n&apos;es{" "}
+						<span className="font-bold text-amber-400">pas encore</span> modérateur officiel.
 					</p>
 				</div>
 
 				<p className="text-base text-gray-400">
-					L&apos;objectif est simple : <span className="text-white">te former, t&apos;evaluer et t&apos;aider a atteindre le niveau attendu</span> et a ton rythme.
+					L&apos;objectif est simple :{" "}
+					<span className="text-white">
+						te former, t&apos;évaluer et t&apos;aider à atteindre le niveau attendu
+					</span>{" "}
+					et à ton rythme.
 				</p>
 
 				{/* Hierarchy pyramid */}
 				<div className="mt-4 flex animate-[onboardFadeUp_600ms_ease-out_800ms_both] flex-col items-center gap-1.5">
-					<p className="mb-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Hierarchie</p>
+					<p className="mb-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Hiérarchie</p>
 					{HIERARCHY_LEVELS.map((level, i) => (
 						<div
 							key={level.label}
 							className={cn(
-								"flex items-center justify-center rounded-lg py-1.5 text-xs font-bold text-white/90 animate-[onboardScaleIn_400ms_ease-out_both]",
+								"flex animate-[onboardScaleIn_400ms_ease-out_both] items-center justify-center rounded-lg py-1.5 text-xs font-bold text-white/90",
 								`bg-gradient-to-r ${level.color}`,
 								level.highlight ? "ring-2 ring-white/30 ring-offset-2 ring-offset-gray-900" : "",
 							)}
@@ -641,7 +735,13 @@ export default function OnboardingPage() {
 				<div className="mb-4 animate-[onboardScaleIn_600ms_ease-out_400ms_both]">
 					<div className="relative">
 						<div className="absolute inset-0 rounded-full bg-gradient-to-br from-amber-500/20 to-transparent blur-2xl" />
-						<Image src="/icons/marsha/marshaSquad.png" alt="Marsha Squad" width={100} height={100} className="relative drop-shadow-xl" />
+						<Image
+							src="/icons/marsha/marshaSquad.png"
+							alt="Marsha Squad"
+							width={100}
+							height={100}
+							className="relative drop-shadow-xl"
+						/>
 					</div>
 				</div>
 
@@ -652,9 +752,7 @@ export default function OnboardingPage() {
 							key={div.label}
 							className={cn(
 								"relative z-10 flex animate-[onboardFadeUp_500ms_ease-out_both] items-center gap-4 rounded-2xl border px-5 py-3 shadow-xl backdrop-blur-sm",
-								i === 0
-									? "border-amber-500/40 bg-amber-900/20"
-									: "border-gray-700/50 bg-gray-800/80",
+								i === 0 ? "border-amber-500/40 bg-amber-900/20" : "border-gray-700/50 bg-gray-800/80",
 							)}
 							style={{ animationDelay: `${600 + i * 150}ms` }}
 						>
@@ -687,11 +785,16 @@ export default function OnboardingPage() {
 			<div className="flex max-w-2xl flex-col items-center gap-8">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
 					<div className="flex items-center gap-2">
-						<span className="rounded-full bg-primary-500/20 px-3 py-1 text-xs font-bold text-primary-400">PHASE 1</span>
+						<span className="bg-primary-500/20 text-primary-400 rounded-full px-3 py-1 text-xs font-bold">
+							PHASE 1
+						</span>
 					</div>
-					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">La PIM : l&apos;apprentissage</h2>
+					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">
+						La PIM : l&apos;apprentissage
+					</h2>
 					<p className="max-w-md text-base text-gray-400">
-						Ta periode d&apos;integration de moderation commence ici. Dans cette premiere phase, tu vas decouvrir :
+						Ta période d&apos;intégration de moderation commence ici. Dans cette première phase, tu vas
+						découvrir :
 					</p>
 				</div>
 
@@ -700,24 +803,31 @@ export default function OnboardingPage() {
 					<div className="relative flex items-center justify-between">
 						{/* Connecting line */}
 						<div className="absolute top-4 right-6 left-6 h-0.5 bg-gray-700">
-							<div className="h-full w-1/3 animate-[progressGrow_1s_ease-out_800ms_both] bg-gradient-to-r from-primary-500 to-primary-400" />
+							<div className="from-primary-500 to-primary-400 h-full w-1/3 animate-[progressGrow_1s_ease-out_800ms_both] bg-gradient-to-r" />
 						</div>
 						{PHASE_MILESTONES.map((milestone, i) => (
 							<div key={milestone} className="relative z-10 flex flex-col items-center gap-2">
 								<div
 									className={cn(
-										"flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold animate-[onboardScaleIn_400ms_ease-out_both]",
+										"flex h-8 w-8 animate-[onboardScaleIn_400ms_ease-out_both] items-center justify-center rounded-full text-xs font-bold",
 										i === 0
 											? "bg-primary-500 text-white"
 											: i === 1
-												? "border-2 border-primary-500/50 bg-gray-800 text-primary-400"
+												? "border-primary-500/50 text-primary-400 border-2 bg-gray-800"
 												: "border border-gray-700 bg-gray-800 text-gray-500",
 									)}
 									style={{ animationDelay: `${600 + i * 150}ms` }}
 								>
 									{i === 0 ? <Icon name="check" size="xs" /> : i + 1}
 								</div>
-								<span className={cn("text-[10px] font-medium", i <= 1 ? "text-primary-400" : "text-gray-600")}>{milestone}</span>
+								<span
+									className={cn(
+										"text-[10px] font-medium",
+										i <= 1 ? "text-primary-400" : "text-gray-600",
+									)}
+								>
+									{milestone}
+								</span>
 							</div>
 						))}
 					</div>
@@ -736,7 +846,7 @@ export default function OnboardingPage() {
 							</div>
 							<span className="flex-1 text-sm font-medium text-white">{item.label}</span>
 							<div
-								className="flex h-6 w-6 items-center justify-center rounded-full bg-primary-500/10 animate-[checkPop_400ms_ease-out_both]"
+								className="bg-primary-500/10 flex h-6 w-6 animate-[checkPop_400ms_ease-out_both] items-center justify-center rounded-full"
 								style={{ animationDelay: `${1000 + i * 200}ms` }}
 							>
 								<Icon name="check" size="xs" className="text-primary-400" />
@@ -748,10 +858,12 @@ export default function OnboardingPage() {
 				<div className="max-w-md animate-[onboardFadeUp_600ms_ease-out_900ms_both] rounded-xl border border-indigo-500/20 bg-indigo-900/10 p-5">
 					<div className="mb-2 flex items-center gap-2">
 						<Icon name="profile" size="sm" className="text-indigo-400" />
-						<span className="text-sm font-bold text-indigo-300">Ton Referent</span>
+						<span className="text-sm font-bold text-indigo-300">Ton Référent</span>
 					</div>
 					<p className="text-sm leading-relaxed text-gray-400">
-						Tu seras accompagne(e) par un <span className="text-white">Referent</span>. Son role va etre de te guider, de repondre a tes questions, de te donner des retours constructifs et de t&apos;aider a progresser tout au long de ton apprentissage
+						Tu seras accompagné(e) par un <span className="text-white">Référent</span>. Son role va être de
+						te guider, de répondre à tes questions, de te donner des retours constructifs et de t&apos;aider
+						à progresser tout au long de ton apprentissage
 					</p>
 				</div>
 			</div>
@@ -762,7 +874,7 @@ export default function OnboardingPage() {
 
 	/**
 	 * Renders PIM Phase 2: Le perfectionnement, with skill cards
-	 * that use a flip-in animation on appear and hover effects.
+	 * that use à flip-in animation on appear and hover effects.
 	 * @returns {JSX.Element} PIM Phase 2 step
 	 */
 	const renderPIMPhase2 = () => (
@@ -770,11 +882,14 @@ export default function OnboardingPage() {
 			<div className="flex max-w-2xl flex-col items-center gap-8">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
 					<div className="flex items-center gap-2">
-						<span className="rounded-full bg-success-500/20 px-3 py-1 text-xs font-bold text-success-400">PHASE 2</span>
+						<span className="bg-success-500/20 text-success-400 rounded-full px-3 py-1 text-xs font-bold">
+							PHASE 2
+						</span>
 					</div>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Le perfectionnement</h2>
 					<p className="max-w-md text-base text-gray-400">
-						Si la premiere phase est validee, tu passes au perfectionnement ! On va alors travailler sur tes axes d&apos;amelioration :
+						Si la première phase est validée, tu passés au perfectionnement ! On va alors travailler sur tes
+						axes d&apos;amélioration :
 					</p>
 				</div>
 
@@ -786,10 +901,10 @@ export default function OnboardingPage() {
 							className="animate-[flipIn_600ms_ease-out_both]"
 							style={{ animationDelay: `${600 + i * 120}ms` }}
 						>
-							<div className="group relative flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gray-800/60 p-4 backdrop-blur-sm transition-all duration-300 hover:border-success-500/30 hover:bg-gray-800/80">
+							<div className="group hover:border-success-500/30 relative flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gray-800/60 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-gray-800/80">
 								{/* Decorative corner accent */}
 								<div className="absolute top-0 right-0 h-12 w-12 overflow-hidden rounded-tr-xl">
-									<div className="absolute -top-6 -right-6 h-12 w-12 rotate-45 bg-gradient-to-br from-success-500/10 to-transparent" />
+									<div className="from-success-500/10 absolute -top-6 -right-6 h-12 w-12 rotate-45 bg-gradient-to-br to-transparent" />
 								</div>
 								<div className="flex items-center gap-2">
 									<div className="bg-success-500/15 text-success-400 flex h-8 w-8 items-center justify-center rounded-lg transition-transform duration-300 group-hover:scale-110">
@@ -805,7 +920,9 @@ export default function OnboardingPage() {
 
 				<div className="max-w-md animate-[onboardFadeUp_600ms_ease-out_1000ms_both] rounded-xl border border-gray-700/30 bg-gray-800/40 p-5 text-center">
 					<p className="text-sm leading-relaxed text-gray-400">
-						Il ne s&apos;agit pas d&apos;etre parfait. Le but est d&apos;etre <span className="font-semibold text-white">fiable et a l&apos;aise</span> dans ton role. La validation dependra de ton niveau reel, pas du temps passe
+						Il ne s&apos;agit pas d&apos;etre parfait. Le but est d&apos;etre{" "}
+						<span className="font-semibold text-white">fiable et à l&apos;aise</span> dans ton role. La
+						validation dépendra de ton niveau réel, pas du temps passé
 					</p>
 				</div>
 			</div>
@@ -828,21 +945,22 @@ export default function OnboardingPage() {
 						<div className="rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 p-3">
 							<Icon name="shield" size="lg" className="text-white" />
 						</div>
-						<div className="absolute -inset-3 rounded-3xl border border-teal-500/20 animate-[shieldPulse_2s_ease-in-out_infinite]" />
-						<div className="absolute -inset-6 rounded-3xl border border-teal-500/10 animate-[shieldPulse_2s_ease-in-out_0.5s_infinite]" />
+						<div className="absolute -inset-3 animate-[shieldPulse_2s_ease-in-out_infinite] rounded-3xl border border-teal-500/20" />
+						<div className="absolute -inset-6 animate-[shieldPulse_2s_ease-in-out_0.5s_infinite] rounded-3xl border border-teal-500/10" />
 					</div>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Avant de commencer</h2>
 					<p className="max-w-md text-base text-gray-400">
-						Avant d&apos;entrer officiellement dans ta PIM, une derniere etape est necessaire. Tu vas remplir un formulaire de donnees personnelles.
+						Avant d&apos;entrer officiellement dans ta PIM, une dernière étape est nécessaire. Tu vas
+						remplir un formulaire de données personnelles.
 					</p>
 				</div>
 
 				<div className="w-full max-w-lg animate-[onboardFadeUp_600ms_ease-out_500ms_both]">
-					<p className="mb-4 text-center text-sm font-semibold text-gray-300">Pourquoi ca ?</p>
+					<p className="mb-4 text-center text-sm font-semibold text-gray-300">Pourquoi ça ?</p>
 					<div className="flex flex-col gap-3">
 						{[
 							{ icon: "profile" as const, text: "Identifier chaque membre correctement" },
-							{ icon: "lock" as const, text: "Attribuer les bons acces" },
+							{ icon: "lock" as const, text: "Attribuer les bons accès" },
 							{ icon: "stats" as const, text: "Assurer un suivi fiable" },
 							{ icon: "shield" as const, text: "Respecter nos obligations legales" },
 						].map((item, i) => (
@@ -865,7 +983,7 @@ export default function OnboardingPage() {
 					{TRUST_BADGES.map((trust, i) => (
 						<div key={trust.label} className="flex flex-col items-center gap-1.5">
 							<div
-								className="flex h-10 w-10 items-center justify-center rounded-full border border-teal-500/30 bg-teal-500/10 animate-[trustFadeIn_500ms_ease-out_both]"
+								className="flex h-10 w-10 animate-[trustFadeIn_500ms_ease-out_both] items-center justify-center rounded-full border border-teal-500/30 bg-teal-500/10"
 								style={{ animationDelay: `${900 + i * 150}ms` }}
 							>
 								<Icon name={trust.icon} size="sm" className="text-teal-400" />
@@ -876,20 +994,24 @@ export default function OnboardingPage() {
 				</div>
 
 				{/* Phone number explanation */}
-				<div className="max-w-lg animate-[onboardFadeUp_600ms_ease-out_900ms_both] rounded-xl border border-info-500/20 bg-info-900/10 p-5">
+				<div className="border-info-500/20 bg-info-900/10 max-w-lg animate-[onboardFadeUp_600ms_ease-out_900ms_both] rounded-xl border p-5">
 					<div className="mb-2 flex items-center gap-2">
 						<Icon name="phone" size="sm" className="text-info-400" />
-						<span className="text-sm font-bold text-info-300">A propos du telephone</span>
+						<span className="text-info-300 text-sm font-bold">À propos du téléphone</span>
 					</div>
 					<p className="text-xs leading-relaxed text-gray-400">
-						Nous le stockerons dans le cas ou, meme si on te le souhaitera jamais, tu aurais un souci urgent comme un probleme de sante et que tu ne reponds plus. Nous nous permettront de t&apos;appeler pour s&apos;assurer que tout va bien. Ca ne sera qu&apos;un usage professionnel.
+						Nous le stockerons dans le cas ou, meme si on te le souhaitera jamais, tu aurais un souci urgent
+						comme un problème de santé et que tu ne réponds plus. Nous nous permettront de t&apos;appeler
+						pour s&apos;assurer que tout va bien. Ca ne sera qu&apos;un usage professionnel.
 					</p>
 				</div>
 
 				{/* Privacy badge */}
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_1100ms_both] items-center gap-2 rounded-full border border-gray-700/30 bg-gray-800/30 px-4 py-2">
 					<Icon name="lock" size="xs" className="text-primary-400" />
-					<span className="text-xs text-gray-400">Tes donnees restent strictement internes, elles ne seront ni revendues ni partagees en dehors.</span>
+					<span className="text-xs text-gray-400">
+						Tes données restent strictement internes, elles ne seront ni revendues ni partagées en dehors.
+					</span>
 				</div>
 			</div>
 		</div>
@@ -899,7 +1021,7 @@ export default function OnboardingPage() {
 
 	/**
 	 * Renders the personal data form with identity, languages, and social fields.
-	 * Includes a subtle progress bar indicating form completion percentage.
+	 * Includes à subtle progress bar indicating form completion percentage.
 	 * @returns {JSX.Element} Form step
 	 */
 	const renderForm = () => (
@@ -910,7 +1032,7 @@ export default function OnboardingPage() {
 						<Icon name="profile" size="lg" className="text-white" />
 					</div>
 					<h2 className="font-serif text-3xl font-bold text-white">Tes informations</h2>
-					<p className="text-gray-400">Prends bien le temps de verifier tes informations</p>
+					<p className="text-gray-400">Prends bien le temps de vérifier tes informations</p>
 
 					{/* Form progress indicator */}
 					<div className="mt-3 flex w-full max-w-xs items-center gap-3">
@@ -928,45 +1050,133 @@ export default function OnboardingPage() {
 					{/* Identity */}
 					<div className="flex flex-col gap-5">
 						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
-							<Icon name="profile" size="xs" />Identite
+							<Icon name="profile" size="xs" />
+							Identité
 						</h3>
 						<div className="grid gap-4 sm:grid-cols-2">
-							<Input label="Pseudo (Discord) *" placeholder="TonPseudo#0000" value={formData.pseudo} onChange={(e) => updateField("pseudo", e.target.value)} error={formErrors.pseudo} icon="chat" />
-							<Input label="Discord ID *" placeholder="123456789012345678" value={formData.discordId} onChange={(e) => updateField("discordId", e.target.value)} error={formErrors.discordId} icon="lock" />
+							<Input
+								label="Pseudo (Discord) *"
+								placeholder="TonPseudo#0000"
+								value={formData.pseudo}
+								onChange={(e) => updateField("pseudo", e.target.value)}
+								error={formErrors.pseudo}
+								icon="chat"
+							/>
+							<Input
+								label="Discord ID *"
+								placeholder="123456789012345678"
+								value={formData.discordId}
+								onChange={(e) => updateField("discordId", e.target.value)}
+								error={formErrors.discordId}
+								icon="lock"
+							/>
 						</div>
 						<div className="grid gap-4 sm:grid-cols-2">
-							<Input label="Prenom *" placeholder="Ton prenom" value={formData.prenom} onChange={(e) => updateField("prenom", e.target.value)} error={formErrors.prenom} />
-							<Input label="Nom *" placeholder="Ton nom" value={formData.nom} onChange={(e) => updateField("nom", e.target.value)} error={formErrors.nom} />
+							<Input
+								label="Prénom *"
+								placeholder="Ton prénom"
+								value={formData.prenom}
+								onChange={(e) => updateField("prenom", e.target.value)}
+								error={formErrors.prenom}
+							/>
+							<Input
+								label="Nom *"
+								placeholder="Ton nom"
+								value={formData.nom}
+								onChange={(e) => updateField("nom", e.target.value)}
+								error={formErrors.nom}
+							/>
 						</div>
-						<Input label="Email *" type="email" placeholder="ton@email.com" value={formData.email} onChange={(e) => updateField("email", e.target.value)} error={formErrors.email} icon="globe" />
+						<Input
+							label="Email *"
+							type="email"
+							placeholder="ton@email.com"
+							value={formData.email}
+							onChange={(e) => updateField("email", e.target.value)}
+							error={formErrors.email}
+							icon="globe"
+						/>
 						<div className="grid gap-4 sm:grid-cols-2">
-							<Input label="Telephone" type="tel" placeholder="+33 6 12 34 56 78" value={formData.telephone} onChange={(e) => updateField("telephone", e.target.value)} />
-							<Input label="Date de naissance" type="date" value={formData.dateNaissance} onChange={(e) => updateField("dateNaissance", e.target.value)} />
+							<Input
+								label="Telephone"
+								type="tel"
+								placeholder="+33 6 12 34 56 78"
+								value={formData.telephone}
+								onChange={(e) => updateField("telephone", e.target.value)}
+							/>
+							<Input
+								label="Date de naissance"
+								type="date"
+								value={formData.dateNaissance}
+								onChange={(e) => updateField("dateNaissance", e.target.value)}
+							/>
 						</div>
 					</div>
 					<div className="h-px bg-gray-700/50" />
 					{/* Languages */}
 					<div className="flex flex-col gap-4">
-						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase"><Icon name="globe" size="xs" />Langues parlees</h3>
+						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+							<Icon name="globe" size="xs" />
+							Langues parlées
+						</h3>
 						<div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-							{LANGUES_OPTIONS.map((langue) => (<Checkbox key={langue} label={langue} checked={formData.langues.includes(langue)} onChange={() => toggleLangue(langue)} />))}
+							{LANGUES_OPTIONS.map((langue) => (
+								<Checkbox
+									key={langue}
+									label={langue}
+									checked={formData.langues.includes(langue)}
+									onChange={() => toggleLangue(langue)}
+								/>
+							))}
 						</div>
 					</div>
 					<div className="h-px bg-gray-700/50" />
-					{/* Preferences */}
+					{/* Préférences */}
 					<div className="flex flex-col gap-4">
-						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase"><Icon name="bell" size="xs" />Preferences</h3>
-						<Toggle checked={formData.anniversaire} onChange={(checked) => updateField("anniversaire", checked)} label="Souhait d'anniversaire" description="Recevoir un message de l'equipe le jour de ton anniversaire" />
+						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+							<Icon name="bell" size="xs" />
+							Préférences
+						</h3>
+						<Toggle
+							checked={formData.anniversaire}
+							onChange={(checked) => updateField("anniversaire", checked)}
+							label="Souhait d'anniversaire"
+							description="Recevoir un message de l'équipe le jour de ton anniversaire"
+						/>
 					</div>
 					<div className="h-px bg-gray-700/50" />
 					{/* Social */}
 					<div className="flex flex-col gap-4">
-						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase"><Icon name="globe" size="xs" />Reseaux sociaux <span className="text-xs font-normal text-gray-500 normal-case">(optionnel)</span></h3>
+						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+							<Icon name="globe" size="xs" />
+							Réseaux sociaux{" "}
+							<span className="text-xs font-normal text-gray-500 normal-case">(optionnel)</span>
+						</h3>
 						<div className="grid gap-4 sm:grid-cols-2">
-							<Input label="Twitter / X" placeholder="@tonpseudo" value={formData.twitter} onChange={(e) => updateField("twitter", e.target.value)} />
-							<Input label="Instagram" placeholder="@tonpseudo" value={formData.instagram} onChange={(e) => updateField("instagram", e.target.value)} />
-							<Input label="Twitch" placeholder="tonpseudo" value={formData.twitch} onChange={(e) => updateField("twitch", e.target.value)} />
-							<Input label="YouTube" placeholder="Lien de ta chaine" value={formData.youtube} onChange={(e) => updateField("youtube", e.target.value)} />
+							<Input
+								label="Twitter / X"
+								placeholder="@tonpseudo"
+								value={formData.twitter}
+								onChange={(e) => updateField("twitter", e.target.value)}
+							/>
+							<Input
+								label="Instagram"
+								placeholder="@tonpseudo"
+								value={formData.instagram}
+								onChange={(e) => updateField("instagram", e.target.value)}
+							/>
+							<Input
+								label="Twitch"
+								placeholder="tonpseudo"
+								value={formData.twitch}
+								onChange={(e) => updateField("twitch", e.target.value)}
+							/>
+							<Input
+								label="YouTube"
+								placeholder="Lien de ta chaîne"
+								value={formData.youtube}
+								onChange={(e) => updateField("youtube", e.target.value)}
+							/>
 						</div>
 					</div>
 				</div>
@@ -978,22 +1188,30 @@ export default function OnboardingPage() {
 
 	/**
 	 * Renders the post-form step explaining what comes next,
-	 * with animated feature preview cards for Hub modules and a preview strip.
+	 * with animated feature preview cards for Hub modules and à preview strip.
 	 * @returns {JSX.Element} After form step
 	 */
 	const renderApresFormulaire = () => (
 		<div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-20">
 			<div className="absolute inset-0 z-0">
-				<Image src="/banners/inoxtag-banner.png" alt="" fill className="object-cover opacity-[0.07] blur-xl" priority={false} />
+				<Image
+					src="/banners/inoxtag-banner.png"
+					alt=""
+					fill
+					className="object-cover opacity-[0.07] blur-xl"
+					priority={false}
+				/>
 				<div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-900/95 to-gray-900" />
 			</div>
 
 			<div className="relative z-10 flex max-w-2xl flex-col items-center gap-8 text-center">
 				<div className="flex animate-[onboardScaleIn_600ms_ease-out_200ms_both] flex-col items-center gap-4">
 					<div className="animate-[celebrateBounce_1s_ease-out_both] text-4xl">🎉</div>
-					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Formulaire valide !</h2>
+					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Formulaire validé !</h2>
 					<p className="text-lg leading-relaxed text-gray-300">
-						Tu entres officiellement dans ta PIM. Tu auras ensuite acces a <span className="font-bold text-primary-400">Memora Hub</span>, qui regroupe tout ce dont tu auras besoin :
+						Tu entres officiellement dans ta PIM. Tu auras ensuite accès à{" "}
+						<span className="text-primary-400 font-bold">Memora Hub</span>, qui regroupe tout ce dont tu
+						auras besoin :
 					</p>
 				</div>
 
@@ -1005,20 +1223,26 @@ export default function OnboardingPage() {
 							className="group flex animate-[onboardSlideCardIn_500ms_cubic-bezier(0.16,1,0.3,1)_both] items-center gap-4 rounded-2xl border border-gray-700/50 bg-gray-800/60 p-4 shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-[1.02] hover:border-gray-600/50 hover:bg-gray-800/80"
 							style={{ animationDelay: `${400 + i * 150}ms` }}
 						>
-							<div className={cn(
-								"flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
-								i === 0 && "bg-primary-500/15 text-primary-400",
-								i === 1 && "bg-info-500/15 text-info-400",
-								i === 2 && "bg-success-500/15 text-success-400",
-								i === 3 && "bg-warning-500/15 text-warning-400",
-							)}>
+							<div
+								className={cn(
+									"flex h-10 w-10 shrink-0 items-center justify-center rounded-xl transition-transform duration-300 group-hover:scale-110",
+									i === 0 && "bg-primary-500/15 text-primary-400",
+									i === 1 && "bg-info-500/15 text-info-400",
+									i === 2 && "bg-success-500/15 text-success-400",
+									i === 3 && "bg-warning-500/15 text-warning-400",
+								)}
+							>
 								<Icon name={feature.icon} size="md" />
 							</div>
 							<div className="flex flex-col text-left">
 								<span className="text-sm font-semibold text-white">{feature.label}</span>
 								<span className="text-xs text-gray-400">{feature.desc}</span>
 							</div>
-							<Icon name="chevronRight" size="xs" className="ml-auto text-gray-600 transition-all duration-300 group-hover:translate-x-1 group-hover:text-gray-400" />
+							<Icon
+								name="chevronRight"
+								size="xs"
+								className="ml-auto text-gray-600 transition-all duration-300 group-hover:translate-x-1 group-hover:text-gray-400"
+							/>
 						</div>
 					))}
 				</div>
@@ -1028,7 +1252,7 @@ export default function OnboardingPage() {
 					{DASHBOARD_PREVIEW_ICONS.map((icon, i) => (
 						<div
 							key={icon}
-							className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-700/30 text-gray-500 animate-[onboardScaleIn_300ms_ease-out_both]"
+							className="flex h-8 w-8 animate-[onboardScaleIn_300ms_ease-out_both] items-center justify-center rounded-lg bg-gray-700/30 text-gray-500"
 							style={{ animationDelay: `${1000 + i * 80}ms` }}
 						>
 							<Icon name={icon} size="sm" />
@@ -1038,7 +1262,10 @@ export default function OnboardingPage() {
 
 				<div className="max-w-md animate-[onboardFadeUp_600ms_ease-out_1000ms_both] rounded-xl border border-gray-700/30 bg-gray-800/40 p-5">
 					<p className="text-sm text-gray-400">
-						Mais pour l&apos;instant, ton objectif est simple : <span className="font-semibold text-white">apprendre, progresser et trouver ta place dans l&apos;equipe.</span>
+						Mais pour l&apos;instant, ton objectif est simple :{" "}
+						<span className="font-semibold text-white">
+							apprendre, progresser et trouver ta place dans l&apos;équipe.
+						</span>
 					</p>
 					<p className="mt-3 text-sm text-gray-500">On est heureux de t&apos;avoir avec nous</p>
 				</div>
@@ -1060,18 +1287,30 @@ export default function OnboardingPage() {
 			<div className="from-primary-500/15 absolute top-1/3 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br to-transparent blur-[150px]" />
 
 			{/* Additional drifting glow effects */}
-			<div className="absolute top-1/4 left-1/4 h-[200px] w-[200px] rounded-full bg-purple-500/10 blur-[100px] animate-[driftSlow_8s_ease-in-out_infinite]" />
-			<div className="absolute right-1/4 bottom-1/4 h-[200px] w-[200px] rounded-full bg-pink-500/10 blur-[100px] animate-[driftSlow_8s_ease-in-out_2s_infinite]" />
+			<div className="absolute top-1/4 left-1/4 h-[200px] w-[200px] animate-[driftSlow_8s_ease-in-out_infinite] rounded-full bg-purple-500/10 blur-[100px]" />
+			<div className="absolute right-1/4 bottom-1/4 h-[200px] w-[200px] animate-[driftSlow_8s_ease-in-out_2s_infinite] rounded-full bg-pink-500/10 blur-[100px]" />
 
 			{/* Confetti layer with more variety */}
 			<div className="absolute inset-0 overflow-hidden">
-				{Array.from({ length: 80 }).map((_, i) => (<ConfettiParticle key={i} index={i} />))}
+				{Array.from({ length: 80 }).map((_, i) => (
+					<ConfettiParticle key={i} index={i} />
+				))}
 			</div>
 
 			{/* Floating sparkle particles */}
 			<div className="absolute inset-0 overflow-hidden">
 				{Array.from({ length: 12 }).map((_, i) => (
-					<FloatingParticle key={`sp-${i}`} index={i} color={i % 3 === 0 ? "rgba(236, 72, 153, 0.4)" : i % 3 === 1 ? "rgba(139, 92, 246, 0.4)" : "rgba(59, 130, 246, 0.4)"} />
+					<FloatingParticle
+						key={`sp-${i}`}
+						index={i}
+						color={
+							i % 3 === 0
+								? "rgba(236, 72, 153, 0.4)"
+								: i % 3 === 1
+									? "rgba(139, 92, 246, 0.4)"
+									: "rgba(59, 130, 246, 0.4)"
+						}
+					/>
 				))}
 			</div>
 
@@ -1079,10 +1318,16 @@ export default function OnboardingPage() {
 				<div className="animate-[onboardScaleIn_600ms_ease-out_300ms_both]">
 					<div className="relative">
 						<div className="from-primary-500/30 absolute inset-0 rounded-full bg-gradient-to-br to-transparent blur-2xl" />
-						<Image src="/icons/marsha/marshaSquad0.png" alt="Marsha Academy" width={100} height={100} className="relative drop-shadow-xl" />
+						<Image
+							src="/icons/marsha/marshaSquad0.png"
+							alt="Marsha Academy"
+							width={100}
+							height={100}
+							className="relative drop-shadow-xl"
+						/>
 						{/* Celebration pulsing rings */}
-						<div className="absolute -inset-4 rounded-full border border-primary-500/20 animate-[pulseRing_2s_ease-out_infinite]" />
-						<div className="absolute -inset-8 rounded-full border border-primary-500/10 animate-[pulseRing_2s_ease-out_0.6s_infinite]" />
+						<div className="border-primary-500/20 absolute -inset-4 animate-[pulseRing_2s_ease-out_infinite] rounded-full border" />
+						<div className="border-primary-500/10 absolute -inset-8 animate-[pulseRing_2s_ease-out_0.6s_infinite] rounded-full border" />
 					</div>
 				</div>
 
@@ -1090,20 +1335,28 @@ export default function OnboardingPage() {
 				<div className="animate-[onboardFadeUp_600ms_ease-out_500ms_both]">
 					<h1 className="font-serif text-4xl font-bold text-white sm:text-5xl">
 						{"Bienvenue, ".split("").map((char, i) => (
-							<span key={i} className="inline-block animate-[letterReveal_400ms_ease-out_both]" style={{ animationDelay: `${600 + i * 40}ms` }}>
+							<span
+								key={i}
+								className="inline-block animate-[letterReveal_400ms_ease-out_both]"
+								style={{ animationDelay: `${600 + i * 40}ms` }}
+							>
 								{char === " " ? "\u00a0" : char}
 							</span>
 						))}
-						<span className="text-primary-400 animate-[onboardFadeUp_500ms_ease-out_1100ms_both]">{formData.pseudo || "Recrue"}</span>
+						<span className="text-primary-400 animate-[onboardFadeUp_500ms_ease-out_1100ms_both]">
+							{formData.pseudo || "Recrue"}
+						</span>
 						<span className="animate-[onboardFadeUp_500ms_ease-out_1200ms_both]"> !</span>
 					</h1>
 				</div>
 
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_700ms_both] flex-col gap-3">
-					<p className="text-lg text-gray-300">Tu es desormais membre de la Marsha Squad.</p>
+					<p className="text-lg text-gray-300">Tu es désormais membre de la Marsha Squad.</p>
 					<div className="mx-auto mt-2 inline-flex items-center gap-2 rounded-full border border-gray-700/50 bg-gray-800/60 px-5 py-2 backdrop-blur-sm">
 						<Image src="/icons/marsha/marshaSquad0.png" alt="" width={24} height={24} />
-						<span className="text-sm font-semibold text-white">Ta division : Marsha Academy (Division 0)</span>
+						<span className="text-sm font-semibold text-white">
+							Ta division : Marsha Academy (Division 0)
+						</span>
 					</div>
 					<p className="mt-4 text-lg font-medium text-gray-400">Ton aventure commence maintenant.</p>
 				</div>
@@ -1112,24 +1365,37 @@ export default function OnboardingPage() {
 				<div className="holoCard mt-2 w-full max-w-sm animate-[onboardFadeUp_600ms_ease-out_900ms_both] rounded-2xl border border-gray-700/50 p-5 backdrop-blur-sm">
 					<div className="mb-3 flex items-center gap-2">
 						<Icon name="users" size="sm" className="text-primary-400" />
-						<span className="text-xs font-bold tracking-wider text-primary-400 uppercase">Carte Squad creee</span>
+						<span className="text-primary-400 text-xs font-bold tracking-wider uppercase">
+							Carte Squad créée
+						</span>
 					</div>
 					<div className="flex items-center gap-3">
-						<div className="flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-primary-500 to-primary-700 text-lg font-bold text-white">
+						<div className="from-primary-500 to-primary-700 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br text-lg font-bold text-white">
 							{formData.pseudo ? formData.pseudo[0].toUpperCase() : "R"}
 						</div>
 						<div className="text-left">
 							<p className="text-sm font-semibold text-white">{formData.pseudo || "Recrue"}</p>
-							<p className="text-xs text-gray-400">{formData.prenom || "Nouveau"} {formData.nom || "Membre"}</p>
+							<p className="text-xs text-gray-400">
+								{formData.prenom || "Nouveau"} {formData.nom || "Membre"}
+							</p>
 							<p className="text-[10px] text-gray-500">Junior — Marsha Academy</p>
 						</div>
 					</div>
 				</div>
 
 				<div className="mt-4 animate-[onboardFadeUp_600ms_ease-out_1100ms_both]">
-					<Button variant="primary" size="lg" onClick={handleComplete} className="group shadow-primary-500/20 gap-2 px-10 shadow-lg">
-						Acceder au Hub
-						<Icon name="chevronRight" size="sm" className="transition-transform group-hover:translate-x-1" />
+					<Button
+						variant="primary"
+						size="lg"
+						onClick={handleComplete}
+						className="group shadow-primary-500/20 gap-2 px-10 shadow-lg"
+					>
+						Accéder au Hub
+						<Icon
+							name="chevronRight"
+							size="sm"
+							className="transition-transform group-hover:translate-x-1"
+						/>
 					</Button>
 				</div>
 
@@ -1145,7 +1411,7 @@ export default function OnboardingPage() {
 	// Step map
 	const steps = [
 		renderIntroduction,
-		renderMarshaConcretement,
+		renderMarshaConcrètement,
 		renderPosition,
 		renderPIMPhase1,
 		renderPIMPhase2,
@@ -1158,7 +1424,9 @@ export default function OnboardingPage() {
 	// Render
 	return (
 		<>
-			<style dangerouslySetInnerHTML={{ __html: `
+			<style
+				dangerouslySetInnerHTML={{
+					__html: `
 				/* Slide transitions */
 				@keyframes onboardSlideInRight {
 					from { transform: translateX(60px); opacity: 0; }
@@ -1169,7 +1437,7 @@ export default function OnboardingPage() {
 					to { transform: translateX(0); opacity: 1; }
 				}
 
-				/* Basic element animations */
+				/* Basic élément animations */
 				@keyframes onboardFadeUp {
 					from { transform: translateY(24px); opacity: 0; }
 					to { transform: translateY(0); opacity: 1; }
@@ -1301,7 +1569,9 @@ export default function OnboardingPage() {
 					0% { transform: translateX(-30%) translateY(-30%) rotate(0deg); }
 					100% { transform: translateX(30%) translateY(30%) rotate(0deg); }
 				}
-			` }} />
+			`,
+				}}
+			/>
 
 			<div className="fixed inset-0 z-50 flex flex-col bg-gray-900">
 				{/* Progress bar — visible on steps 1-7 */}
@@ -1321,9 +1591,15 @@ export default function OnboardingPage() {
 									key={i}
 									className={cn(
 										"h-1.5 rounded-full transition-all duration-500",
-										i === currentStep ? "bg-primary-500 w-6" : i < currentStep ? "bg-primary-500/50 w-1.5" : "w-1.5 bg-gray-700",
+										i === currentStep
+											? "bg-primary-500 w-6"
+											: i < currentStep
+												? "bg-primary-500/50 w-1.5"
+												: "w-1.5 bg-gray-700",
 									)}
-									style={i === currentStep ? { animation: "progressPulse 2s ease-in-out infinite" } : {}}
+									style={
+										i === currentStep ? { animation: "progressPulse 2s ease-in-out infinite" } : {}
+									}
 								/>
 							))}
 						</div>
@@ -1358,9 +1634,19 @@ export default function OnboardingPage() {
 								<Icon name="chevronLeft" size="xs" />
 								Retour
 							</button>
-							<Button variant="primary" size="md" onClick={nextStep} disabled={isAnimating} className="group gap-2">
+							<Button
+								variant="primary"
+								size="md"
+								onClick={nextStep}
+								disabled={isAnimating}
+								className="group gap-2"
+							>
 								{currentStep === 6 ? "Valider" : currentStep === 7 ? "Terminer" : "Continuer"}
-								<Icon name="chevronRight" size="sm" className="transition-transform group-hover:translate-x-1" />
+								<Icon
+									name="chevronRight"
+									size="sm"
+									className="transition-transform group-hover:translate-x-1"
+								/>
 							</Button>
 						</div>
 					</div>

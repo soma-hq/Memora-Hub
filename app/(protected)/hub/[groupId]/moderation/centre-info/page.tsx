@@ -7,7 +7,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/moderation/centre-info",
+	section: "protected",
+	module: "moderation_discord",
+	description: "Centre d'informations de la modération Discord.",
+	requiredPermissions: [{ module: "moderation_discord", action: "view" }],
+	entityScoped: true,
+});
 
 interface InfoSection {
 	title: string;

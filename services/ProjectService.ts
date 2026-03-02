@@ -3,7 +3,6 @@ import { LogService } from "@/services/LogService";
 import { LogAction, ProjectStatus } from "@/constants";
 import type { CreateProjectFormData } from "@/lib/validators/schemas";
 
-
 /** Project CRUD and membership service */
 export class ProjectService {
 	/**
@@ -169,6 +168,30 @@ export class ProjectService {
 			include: {
 				group: { select: { id: true, name: true } },
 				_count: { select: { tasks: true } },
+			},
+			orderBy: { updatedAt: "desc" },
+		});
+	}
+
+	/**
+	 * Search projects by name or description within a group
+	 * @param groupId Group ID
+	 * @param query Search query
+	 * @returns Matching projects
+	 */
+
+	static async search(groupId: string, query: string) {
+		return prisma.project.findMany({
+			where: {
+				groupId,
+				OR: [
+					{ name: { contains: query, mode: "insensitive" } },
+					{ description: { contains: query, mode: "insensitive" } },
+				],
+			},
+			include: {
+				createdBy: { select: { id: true, firstName: true, lastName: true } },
+				_count: { select: { tasks: true, members: true } },
 			},
 			orderBy: { updatedAt: "desc" },
 		});

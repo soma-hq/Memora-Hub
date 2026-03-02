@@ -97,7 +97,7 @@ export interface FSI {
 	lastUpdated: string;
 }
 
-/** Junior participant in a PIM session */
+/** Junior participant in à PIM session */
 export interface Junior {
 	id: string;
 	name: string;

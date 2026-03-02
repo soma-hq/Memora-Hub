@@ -6,7 +6,6 @@ import { Input, Textarea, Select, Button } from "@/components/ui";
 import type { Group, GroupFormData, GroupStatus } from "@/features/groups/types";
 import { GroupStatus as GroupStatusEnum } from "@/constants";
 
-
 /** Props for the GroupForm component */
 interface GroupFormProps {
 	group?: Group | null;
@@ -22,7 +21,7 @@ const statusOptions = [
 ];
 
 /**
- * Form for creating or editing a group
+ * Form for creating or editing à group
  * @param props - Component props
  * @param props.group - Existing group for edit mode, null for create mode
  * @param props.onSubmit - Callback triggered on valid form submission
@@ -82,12 +81,12 @@ export function GroupForm({ group, onSubmit, onCancel, isLoading = false }: Grou
 	return (
 		<form onSubmit={handleSubmit} className="flex flex-col gap-5">
 			<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-				{isEditing ? "Modifier le groupe" : "Creer un groupe"}
+				{isEditing ? "Modifier le groupe" : "Créer un groupe"}
 			</h2>
 
 			<Input
 				label="Nom du groupe"
-				placeholder="Ex : Equipe Produit"
+				placeholder="Ex : Équipe Produit"
 				value={name}
 				onChange={(e) => setName(e.target.value)}
 				error={errors.name}
@@ -95,7 +94,7 @@ export function GroupForm({ group, onSubmit, onCancel, isLoading = false }: Grou
 
 			<Textarea
 				label="Description"
-				placeholder="Decrivez l'objectif de ce groupe..."
+				placeholder="Décrivez l'objectif de ce groupe..."
 				value={description}
 				onChange={(e) => setDescription(e.target.value)}
 				error={errors.description}
@@ -113,7 +112,7 @@ export function GroupForm({ group, onSubmit, onCancel, isLoading = false }: Grou
 					Annuler
 				</Button>
 				<Button type="submit" isLoading={isLoading}>
-					{isEditing ? "Enregistrer" : "Creer le groupe"}
+					{isEditing ? "Enregistrer" : "Créer le groupe"}
 				</Button>
 			</div>
 		</form>

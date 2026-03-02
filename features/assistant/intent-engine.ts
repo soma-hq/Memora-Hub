@@ -119,7 +119,7 @@ function extractEntities(input: string, category: string, action: string): Recor
 
 	// Extract status mentions
 	const statusMap: Record<string, string> = {
-		"a faire": "A faire",
+		"à faire": "A faire",
 		"en cours": "En cours",
 		termine: "Termine",
 		fait: "Termine",
@@ -224,7 +224,7 @@ function detectActionVerbs(input: string): Set<string> {
 
 	const verbMap: Record<string, string[]> = {
 		create: ["creer", "ajouter", "nouveau", "nouvelle", "planifier", "organiser", "demander", "poser", "publier"],
-		update: ["modifier", "changer", "mettre a jour", "editer", "corriger"],
+		update: ["modifier", "changer", "mettre à jour", "editer", "corriger"],
 		delete: ["supprimer", "retirer", "enlever", "annuler"],
 		list: ["lister", "voir", "afficher", "montrer", "mes", "liste", "prochaines", "prochains"],
 		complete: ["terminer", "finir", "completer", "valider", "marquer"],

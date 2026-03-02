@@ -22,14 +22,14 @@ const CHANGE_TYPE_CONFIG: Record<PatchnoteChange["type"], { label: string; color
 		color: "text-success-600 dark:text-success-500",
 		bg: "bg-success-100 dark:bg-success-900/30",
 	},
-	improved: { label: "Ameliore", color: "text-info-600 dark:text-info-500", bg: "bg-info-100 dark:bg-info-900/30" },
+	improved: { label: "Amélioré", color: "text-info-600 dark:text-info-500", bg: "bg-info-100 dark:bg-info-900/30" },
 	fixed: {
-		label: "Corrige",
+		label: "Corrigé",
 		color: "text-warning-600 dark:text-warning-500",
 		bg: "bg-warning-100 dark:bg-warning-900/30",
 	},
 	removed: {
-		label: "Supprime",
+		label: "Supprimé",
 		color: "text-error-600 dark:text-error-500",
 		bg: "bg-error-100 dark:bg-error-900/30",
 	},
@@ -86,7 +86,7 @@ export function PatchnotePanel({ isOpen, onClose }: PatchnotePanelProps) {
 						</div>
 						<div>
 							<h2 className="text-base font-bold text-gray-900 dark:text-white">Patchnotes</h2>
-							<p className="text-xs text-gray-500 dark:text-gray-400">Dernieres mises a jour de Memora</p>
+							<p className="text-xs text-gray-500 dark:text-gray-400">Dernières mises à jour de Memora</p>
 						</div>
 					</div>
 					<button

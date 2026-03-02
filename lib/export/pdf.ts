@@ -36,7 +36,7 @@ export async function exportToPdf(options: PdfExportOptions): Promise<Blob> {
 }
 
 /**
- * Exports data as PDF and triggers a browser download
+ * Exports data as PDF and triggers à browser download
  * @param options - PDF export configuration
  * @returns Resolves when the download is triggered
  */

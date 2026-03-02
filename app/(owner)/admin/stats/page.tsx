@@ -2,10 +2,20 @@
 
 // Features & Components
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon } from "@/components/ui";
+import { Card, Badge, Icon, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "admin/stats",
+	section: "owner",
+	module: "admin",
+	description: "Statistiques globales de la plateforme.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "view" }],
+	ownerOnly: true,
+});
 
 const overviewMetrics: {
 	label: string;
@@ -141,11 +151,14 @@ export default function AdminStatsPage() {
 			</div>
 
 			<div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
-				{/* Access distribution */}
+				{/* Accèss distribution */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-						Distribution des niveaux d&apos;accès
-					</h2>
+					<SectionHeaderBanner
+						icon="shield"
+						title="Distribution des niveaux d'accès"
+						accentColor="red"
+						className="mb-4"
+					/>
 					<Card padding="lg">
 						<div className="space-y-4">
 							{accessDistribution.map((item) => (
@@ -176,9 +189,12 @@ export default function AdminStatsPage() {
 
 				{/* Entity distribution */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-						Utilisateurs par entité
-					</h2>
+					<SectionHeaderBanner
+						icon="users"
+						title="Utilisateurs par entité"
+						accentColor="red"
+						className="mb-4"
+					/>
 					<Card padding="lg">
 						<div className="space-y-4">
 							{entityDistribution.map((item) => (
@@ -210,7 +226,12 @@ export default function AdminStatsPage() {
 			<div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
 				{/* Team distribution */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Utilisateurs par team</h2>
+					<SectionHeaderBanner
+						icon="group"
+						title="Utilisateurs par team"
+						accentColor="red"
+						className="mb-4"
+					/>
 					<Card padding="lg">
 						<div className="space-y-4">
 							{teamDistribution.map((item) => (
@@ -240,9 +261,12 @@ export default function AdminStatsPage() {
 
 				{/* Division breakdown */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">
-						Répartition par division
-					</h2>
+					<SectionHeaderBanner
+						icon="stats"
+						title="Répartition par division"
+						accentColor="red"
+						className="mb-4"
+					/>
 					<Card padding="lg">
 						<div className="grid grid-cols-2 gap-4">
 							{divisionBreakdown.map((div) => (
@@ -277,7 +301,12 @@ export default function AdminStatsPage() {
 			</div>
 
 			<div>
-				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Activité sanctions récente</h2>
+				<SectionHeaderBanner
+					icon="flag"
+					title="Activité sanctions récente"
+					accentColor="red"
+					className="mb-4"
+				/>
 				<Card padding="lg">
 					<div className="relative">
 						{/* Timeline line */}

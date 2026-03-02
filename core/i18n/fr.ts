@@ -95,7 +95,7 @@ const fr = {
 		groupAccess: "Accès par entité",
 		addGroupAccess: "Ajouter un accès entité",
 		groupAccessInfo:
-			"Chaque entité a ses propres accès. Un utilisateur peut avoir un rôle différent dans chaque entité auquel il appartient.",
+			"Chaque entité à ses propres accès. Un utilisateur peut avoir un rôle différent dans chaque entité auquel il appartient.",
 	},
 
 	// Groups
@@ -180,7 +180,7 @@ const fr = {
 		},
 		tasks: {
 			title: "Mes tâches",
-			description: "Vos tâches assignées",
+			description: "Vos tâches assignees",
 		},
 	},
 
@@ -348,7 +348,7 @@ const fr = {
 		noNotifications: "Aucune notification",
 		email: "Email",
 		push: "Push",
-		taskAssigned: "Tâche assignée",
+		taskAssigned: "Tâche assignee",
 		meetingReminder: "Rappel de réunion",
 		absenceResponse: "Réponse d'absence",
 		projectUpdate: "Mise à jour de projet",
@@ -357,7 +357,7 @@ const fr = {
 	// Errors
 	errors: {
 		notFound: "Page non trouvée",
-		notFoundDescription: "Oups, cette page n'existe pas ou a été déplacée.",
+		notFoundDescription: "Oups, cette page n'existe pas ou à été déplacée.",
 		serverError: "Erreur serveur",
 		serverErrorDescription: "Une erreur inattendue s'est produite.",
 		goHome: "Retour à l'accueil",

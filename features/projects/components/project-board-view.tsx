@@ -1,13 +1,12 @@
 "use client";
 
 // Components
-import { Badge, Icon, EmptyState } from "@/components/ui";
+import { Badge, Icon, EmptyState, StyledEmptyState } from "@/components/ui";
 import { ProjectCard } from "./project-card";
 import { cn } from "@/lib/utils/cn";
 import type { Project, ProjectStatusValue } from "../types";
 import { projectStatusVariant, ProjectStatusLabel } from "../types";
 import { ProjectStatus } from "@/constants";
-
 
 /** Column header background colors per status */
 const columnHeaderColor: Record<ProjectStatusValue, string> = {
@@ -45,7 +44,7 @@ export function ProjectBoardView({ projects, groupId, onProjectClick }: ProjectB
 
 	if (projects.length === 0) {
 		return (
-			<EmptyState icon="folder" title="Aucun projet" description="Creez votre premier projet pour commencer." />
+			<EmptyState icon="folder" title="Aucun projet" description="Créez votre premier projet pour commencer." />
 		);
 	}
 

@@ -6,7 +6,16 @@ import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/moderation/centre-info/tips",
+	section: "protected",
+	module: "moderation_discord",
+	description: "Conseils et astuces de modération Discord.",
+	requiredPermissions: [{ module: "moderation_discord", action: "view" }],
+	entityScoped: true,
+});
 
 // Data
 interface Tip {
@@ -31,7 +40,7 @@ const TIPS: Tip[] = [
 		iconColor: "text-error-500",
 		points: [
 			"Reglementation Discord TOS : 13 ans minimum (certains pays ont des ages differents).",
-			"Ne JAMAIS demander l'age a un utilisateur pour ensuite le bannir.",
+			"Ne JAMAIS demander l'age à un utilisateur pour ensuite le bannir.",
 			"Eviter toute discussion concernant l'age avec les membres.",
 			'Procedure : copier le lien du message, signaler au Trust & Safety, puis ban avec la raison "Underaged X age" pendant 30 jours en joignant une capture.',
 		],
@@ -60,9 +69,9 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-info-100 dark:bg-info-900/20",
 		iconColor: "text-info-500",
 		points: [
-			"Inviter le membre a ouvrir un ticket pour contester.",
-			"Ne jamais intervenir si vous etes a l'origine de la sanction (conflit d'interet).",
-			"Seul un responsable est habilite a gerer ce type d'echange.",
+			"Inviter le membre à ouvrir un ticket pour contester.",
+			"Ne jamais intervenir si vous etes à l'origine de la sanction (conflit d'interet).",
+			"Seul un responsable est habilite à gerer ce type d'echange.",
 		],
 	},
 	{
@@ -75,7 +84,7 @@ const TIPS: Tip[] = [
 		iconColor: "text-primary-500",
 		points: [
 			"Copier l'ID Discord de la personne concernee immediatement.",
-			"Faire appel a d'autres moderateurs si la situation vous depasse.",
+			"Faire appel à d'autres moderateurs si la situation vous depasse.",
 		],
 	},
 	{

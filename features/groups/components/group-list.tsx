@@ -5,7 +5,6 @@ import { Card, Input, Badge, Icon, AvatarGroup, EmptyState } from "@/components/
 import type { Group } from "@/features/groups/types";
 import { statusVariantMap, statusLabelMap } from "@/features/groups/types";
 
-
 /** Props for the GroupList component */
 interface GroupListProps {
 	groups: Group[];
@@ -41,13 +40,13 @@ export function GroupList({ groups, search, onSearchChange, onSelect, onCreateNe
 			{groups.length === 0 ? (
 				<EmptyState
 					icon="group"
-					title="Aucun groupe trouve"
+					title="Aucun groupe trouvé"
 					description={
 						search
-							? "Aucun groupe ne correspond a votre recherche. Essayez avec d'autres termes."
-							: "Vous n'avez pas encore de groupes. Creez-en un pour commencer."
+							? "Aucun groupe ne correspond à votre recherche. Essayez avec d'autres termes."
+							: "Vous n'avez pas encore de groupes. Créez-en un pour commencer."
 					}
-					actionLabel={!search ? "Creer un groupe" : undefined}
+					actionLabel={!search ? "Créer un groupe" : undefined}
 					onAction={!search ? onCreateNew : undefined}
 				/>
 			) : (

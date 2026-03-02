@@ -24,7 +24,7 @@ export type LeaderDecision = "Accepté" | "Refusé";
 /** Role of the person submitting an avis */
 export type AvisAuthorRole = "Talent" | "Marsha" | "Legacy";
 
-/** Profile types a consigne can target */
+/** Profile types à consigne can target */
 export type ConsigneProfileType =
 	| "Modération Discord"
 	| "Modération Twitch"

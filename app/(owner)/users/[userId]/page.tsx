@@ -4,7 +4,7 @@
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
-import { Card, Badge, Icon, Button, Tag } from "@/components/ui";
+import { Card, Badge, Icon, Button, Tag, StyledEmptyState } from "@/components/ui";
 import { getUserById } from "@/features/users/data";
 import { DIVISION_ICONS, DIVISION_LABELS } from "@/features/users/types";
 import { TEAM_TEXT_COLORS, TEAM_DESCRIPTIONS, type Team } from "@/core/config/teams";
@@ -15,9 +15,19 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
 import { useUserRelations } from "@/hooks/use-data-store";
 import { UserArchives } from "@/features/users/components/user-archives";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "users/[userId]",
+	section: "owner",
+	module: "admin",
+	description: "Détail et édition d'un utilisateur.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
-type ProfileTab = "profil" | "acces" | "infos" | "activite";
+type ProfileTab = "profil" | "access" | "infos" | "activite";
 
 interface TabDef {
 	id: ProfileTab;
@@ -27,7 +37,7 @@ interface TabDef {
 
 const TABS: TabDef[] = [
 	{ id: "profil", label: "Profil", icon: "profile" },
-	{ id: "acces", label: "Accès", icon: "shield" },
+	{ id: "access", label: "Accès", icon: "shield" },
 	{ id: "infos", label: "Informations", icon: "edit" },
 	{ id: "activite", label: "Activité", icon: "clock" },
 ];
@@ -58,9 +68,9 @@ const CURRENT_USER_TEAM: Team = "Owner";
 const LEGACY_READONLY_FIELDS = ["division", "team", "entity", "roleSecondary"];
 
 function canEditField(field: string): boolean {
-	if (CURRENT_USER_TEAM === "Owner" || CURRENT_USER_TEAM === "Executive") return true;
+	if (CURRENT_USER_TEAM === "Owner") return true;
 	if (CURRENT_USER_TEAM === "Legacy" && LEGACY_READONLY_FIELDS.includes(field)) return false;
-	if (CURRENT_USER_TEAM === "Marsha Team") return true;
+	if (CURRENT_USER_TEAM === "Marsha Teams") return true;
 	if (CURRENT_USER_TEAM === "Legacy") return true;
 	return false;
 }
@@ -68,8 +78,7 @@ function canEditField(field: string): boolean {
 function canEdit(): boolean {
 	return (
 		CURRENT_USER_TEAM === "Owner" ||
-		CURRENT_USER_TEAM === "Executive" ||
-		CURRENT_USER_TEAM === "Marsha Team" ||
+		CURRENT_USER_TEAM === "Marsha Teams" ||
 		CURRENT_USER_TEAM === "Legacy"
 	);
 }
@@ -88,17 +97,16 @@ export default function UserDetailPage() {
 
 	if (!user) {
 		return (
-			<div className="flex flex-1 flex-col items-center justify-center p-8">
-				<div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 px-12 py-20 dark:border-gray-600">
-					<Icon name="users" size="xl" className="mb-3 text-gray-300 dark:text-gray-600" />
-					<p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-						Aucun utilisateur trouvé avec cet identifiant.
-					</p>
-					<Button variant="outline-primary" size="sm" onClick={() => router.push("/users")}>
-						<Icon name="back" size="xs" />
-						Retour aux utilisateurs
-					</Button>
-				</div>
+			<div className="flex flex-1 flex-col items-center justify-center gap-4 p-8">
+				<StyledEmptyState
+					icon="users"
+					title="Utilisateur introuvable"
+					description="Aucun utilisateur trouvé avec cet identifiant."
+				/>
+				<Button variant="outline-primary" size="sm" onClick={() => router.push("/users")}>
+					<Icon name="back" size="xs" />
+					Retour aux utilisateurs
+				</Button>
 			</div>
 		);
 	}
@@ -265,7 +273,7 @@ export default function UserDetailPage() {
 			<div className="flex-1 bg-gray-50 dark:bg-gray-900">
 				<div className="px-4 py-6 sm:px-6 lg:px-8">
 					{activeTab === "profil" && <ProfilView user={user} />}
-					{activeTab === "acces" && <AccesView user={user} />}
+					{activeTab === "access" && <AccessView user={user} />}
 					{activeTab === "infos" && <InfosView user={user} />}
 					{activeTab === "activite" && <ActiviteView user={user} />}
 				</div>
@@ -609,8 +617,8 @@ function SocialRow({ label, handle, url }: { label: string; handle: string; url:
 	);
 }
 
-// ── Access tab ───────────────────────────────────────────────────────────────
-function AccesView({ user }: { user: UserProfile }) {
+// ── Accèss tab ───────────────────────────────────────────────────────────────
+function AccessView({ user }: { user: UserProfile }) {
 	const teamColor = TEAM_TEXT_COLORS[user.team] ?? "text-gray-500";
 
 	return (
@@ -655,7 +663,7 @@ function AccesView({ user }: { user: UserProfile }) {
 				</div>
 
 				<div className="space-y-3">
-					{user.entityAccess.map((access) => (
+					{user.entityAccessDetails.map((access) => (
 						<div
 							key={access.entityId}
 							className="rounded-xl border border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-gray-800/40"
@@ -972,11 +980,11 @@ function InfosView({ user }: { user: UserProfile }) {
 // ── Activity tab ─────────────────────────────────────────────────────────────
 function ActiviteView({ user }: { user: UserProfile }) {
 	const activityItems = [
-		{ id: "1", time: "Il y a 2h", text: "A terminé une tâche sur le projet Refonte" },
-		{ id: "2", time: "Il y a 5h", text: "A commenté sur le Design system" },
+		{ id: "1", time: "Il y à 2h", text: "A terminé une tâche sur le projet Refonte" },
+		{ id: "2", time: "Il y à 5h", text: "A commenté sur le Design system" },
 		{ id: "3", time: "Hier", text: "A rejoint la réunion Sprint Planning" },
-		{ id: "4", time: "Il y a 2j", text: "A créé un nouveau projet" },
-		{ id: "5", time: "Il y a 3j", text: "A mis à jour son profil" },
+		{ id: "4", time: "Il y à 2j", text: "A créé un nouveau projet" },
+		{ id: "5", time: "Il y à 3j", text: "A mis à jour son profil" },
 	];
 
 	return (

@@ -4,15 +4,8 @@
 import Image from "next/image";
 import { Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-
-
-interface Entity {
-	id: string;
-	name: string;
-	logo: string;
-}
-
-const entities: Entity[] = [];
+import { useDataStore } from "@/store/data.store";
+import { usePermission } from "@/hooks/usePermission";
 
 interface EntityModalProps {
 	isOpen: boolean;
@@ -23,15 +16,22 @@ interface EntityModalProps {
 
 /**
  * Modal for switching between available entities.
+ * Filters entities based on the current user's entityAccess permissions.
  * @param {EntityModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
- * @param {string} [props.activeEntityId="bazalthe"] - Currently selected entity ID
+ * @param {string} [props.activeEntityId] - Currently selected entity ID
  * @param {(entityId: string) => void} [props.onSelect] - Callback when an entity is selected
  * @returns {JSX.Element | null} Entity selector modal or null when closed
  */
-export function EntityModal({ isOpen, onClose, activeEntityId = "bazalthe", onSelect }: EntityModalProps) {
+export function EntityModal({ isOpen, onClose, activeEntityId, onSelect }: EntityModalProps) {
+	const getEntitiesForCurrentUser = useDataStore((s) => s.getEntitiesForCurrentUser);
+	const { isAdmin } = usePermission();
+
 	if (!isOpen) return null;
+
+	// Get entities the current user can access (respects entityAccess + wildcard)
+	const accessibleEntities = getEntitiesForCurrentUser();
 
 	// Render
 	return (
@@ -48,7 +48,12 @@ export function EntityModal({ isOpen, onClose, activeEntityId = "bazalthe", onSe
 				<div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-700">
 					<div className="flex items-center gap-2.5">
 						<Icon name="group" size="md" className="text-primary-500" />
-						<h2 className="text-base font-semibold text-gray-900 dark:text-white">Entites</h2>
+						<div>
+							<h2 className="text-base font-semibold text-gray-900 dark:text-white">Entites</h2>
+							<p className="text-xs text-gray-500 dark:text-gray-400">
+								{isAdmin ? "Toutes les entites" : `${accessibleEntities.length} entite(s) accessible(s)`}
+							</p>
+						</div>
 					</div>
 					<button
 						onClick={onClose}
@@ -60,10 +65,10 @@ export function EntityModal({ isOpen, onClose, activeEntityId = "bazalthe", onSe
 
 				{/* Entity list */}
 				<div className="p-3">
-					{entities.length === 0 ? (
-						<p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">Aucune entite</p>
+					{accessibleEntities.length === 0 ? (
+						<p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">Aucune entite accessible</p>
 					) : (
-						entities.map((entity, idx) => (
+						accessibleEntities.map((entity, idx) => (
 							<div key={entity.id}>
 								<button
 									onClick={() => {
@@ -77,13 +82,13 @@ export function EntityModal({ isOpen, onClose, activeEntityId = "bazalthe", onSe
 											: "hover:bg-gray-50 dark:hover:bg-gray-700/50",
 									)}
 								>
-									<Image
-										src={entity.logo}
-										alt={entity.name}
-										width={36}
-										height={36}
-										className="rounded-lg object-contain"
-									/>
+									{/* Entity color indicator + avatar */}
+									<div
+										className="flex h-9 w-9 items-center justify-center rounded-lg text-sm font-bold text-white"
+										style={{ backgroundColor: entity.color }}
+									>
+										{entity.name.charAt(0).toUpperCase()}
+									</div>
 
 									<div className="h-6 w-px bg-gray-200 dark:bg-gray-600" />
 
@@ -103,7 +108,7 @@ export function EntityModal({ isOpen, onClose, activeEntityId = "bazalthe", onSe
 									)}
 								</button>
 
-								{idx < entities.length - 1 && (
+								{idx < accessibleEntities.length - 1 && (
 									<div className="mx-4 my-1">
 										<div className="h-px bg-gray-100 dark:bg-gray-700/50" />
 									</div>

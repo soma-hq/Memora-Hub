@@ -35,16 +35,16 @@ const searchData: SearchResult[] = [
 	},
 	{
 		id: "p3",
-		title: "Taches",
-		description: "Suivi des taches",
+		title: "Tâches",
+		description: "Suivi des tâches",
 		icon: "tasks",
 		href: "/hub/default/tasks",
 		category: "Pages",
 	},
 	{
 		id: "p4",
-		title: "Reunions",
-		description: "Calendrier des reunions",
+		title: "Réunions",
+		description: "Calendrier des réunions",
 		icon: "calendar",
 		href: "/hub/default/meetings",
 		category: "Pages",
@@ -52,7 +52,7 @@ const searchData: SearchResult[] = [
 	{
 		id: "pe1",
 		title: "Absences",
-		description: "Gerer mes absences",
+		description: "Gérer mes absences",
 		icon: "absence",
 		href: "/hub/default/personnel/absences",
 		category: "Personnel",
@@ -68,15 +68,15 @@ const searchData: SearchResult[] = [
 	{
 		id: "pe3",
 		title: "Mes projets",
-		description: "Projets assignes",
+		description: "Projets assignés",
 		icon: "folder",
 		href: "/hub/default/personnel/projects",
 		category: "Personnel",
 	},
 	{
 		id: "pe4",
-		title: "Mes taches",
-		description: "Taches assignees",
+		title: "Mes tâches",
+		description: "Tâches assignées",
 		icon: "tasks",
 		href: "/hub/default/personnel/tasks",
 		category: "Personnel",
@@ -100,7 +100,7 @@ const searchData: SearchResult[] = [
 	{
 		id: "m3",
 		title: "Espace Momentum",
-		description: "Referentiel interne Momentum",
+		description: "Référentiel interne Momentum",
 		icon: "document",
 		href: "/hub/default/momentum/space",
 		category: "Momentum",
@@ -147,8 +147,8 @@ const searchData: SearchResult[] = [
 	},
 	{
 		id: "t5",
-		title: "Resultats",
-		description: "Kanban des decisions",
+		title: "Résultats",
+		description: "Kanban des décisions",
 		icon: "stats",
 		href: "/hub/default/recruitment/results",
 		category: "Talent",
@@ -179,16 +179,16 @@ const searchData: SearchResult[] = [
 	},
 	{
 		id: "a2",
-		title: "Entites",
+		title: "Entités",
 		description: "Gestion des organisations",
 		icon: "group",
-		href: "/admin/access",
+		href: "/admin/accèss",
 		category: "Pages",
 	},
 	{
 		id: "a3",
 		title: "Statistiques",
-		description: "Metriques de la plateforme",
+		description: "Métriques de la plateforme",
 		icon: "stats",
 		href: "/stats",
 		category: "Pages",
@@ -203,7 +203,7 @@ const searchData: SearchResult[] = [
 	},
 	{
 		id: "a5",
-		title: "Parametres",
+		title: "Paramètres",
 		description: "Configuration du compte",
 		icon: "settings",
 		href: "/settings/account",
@@ -243,31 +243,31 @@ const searchData: SearchResult[] = [
 	},
 	{
 		id: "adm2",
-		title: "Gestion des acces",
-		description: "Permissions et acces",
+		title: "Gestion des accès",
+		description: "Permissions et accès",
 		icon: "shield",
-		href: "/admin/access",
+		href: "/admin/accèss",
 		category: "Admin",
 	},
 	{
 		id: "adm3",
-		title: "Generation de liens",
-		description: "Creer des liens d'invitation",
+		title: "Génération de liens",
+		description: "Créer des liens d'invitation",
 		icon: "globe",
 		href: "/admin/links",
 		category: "Admin",
 	},
 	{
 		id: "adm4",
-		title: "Statistiques avancees",
-		description: "Metriques detaillees",
+		title: "Statistiques avancées",
+		description: "Métriques détaillées",
 		icon: "stats",
 		href: "/admin/stats",
 		category: "Admin",
 	},
 	{
 		id: "adm5",
-		title: "Outils developpeur",
+		title: "Outils développeur",
 		description: "Debug et outils dev",
 		icon: "tools",
 		href: "/admin/dev",
@@ -276,7 +276,7 @@ const searchData: SearchResult[] = [
 	{
 		id: "adm6",
 		title: "Corbeille",
-		description: "Membres supprimes",
+		description: "Membres supprimés",
 		icon: "close",
 		href: "/admin/trash",
 		category: "Admin",
@@ -319,42 +319,42 @@ const recentVisits: SearchResult[] = [
 	{
 		id: "rv1",
 		title: "Dashboard",
-		description: "Derniere visite il y a 5 min",
+		description: "Dernière visite il y a 5 min",
 		icon: "home",
 		href: "/hub/default",
-		category: "Dernieres visites",
+		category: "Dernières visites",
 	},
 	{
 		id: "rv2",
 		title: "Projets",
-		description: "Derniere visite il y a 15 min",
+		description: "Dernière visite il y a 15 min",
 		icon: "folder",
 		href: "/hub/default/projects",
-		category: "Dernieres visites",
+		category: "Dernières visites",
 	},
 	{
 		id: "rv3",
-		title: "Reunions",
-		description: "Derniere visite il y a 1h",
+		title: "Réunions",
+		description: "Dernière visite il y a 1h",
 		icon: "calendar",
 		href: "/hub/default/meetings",
-		category: "Dernieres visites",
+		category: "Dernières visites",
 	},
 	{
 		id: "rv4",
 		title: "Utilisateurs",
-		description: "Derniere visite il y a 2h",
+		description: "Dernière visite il y a 2h",
 		icon: "users",
 		href: "/users",
-		category: "Dernieres visites",
+		category: "Dernières visites",
 	},
 	{
 		id: "rv5",
 		title: "Mon profil",
-		description: "Derniere visite hier",
+		description: "Dernière visite hier",
 		icon: "profile",
 		href: "/profile",
-		category: "Dernieres visites",
+		category: "Dernières visites",
 	},
 ];
 
@@ -524,7 +524,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 											)}
 										</div>
 										{idx === selectedIndex && (
-											<span className="text-xs text-gray-500 dark:text-gray-400">Entree</span>
+											<span className="text-xs text-gray-500 dark:text-gray-400">Entrée</span>
 										)}
 									</button>
 								);
@@ -535,7 +535,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 					{displayItems.length === 0 && (
 						<div className="flex flex-col items-center py-8 text-gray-500 dark:text-gray-400">
 							<Icon name="search" size="xl" className="mb-2 text-gray-400 dark:text-gray-500" />
-							<p className="text-sm">Aucun resultat pour &ldquo;{query}&rdquo;</p>
+							<p className="text-sm">Aucun résultat pour &ldquo;{query}&rdquo;</p>
 						</div>
 					)}
 				</div>

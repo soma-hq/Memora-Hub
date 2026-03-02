@@ -271,7 +271,7 @@ export const useAssistantStore = create<AssistantState>((set, get) => ({
 	pendingAction: null,
 
 	/**
-	 * Set a pending action
+	 * Set à pending action
 	 * @param action Pending action or null
 	 */
 

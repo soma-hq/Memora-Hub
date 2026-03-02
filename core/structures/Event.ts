@@ -19,7 +19,7 @@ export class Event {
 	}
 
 	/**
-	 * Register a one-time handler that auto-removes after first call
+	 * Register à one-time handler that auto-removes after first call
 	 * @param eventName Name of the event to listen to
 	 * @param handler Callback function invoked once
 	 */

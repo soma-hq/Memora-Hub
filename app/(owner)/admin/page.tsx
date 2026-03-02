@@ -1,14 +1,25 @@
 "use client";
 
-// Next.js
 import Link from "next/link";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon } from "@/components/ui";
+import { Badge, Icon, SectionCard, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 import type { SemanticLevel } from "@/core/design";
 import { levelBorderVariant, levelIconColorVariant } from "@/core/design";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "admin",
+	section: "owner",
+	module: "admin",
+	description: "Dashboard d'administration Owner.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "view" }],
+	ownerOnly: true,
+});
+
+/** Quick stat card data */
 const quickStats = [
 	{
 		label: "Total utilisateurs",
@@ -37,6 +48,7 @@ const quickStats = [
 	},
 ];
 
+/** Activity log entry */
 interface ActivityEntry {
 	id: number;
 	text: string;
@@ -46,6 +58,7 @@ interface ActivityEntry {
 	href: string;
 }
 
+/** Recent activity mock data */
 const recentActivity: ActivityEntry[] = [
 	{
 		id: 1,
@@ -73,7 +86,7 @@ const recentActivity: ActivityEntry[] = [
 	},
 	{
 		id: 4,
-		text: "Procy a mis à jour le planning de Bazalthe — ajout session du 15 mars",
+		text: "Procy à mis à jour le planning de Bazalthe — ajout session du 15 mars",
 		time: "il y a 2h",
 		level: "neutral",
 		icon: "calendar",
@@ -130,53 +143,67 @@ const recentActivity: ActivityEntry[] = [
 ];
 
 /**
- * Admin dashboard with quick stats, recent activity and navigation cards.
- * @returns Admin home page
+ * Owner admin dashboard with quick stats and activity feed.
+ * Uses outline-only stat cards and banner overlay in the header section.
+ * @returns {JSX.Element} Admin home page
  */
+
 export default function AdminDashboardPage() {
 	return (
 		<PageContainer title="Admin Dashboard" description="Interface d'administration complète">
-			{/* Quick stats */}
-			<div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-				{quickStats.map((stat) => (
-					<Link key={stat.label} href={stat.href}>
-						<Card
-							hover
-							padding="md"
-							className="border border-red-100 transition-all duration-200 hover:shadow-md dark:border-red-900/20"
-						>
-							<div className="flex items-start justify-between">
-								<div>
-									<p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
-									<p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
-										{stat.value}
-									</p>
-									{stat.sub && (
-										<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{stat.sub}</p>
-									)}
-								</div>
-								<Badge variant="error" showDot={false} className="flex items-center gap-1">
-									<Icon name={stat.icon} style="solid" size="sm" />
-								</Badge>
-							</div>
-							<div className="mt-3 flex items-center gap-1 text-xs font-medium text-red-600 dark:text-red-400">
-								Voir le détail
-								<Icon name="chevronRight" size="xs" />
-							</div>
-						</Card>
-					</Link>
-				))}
-			</div>
-
-			{/* Recent activity */}
-			<div>
-				<div className="mb-4 flex items-center justify-between">
-					<h2 className="text-lg font-semibold text-gray-900 dark:text-white">Activité récente</h2>
+			<div className="mx-auto max-w-5xl space-y-8">
+				{/* Header with banner */}
+				<SectionHeaderBanner
+					icon="shield"
+					title="Espace Owner"
+					description="Administration complète de la plateforme Memora."
+					accentColor="red"
+				>
 					<Badge variant="error" showDot={false}>
-						{recentActivity.length} événements
+						Admin
 					</Badge>
+				</SectionHeaderBanner>
+
+				{/* Quick stats - outline only */}
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+					{quickStats.map((stat) => (
+						<Link key={stat.label} href={stat.href}>
+							<div className="group rounded-xl border border-red-200/60 bg-transparent p-4 transition-all duration-200 hover:border-red-300 hover:shadow-md dark:border-red-900/30 dark:hover:border-red-700">
+								<div className="flex items-start justify-between">
+									<div>
+										<p className="text-sm text-gray-500 dark:text-gray-400">{stat.label}</p>
+										<p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">
+											{stat.value}
+										</p>
+										{stat.sub && (
+											<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">{stat.sub}</p>
+										)}
+									</div>
+									<div className="flex h-9 w-9 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/20">
+										<Icon name={stat.icon} style="solid" size="sm" className="text-red-500" />
+									</div>
+								</div>
+								<div className="mt-3 flex items-center gap-1 text-xs font-medium text-red-600 transition-transform group-hover:translate-x-0.5 dark:text-red-400">
+									Voir le détail
+									<Icon name="chevronRight" size="xs" />
+								</div>
+							</div>
+						</Link>
+					))}
 				</div>
-				<Card padding="sm" className="border border-red-100 dark:border-red-900/20">
+
+				{/* Recent activity */}
+				<SectionCard
+					title="Activité récente"
+					icon="clock"
+					color="error"
+					padding="sm"
+					badge={
+						<Badge variant="error" showDot={false}>
+							{recentActivity.length} événements
+						</Badge>
+					}
+				>
 					<div className="divide-y divide-gray-100 dark:divide-gray-700/50">
 						{recentActivity.map((entry) => (
 							<Link key={entry.id} href={entry.href}>
@@ -212,7 +239,7 @@ export default function AdminDashboardPage() {
 							</Link>
 						))}
 					</div>
-				</Card>
+				</SectionCard>
 			</div>
 		</PageContainer>
 	);

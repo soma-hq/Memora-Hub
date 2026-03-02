@@ -3,9 +3,18 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Tag } from "@/components/ui";
+import { Card, Badge, Icon, Tag, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-twitch/consignes",
+	section: "protected",
+	module: "moderation_twitch",
+	description: "Consignes de modération Twitch.",
+	requiredPermissions: [{ module: "moderation_twitch", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 type Priority = "Haute" | "Moyenne" | "Standard";
@@ -70,10 +79,10 @@ export default function TwitchConsignesPage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-6 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<div>
-					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone a acces restreint</p>
+					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone à accès restreint</p>
 					<p className="text-info-600 dark:text-info-500 mt-1 text-xs">
 						Seuls les membres de la Legacy peuvent creer ou modifier les consignes. Les autres equipes ont
-						un acces en lecture seule.
+						un accès en lecture seule.
 					</p>
 				</div>
 			</div>
@@ -220,7 +229,7 @@ export default function TwitchConsignesPage() {
 			<div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
 				{consignes.length} consigne{consignes.length > 1 ? "s" : ""} active
 				{consignes.length > 1 ? "s" : ""}
-				{" — "}Derniere mise a jour par la Legacy
+				{" — "}Derniere mise à jour par la Legacy
 			</div>
 		</PageContainer>
 	);

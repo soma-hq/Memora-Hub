@@ -5,7 +5,14 @@ import { Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { PATCHNOTES } from "@/features/patchnotes/data/patchnotes";
 import type { PatchnoteChange } from "@/features/patchnotes/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/patchnotes",
+	section: "protected",
+	description: "Notes de mise à jour et changelog.",
+	entityScoped: true,
+});
 
 /** Maps change type to display config */
 const CHANGE_CONFIG: Record<PatchnoteChange["type"], { label: string; color: string; bg: string; icon: string }> = {
@@ -51,7 +58,7 @@ export default function PatchnotesPage() {
 					<div>
 						<h1 className="text-2xl font-bold text-gray-900 dark:text-white">Patchnotes</h1>
 						<p className="text-sm text-gray-500 dark:text-gray-400">
-							Historique complet des mises a jour de Memora Hub
+							Historique complet des mises à jour de Memora Hub
 						</p>
 					</div>
 				</div>

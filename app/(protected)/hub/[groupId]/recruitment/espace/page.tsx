@@ -7,7 +7,16 @@ import { decisionVariantMap } from "@/features/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { StatCard, Card, Badge, Icon, EmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/recruitment/espace",
+	section: "protected",
+	module: "talent",
+	description: "Espace dédié au recrutement.",
+	requiredPermissions: [{ module: "talent", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Recruiter personal space with stats, today interviews and assigned candidates.
@@ -93,7 +102,7 @@ export default function EspacePage() {
 							<Card padding="md">
 								<div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
 									<Icon name="check" size="md" className="text-success-500" />
-									Aucun entretien prevu aujourd&apos;hui. Bonne journee !
+									Aucun entretien prévu aujourd&apos;hui. Bonne journee !
 								</div>
 							</Card>
 						)}

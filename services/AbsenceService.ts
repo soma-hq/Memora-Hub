@@ -101,7 +101,7 @@ export class AbsenceService {
 	}
 
 	/**
-	 * Approve a pending absence request
+	 * Approve à pending absence request
 	 * @param id Absence ID
 	 * @param approvedBy Approver user ID
 	 * @returns Approved absence
@@ -125,7 +125,7 @@ export class AbsenceService {
 	}
 
 	/**
-	 * Reject a pending absence request
+	 * Reject à pending absence request
 	 * @param id Absence ID
 	 * @param rejectedBy Rejector user ID
 	 * @returns Rejected absence

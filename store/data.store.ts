@@ -4,7 +4,11 @@ import type { Project } from "@/features/projects/types";
 import type { Task } from "@/features/tasks/types";
 import type { Meeting } from "@/features/meetings/types";
 import type { Absence } from "@/features/absences/types";
-
+import type { RoleId } from "@/core/config/roles";
+import type { Entity } from "@/core/data/entities";
+import { ENTITIES } from "@/core/data/entities";
+import { SEED_USERS } from "@/core/data/users";
+import { getTeamForRole } from "@/core/config/teams";
 
 /** Project statuses considered archived */
 const ARCHIVED_PROJECT_STATUSES = new Set(["done", "complete", "archived"]);
@@ -37,14 +41,69 @@ interface UserMeetings {
 	past: Meeting[];
 }
 
+/**
+ * Convert a seed user to a UserProfile for the store.
+ */
+function seedToProfile(seed: (typeof SEED_USERS)[number]): UserProfile {
+	const team = getTeamForRole(seed.roleId);
+	return {
+		id: seed.id,
+		pseudo: seed.name,
+		firstName: seed.name,
+		lastName: "",
+		email: seed.email,
+		phone: "",
+		birthdate: "",
+		birthdayWish: false,
+		languages: ["fr"],
+		avatar: seed.avatar ?? `/avatars/${seed.name.toLowerCase()}.png`,
+		discordUsername: "",
+		discordId: "",
+		social: {},
+		entity: seed.entityAccess.includes("*") ? "all" : (seed.entityAccess[0] ?? ""),
+		team,
+		division: 0,
+		roleSecondary: "",
+		arrivalDate: "2024-01-15",
+		roleId: seed.roleId,
+		entityAccess: seed.entityAccess,
+		twoFactorSecret: seed.twoFactorSecret,
+		twoFactorEnabled: seed.twoFactorEnabled,
+		status: "active",
+		entityAccessDetails: [],
+	};
+}
+
+/** Seeded user profiles from SEED_USERS */
+const INITIAL_USERS: UserProfile[] = SEED_USERS.map(seedToProfile);
+
+/** Current user type for the permission system */
+interface CurrentUserState {
+	id: string;
+	pseudo: string;
+	email: string;
+	roleId: RoleId;
+	entityAccess: string[];
+	avatar: string;
+}
+
 /** Global data state with query and CRUD methods */
 interface DataState {
 	// State
+	entities: Entity[];
 	users: UserProfile[];
+	currentUser: CurrentUserState | null;
 	projects: Project[];
 	tasks: Task[];
 	meetings: Meeting[];
 	absences: Absence[];
+
+	// Auth actions
+	setCurrentUser: (userId: string) => void;
+	clearCurrentUser: () => void;
+
+	// Entity actions
+	getEntitiesForCurrentUser: () => Entity[];
 
 	// Query methods
 	getUserById: (userId: string) => UserProfile | undefined;
@@ -52,6 +111,9 @@ interface DataState {
 	getUserTasks: (userId: string) => UserTasks;
 	getUserMeetings: (userId: string) => UserMeetings;
 	getUserAbsences: (userId: string) => Absence[];
+
+	// CRUD: Users
+	updateUser: (id: string, data: Partial<UserProfile>) => void;
 
 	// CRUD: Projects
 	addProject: (project: Project) => void;
@@ -76,15 +138,55 @@ interface DataState {
 
 /**
  * Zustand store for all entity data with query helpers and CRUD operations.
+ * Pre-seeded with entities and 9 users from the data layer.
  * @returns {DataState} Complete data state with all actions
  */
 export const useDataStore = create<DataState>((set, get) => ({
-	// Initial state — empty
-	users: [],
+	// Initial state -- seeded
+	entities: [...ENTITIES],
+	users: INITIAL_USERS,
+	currentUser: null,
 	projects: [],
 	tasks: [],
 	meetings: [],
 	absences: [],
+
+	// ── Auth actions ──────────────────────────────────────────────
+
+	/**
+	 * Sets the current authenticated user by user ID.
+	 * @param userId - User ID to set as current
+	 */
+	setCurrentUser: (userId) => {
+		const user = get().users.find((u) => u.id === userId);
+		if (!user) return;
+		set({
+			currentUser: {
+				id: user.id,
+				pseudo: user.pseudo,
+				email: user.email,
+				roleId: user.roleId,
+				entityAccess: user.entityAccess,
+				avatar: user.avatar,
+			},
+		});
+	},
+
+	/** Clears the current user (logout) */
+	clearCurrentUser: () => set({ currentUser: null }),
+
+	// ── Entity actions ────────────────────────────────────────────
+
+	/**
+	 * Returns entities accessible by the current user.
+	 * Wildcard users get all entities. Others get only their assigned ones.
+	 */
+	getEntitiesForCurrentUser: () => {
+		const { currentUser, entities } = get();
+		if (!currentUser) return [];
+		if (currentUser.entityAccess.includes("*")) return entities;
+		return entities.filter((e) => currentUser.entityAccess.includes(e.id));
+	},
 
 	// ── Query methods ──────────────────────────────────────────────
 
@@ -97,7 +199,6 @@ export const useDataStore = create<DataState>((set, get) => ({
 
 	/**
 	 * Returns a user's projects partitioned into active and archived.
-	 * A project is archived when its status is done, complete, or archived.
 	 * @param userId - User identifier
 	 * @returns Active and archived project arrays
 	 */
@@ -117,7 +218,6 @@ export const useDataStore = create<DataState>((set, get) => ({
 
 	/**
 	 * Returns a user's tasks partitioned into active and archived.
-	 * A task is archived when its status is done.
 	 * @param userId - User identifier
 	 * @returns Active and archived task arrays
 	 */
@@ -137,7 +237,6 @@ export const useDataStore = create<DataState>((set, get) => ({
 
 	/**
 	 * Returns a user's meetings partitioned into upcoming and past.
-	 * A meeting is upcoming when its date+endTime is >= now.
 	 * @param userId - User identifier
 	 * @returns Upcoming and past meeting arrays
 	 */
@@ -161,6 +260,33 @@ export const useDataStore = create<DataState>((set, get) => ({
 	 * @returns Absence array for the user
 	 */
 	getUserAbsences: (userId) => get().absences.filter((a) => a.userId === userId),
+
+	// ── CRUD: Users ───────────────────────────────────────────────
+
+	/** Updates a user profile by ID */
+	updateUser: (id, data) =>
+		set((s) => {
+			const updatedUsers = s.users.map((u) => (u.id === id ? { ...u, ...data } : u));
+			// Also update currentUser if it's the same user
+			const currentUser = s.currentUser;
+			if (currentUser && currentUser.id === id) {
+				const updated = updatedUsers.find((u) => u.id === id);
+				if (updated) {
+					return {
+						users: updatedUsers,
+						currentUser: {
+							...currentUser,
+							pseudo: updated.pseudo,
+							email: updated.email,
+							roleId: updated.roleId,
+							entityAccess: updated.entityAccess,
+							avatar: updated.avatar,
+						},
+					};
+				}
+			}
+			return { users: updatedUsers };
+		}),
 
 	// ── CRUD: Projects ─────────────────────────────────────────────
 

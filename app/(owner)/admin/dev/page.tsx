@@ -3,10 +3,20 @@
 // React
 import { useState, useCallback } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button, Toggle } from "@/components/ui";
+import { Card, Badge, Icon, Button, Toggle, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo, showError } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "admin/dev",
+	section: "owner",
+	module: "admin",
+	description: "Outils de développement et debug.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
 interface EnvInfoItem {
 	label: string;
@@ -61,7 +71,7 @@ export default function AdminDevPage() {
 	 */
 	const handleToggleFlag = useCallback((flagId: string) => {
 		setFeatureFlags((prev) => prev.map((f) => (f.id === flagId ? { ...f, enabled: !f.enabled } : f)));
-		showInfo("Feature flag mis a jour");
+		showInfo("Feature flag mis à jour");
 	}, []);
 
 	/**
@@ -72,7 +82,7 @@ export default function AdminDevPage() {
 		setClearingCache(true);
 		setTimeout(() => {
 			setClearingCache(false);
-			showSuccess("Cache vide avec succes");
+			showSuccess("Cache vidé avec succès");
 		}, 1200);
 	}, []);
 
@@ -84,7 +94,7 @@ export default function AdminDevPage() {
 		setRebuilding(true);
 		setTimeout(() => {
 			setRebuilding(false);
-			showSuccess("Indices reconstruits avec succes");
+			showSuccess("Indices reconstruits avec succès");
 		}, 2000);
 	}, []);
 
@@ -96,7 +106,7 @@ export default function AdminDevPage() {
 		setExporting(true);
 		setTimeout(() => {
 			setExporting(false);
-			showSuccess("Export complet genere");
+			showSuccess("Export complet généré");
 		}, 1500);
 	}, []);
 
@@ -108,19 +118,19 @@ export default function AdminDevPage() {
 	const handleToggleDebug = useCallback((value: boolean) => {
 		setDebugMode(value);
 		if (value) {
-			showInfo("Mode debug active — les logs detailles sont visibles");
+			showInfo("Mode debug activé — les logs détaillés sont visibles");
 		} else {
-			showInfo("Mode debug desactive");
+			showInfo("Mode debug désactivé");
 		}
 	}, []);
 
 	return (
-		<PageContainer title="Outils developpeur" description="Informations systeme, debug et maintenance">
+		<PageContainer title="Outils développeur" description="Informations système, debug et maintenance">
 			{/* Environment & Database */}
 			<div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
 				{/* Environment info */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Environnement</h2>
+					<SectionHeaderBanner icon="settings" title="Environnement" accentColor="red" className="mb-4" />
 					<Card padding="lg" className="border-l-4 border-l-red-500">
 						<div className="space-y-3">
 							{envInfo.length === 0 ? (
@@ -143,7 +153,7 @@ export default function AdminDevPage() {
 
 				{/* Database info */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Base de donnees</h2>
+					<SectionHeaderBanner icon="settings" title="Base de données" accentColor="red" className="mb-4" />
 					<Card padding="lg" className="border-l-4 border-l-red-500">
 						<div className="space-y-3">
 							{dbInfo.length === 0 ? (
@@ -164,7 +174,7 @@ export default function AdminDevPage() {
 						<div className="mt-4 border-t border-gray-200 pt-3 dark:border-gray-700">
 							<div className="flex items-center gap-2">
 								<span className="h-2 w-2 rounded-full bg-gray-400" />
-								<span className="text-sm text-gray-500 dark:text-gray-400">Non connecte</span>
+								<span className="text-sm text-gray-500 dark:text-gray-400">Non connecté</span>
 							</div>
 						</div>
 					</Card>
@@ -173,7 +183,7 @@ export default function AdminDevPage() {
 
 			{/* System actions */}
 			<div className="mb-8">
-				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Actions systeme</h2>
+				<SectionHeaderBanner icon="settings" title="Actions système" accentColor="red" className="mb-4" />
 				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 					<Card padding="lg">
 						<div className="flex flex-col items-center text-center">
@@ -182,7 +192,7 @@ export default function AdminDevPage() {
 							</div>
 							<h3 className="mb-1 font-semibold text-gray-900 dark:text-white">Vider le cache</h3>
 							<p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-								Supprime toutes les entrees en cache
+								Supprime toutes les entrées en cache
 							</p>
 							<Button
 								variant="outline-neutral"
@@ -224,7 +234,7 @@ export default function AdminDevPage() {
 							</div>
 							<h3 className="mb-1 font-semibold text-gray-900 dark:text-white">Export data</h3>
 							<p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-								Exporte toutes les donnees en JSON
+								Exporte toutes les données en JSON
 							</p>
 							<Button
 								variant="outline-neutral"
@@ -244,13 +254,13 @@ export default function AdminDevPage() {
 			<div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
 				{/* Debug panel */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Debug</h2>
+					<SectionHeaderBanner icon="settings" title="Debug" accentColor="red" className="mb-4" />
 					<Card padding="lg">
 						<div className="mb-4 flex items-center justify-between">
 							<div>
 								<p className="font-medium text-gray-900 dark:text-white">Mode debug</p>
 								<p className="text-xs text-gray-400">
-									Active les logs detailles et les outils de diagnostic
+									Active les logs détaillés et les outils de diagnostic
 								</p>
 							</div>
 							<Toggle checked={debugMode} onChange={handleToggleDebug} size="md" />
@@ -265,11 +275,11 @@ export default function AdminDevPage() {
 
 				{/* Feature flags */}
 				<div>
-					<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Feature flags</h2>
+					<SectionHeaderBanner icon="settings" title="Feature flags" accentColor="red" className="mb-4" />
 					<Card padding="lg">
 						<div className="space-y-4">
 							{featureFlags.length === 0 ? (
-								<p className="text-sm text-gray-500 dark:text-gray-400">Aucun feature flag configure</p>
+								<p className="text-sm text-gray-500 dark:text-gray-400">Aucun feature flag configuré</p>
 							) : (
 								featureFlags.map((flag) => (
 									<div key={flag.id} className="flex items-center justify-between">
@@ -299,7 +309,7 @@ export default function AdminDevPage() {
 
 			{/* Console */}
 			<div>
-				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Console</h2>
+				<SectionHeaderBanner icon="settings" title="Console" accentColor="red" className="mb-4" />
 				<div
 					className={cn("overflow-hidden rounded-xl border border-gray-800 bg-gray-950", "font-mono text-sm")}
 				>

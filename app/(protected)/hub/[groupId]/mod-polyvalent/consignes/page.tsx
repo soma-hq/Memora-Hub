@@ -3,9 +3,18 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Tag } from "@/components/ui";
+import { Card, Badge, Icon, Tag, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/consignes",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Consignes de modération Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 type Priority = "Haute" | "Moyenne" | "Standard";
@@ -50,7 +59,7 @@ export default function ConsignesPolyvalentPage() {
 	const [showPermissionNotice, setShowPermissionNotice] = useState(false);
 
 	/**
-	 * Toggles the expanded state of a consigne card.
+	 * Toggles the expanded state of à consigne card.
 	 * @param id - The consigne identifier
 	 */
 	function toggleCard(id: string) {
@@ -89,10 +98,10 @@ export default function ConsignesPolyvalentPage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-6 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<div>
-					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone a acces restreint</p>
+					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone à accès restreint</p>
 					<p className="text-info-600 dark:text-info-500 mt-1 text-xs">
 						Seuls les membres de la Legacy peuvent creer ou modifier les consignes. Les autres equipes ont
-						un acces en lecture seule. Les consignes s&apos;appliquent aux deux plateformes sauf indication
+						un accès en lecture seule. Les consignes s&apos;appliquent aux deux plateformes sauf indication
 						contraire.
 					</p>
 				</div>
@@ -117,7 +126,7 @@ export default function ConsignesPolyvalentPage() {
 				<div className="border-error-200 bg-error-50 dark:border-error-800 dark:bg-error-900/10 mb-4 flex items-center gap-2 rounded-lg border px-4 py-3">
 					<Icon name="lock" size="sm" className="text-error-500 shrink-0" />
 					<p className="text-error-700 dark:text-error-400 text-sm">
-						Permission refusee — Seule la Legacy peut modifier les consignes. Vous etes connecte en tant que{" "}
+						Permission refusée — Seule la Legacy peut modifier les consignes. Vous êtes connecté en tant que{" "}
 						<strong>{CURRENT_USER.team}</strong>.
 					</p>
 				</div>
@@ -126,10 +135,11 @@ export default function ConsignesPolyvalentPage() {
 			{/* Consignes list */}
 			<div className="space-y-4">
 				{consignes.length === 0 && (
-					<div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-300 py-16 dark:border-gray-600">
-						<Icon name="flag" size="xl" className="mb-3 text-gray-300 dark:text-gray-600" />
-						<p className="text-sm text-gray-500 dark:text-gray-400">Aucune consigne active.</p>
-					</div>
+					<StyledEmptyState
+						icon="flag"
+						title="Aucune consigne active"
+						description="Les consignes de modération apparaîtront ici."
+					/>
 				)}
 
 				{consignes.map((consigne) => {
@@ -254,7 +264,7 @@ export default function ConsignesPolyvalentPage() {
 			<div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
 				{consignes.length} consigne{consignes.length > 1 ? "s" : ""} active
 				{consignes.length > 1 ? "s" : ""}
-				{" — "}Derniere mise a jour par la Legacy — Applicable sur Discord & Twitch
+				{" — "}Derniere mise à jour par la Legacy — Applicable sur Discord & Twitch
 			</div>
 		</PageContainer>
 	);

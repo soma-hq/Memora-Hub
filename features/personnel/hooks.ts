@@ -91,7 +91,7 @@ export function useAbsences() {
 	};
 }
 
-/** Maps a planning event type to a unified item type */
+/** Maps à planning event type to a unified item type */
 function toUnifiedType(eventType: PlanningEventType): UnifiedItemType {
 	if (eventType === "meeting") return "meeting";
 	if (eventType === "personal") return "personal";
@@ -236,7 +236,7 @@ export function usePlanning(userId?: string) {
 		for (const p of userProjects) {
 			items.push({
 				id: `store-project-${p.id}`,
-				title: `Echeance — ${p.name}`,
+				title: `Échéance — ${p.name}`,
 				date: p.endDate,
 				startTime: "00:00",
 				endTime: "23:59",
@@ -280,7 +280,7 @@ export function usePlanning(userId?: string) {
 	}, []);
 
 	/**
-	 * Deletes a planning event by ID
+	 * Deletes à planning event by ID
 	 * @param eventId - Event ID to delete
 	 * @returns Nothing
 	 */
@@ -368,7 +368,7 @@ export function usePersonalTasks() {
 
 	// Handlers
 	/**
-	 * Updates the status of a personal task
+	 * Updates the status of à personal task
 	 * @param taskId - Task ID to update
 	 * @param status - New task status
 	 * @returns Nothing

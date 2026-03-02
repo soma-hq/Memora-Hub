@@ -5,7 +5,16 @@ import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Tag } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-twitch/sanctions",
+	section: "protected",
+	module: "moderation_twitch",
+	description: "Gestion des sanctions Twitch.",
+	requiredPermissions: [{ module: "moderation_twitch", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -123,7 +132,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Hate Raid",
 		icon: "flag",
 		color: "error",
-		defaultReason: "Participation a un hate raid coordonne contre la chaine",
+		defaultReason: "Participation à un hate raid coordonne contre la chaine",
 		fixed: true,
 		sanctions: {
 			3: { first: "Ban", repeat: "Ban", multi: "Ban" },

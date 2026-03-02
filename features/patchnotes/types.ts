@@ -4,7 +4,7 @@ export interface PatchnoteChange {
 	description: string;
 }
 
-/** Represents a complete version patchnote */
+/** Represents à complete version patchnote */
 export interface Patchnote {
 	id: string;
 	version: string;

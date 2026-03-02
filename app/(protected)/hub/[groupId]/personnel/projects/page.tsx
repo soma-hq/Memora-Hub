@@ -1,13 +1,21 @@
 "use client";
 
-// Features & Components
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, EmptyState, ProgressBar } from "@/components/ui";
 import { usePersonalProjects } from "@/features/personnel/hooks";
 import { projectStatusVariantMap, projectStatusLabels, PROJECT_STATUSES } from "@/features/personnel/types";
 import { cn } from "@/lib/utils/cn";
 import type { ProjectStatus } from "@/features/personnel/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/personnel/projects",
+	section: "protected",
+	module: "personnel",
+	description: "Projets du personnel.",
+	requiredPermissions: [{ module: "personnel", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Formats a date string to a localized French display format.

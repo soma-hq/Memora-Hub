@@ -50,7 +50,7 @@ export async function updateTaskAction(taskId: string, formData: Partial<CreateT
 
 	const targetTask = await TaskService.getById(taskId);
 	if (!targetTask) {
-		return { success: false, error: "Tache introuvable" };
+		return { success: false, error: "Tâche introuvable" };
 	}
 
 	await TaskService.update(taskId, formData, currentUser.id);
@@ -61,7 +61,7 @@ export async function updateTaskAction(taskId: string, formData: Partial<CreateT
 }
 
 /**
- * Deletes a task
+ * Deletes à task
  * @param taskId - Target task ID
  * @returns Action result
  */
@@ -73,7 +73,7 @@ export async function deleteTaskAction(taskId: string): Promise<ActionResult> {
 
 	const targetTask = await TaskService.getById(taskId);
 	if (!targetTask) {
-		return { success: false, error: "Tache introuvable" };
+		return { success: false, error: "Tâche introuvable" };
 	}
 
 	await TaskService.delete(taskId, currentUser.id);
@@ -115,7 +115,7 @@ export async function toggleSubtaskAction(subtaskId: string): Promise<ActionResu
 
 	const result = await TaskService.toggleSubtask(subtaskId);
 	if (!result) {
-		return { success: false, error: "Sous-tache introuvable" };
+		return { success: false, error: "Sous-tâche introuvable" };
 	}
 
 	return { success: true };
@@ -139,7 +139,7 @@ export async function addSubtaskAction(taskId: string, title: string): Promise<A
 }
 
 /**
- * Deletes a subtask
+ * Deletes à subtask
  * @param subtaskId - Target subtask ID
  * @returns Action result
  */
@@ -165,7 +165,7 @@ export async function getTaskAction(taskId: string): Promise<ActionResult> {
 
 	const task = await TaskService.getById(taskId);
 	if (!task) {
-		return { success: false, error: "Tache introuvable" };
+		return { success: false, error: "Tâche introuvable" };
 	}
 
 	return { success: true, data: task as unknown as Record<string, unknown> };
@@ -186,7 +186,7 @@ export async function getTasksByProjectAction(projectId: string, page = 1, pageS
 }
 
 /**
- * Assigns a task to a user
+ * Assigns à task to a user
  * @param taskId - Target task ID
  * @param assigneeId - User to assign
  * @returns Action result
@@ -249,4 +249,44 @@ export async function updateSubtaskTitleAction(subtaskId: string, title: string)
 	if (!currentUser) return { success: false, error: "Non authentifie" };
 	await TaskService.updateSubtaskTitle(subtaskId, title);
 	return { success: true };
+}
+
+/**
+ * Get tasks by group (through projects)
+ * @param groupId - Group ID
+ * @param page - Page number
+ * @param pageSize - Tasks per page
+ * @returns Action result with paginated tasks
+ */
+export async function getTasksByGroupAction(groupId: string, page = 1, pageSize = 20): Promise<ActionResult> {
+	const currentUser = await AuthService.getCurrentUser();
+	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const result = await TaskService.getByGroup(groupId, page, pageSize);
+	return { success: true, data: result as unknown as Record<string, unknown> };
+}
+
+/**
+ * Get overdue tasks (past due date, not done/archived)
+ * @param groupId - Optional group ID filter
+ * @returns Action result with overdue tasks
+ */
+export async function getOverdueTasksAction(groupId?: string): Promise<ActionResult> {
+	const currentUser = await AuthService.getCurrentUser();
+	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const tasks = await TaskService.getOverdue(groupId);
+	return { success: true, data: { tasks } as unknown as Record<string, unknown> };
+}
+
+/**
+ * Bulk update task statuses
+ * @param taskIds - Array of task IDs
+ * @param status - New status value
+ * @returns Action result with count of updated tasks
+ */
+export async function bulkUpdateTaskStatusAction(taskIds: string[], status: string): Promise<ActionResult> {
+	const currentUser = await AuthService.getCurrentUser();
+	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const count = await TaskService.bulkUpdateStatus(taskIds, status, currentUser.id);
+	revalidatePath("/tasks");
+	return { success: true, data: { count } };
 }

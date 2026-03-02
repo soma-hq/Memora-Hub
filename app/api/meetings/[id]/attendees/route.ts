@@ -7,7 +7,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 	if (!currentUser) return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
 	const { id } = await params;
 	const meeting = await MeetingService.getById(id);
-	if (!meeting) return NextResponse.json({ error: "Reunion introuvable" }, { status: 404 });
+	if (!meeting) return NextResponse.json({ error: "Réunion introuvable" }, { status: 404 });
 	return NextResponse.json({ attendees: meeting.attendees });
 }
 

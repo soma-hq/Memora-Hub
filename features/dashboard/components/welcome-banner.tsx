@@ -4,7 +4,6 @@
 import { Card, Button, Icon } from "@/components/ui";
 import { useDashboardStats } from "@/features/dashboard/hooks";
 
-
 /** Props for the WelcomeBanner component */
 interface WelcomeBannerProps {
 	userName: string;
@@ -20,7 +19,7 @@ interface WelcomeBannerProps {
 function getGreeting(): string {
 	const hour = new Date().getHours();
 	if (hour < 12) return "Bonjour";
-	if (hour < 18) return "Bon apres-midi";
+	if (hour < 18) return "Bon après-midi";
 	return "Bonsoir";
 }
 
@@ -38,7 +37,7 @@ function getFormattedDate(): string {
 }
 
 /**
- * Dashboard welcome banner with greeting, quick stats, and action buttons
+ * Dashboard welcome banner
  * @param props - Component props
  * @param props.userName - Display name for the user
  * @param props.className - Additional CSS classes
@@ -53,8 +52,8 @@ export function WelcomeBanner({ userName, className, onNewTask, onPlan }: Welcom
 	// Computed
 	const quickStats = [
 		{ label: "Projets", value: stats.projects.value, icon: stats.projects.icon },
-		{ label: "Taches", value: stats.tasks.value, icon: stats.tasks.icon },
-		{ label: "Reunions", value: stats.meetings.value, icon: stats.meetings.icon },
+		{ label: "Tâches", value: stats.tasks.value, icon: stats.tasks.icon },
+		{ label: "Réunions", value: stats.meetings.value, icon: stats.meetings.icon },
 	] as const;
 
 	// Render
@@ -84,7 +83,7 @@ export function WelcomeBanner({ userName, className, onNewTask, onPlan }: Welcom
 				<div className="flex shrink-0 items-center gap-2">
 					<Button variant="primary" size="sm" onClick={onNewTask}>
 						<Icon name="plus" size="sm" />
-						Nouvelle tache
+						Nouvelle tâche
 					</Button>
 					<Button variant="outline-neutral" size="sm" onClick={onPlan}>
 						<Icon name="calendar" size="sm" />

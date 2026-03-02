@@ -21,7 +21,7 @@ export function canCreateTask(user: UserWithAccess, groupId: string): boolean {
 }
 
 /**
- * Check if user can edit a task
+ * Check if user can edit à task
  */
 export function canEditTask(user: UserWithAccess, groupId: string, assigneeId?: string, userId?: string): boolean {
 	// Assignee can always edit their own task
@@ -30,7 +30,7 @@ export function canEditTask(user: UserWithAccess, groupId: string, assigneeId?: 
 }
 
 /**
- * Check if user can delete a task
+ * Check if user can delete à task
  */
 export function canDeleteTask(user: UserWithAccess, groupId: string): boolean {
 	return canDo(user, groupId, C.TASKS_DELETE);

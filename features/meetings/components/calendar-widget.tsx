@@ -186,7 +186,7 @@ export function CalendarWidget({ meetings, onDayClick, className }: CalendarWidg
 				return (
 					<div className="mt-1 border-t border-gray-100 pt-3 dark:border-gray-700">
 						<p className="mb-2 text-xs font-medium text-gray-500 dark:text-gray-400">
-							Aujourd&apos;hui — {todayMeetings.length} reunion{todayMeetings.length > 1 ? "s" : ""}
+							Aujourd&apos;hui — {todayMeetings.length} réunion{todayMeetings.length > 1 ? "s" : ""}
 						</p>
 						<div className="flex flex-col gap-1.5">
 							{todayMeetings.map((m) => (

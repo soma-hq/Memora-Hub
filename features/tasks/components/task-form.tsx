@@ -6,7 +6,6 @@ import { Input, Textarea, Select, Button, Card, Icon } from "@/components/ui";
 import type { Task, TaskFormData, TaskStatusValue, TaskPriorityValue } from "../types";
 import { TaskStatusLabel, TaskPriorityLabel } from "../types";
 
-
 /** Props for the TaskForm component */
 interface TaskFormProps {
 	task?: Task;
@@ -38,7 +37,7 @@ const assigneeOptions = [
 ];
 
 /**
- * Form for creating or editing a task
+ * Form for creating or editing à task
  * @param props - Component props
  * @param props.task - Existing task for edit mode, undefined for create mode
  * @param props.onSubmit - Callback triggered on valid form submission
@@ -114,13 +113,13 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading, className }: Tas
 				<div className="flex items-center gap-2 border-b border-gray-200 pb-4 dark:border-gray-700">
 					<Icon name="tasks" size="lg" className="text-primary-500" />
 					<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-						{isEditing ? "Modifier la tache" : "Nouvelle tache"}
+						{isEditing ? "Modifier la tâche" : "Nouvelle tâche"}
 					</h2>
 				</div>
 
 				<Input
 					label="Titre"
-					placeholder="Entrez le titre de la tache"
+					placeholder="Entrez le titre de la tâche"
 					value={formData.title}
 					onChange={(e) => handleChange("title", e.target.value)}
 					error={errors.title}
@@ -128,7 +127,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading, className }: Tas
 
 				<Textarea
 					label="Description"
-					placeholder="Decrivez la tache en detail..."
+					placeholder="Decrivez la tâche en detail..."
 					value={formData.description}
 					onChange={(e) => handleChange("description", e.target.value)}
 				/>
@@ -167,7 +166,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading, className }: Tas
 				</div>
 
 				<Input
-					label="Date d'echeance"
+					label="Date d'échéance"
 					type="date"
 					value={formData.dueDate}
 					onChange={(e) => handleChange("dueDate", e.target.value)}
@@ -180,7 +179,7 @@ export function TaskForm({ task, onSubmit, onCancel, isLoading, className }: Tas
 					</Button>
 					<Button type="submit" isLoading={isLoading}>
 						<Icon name="check" size="sm" />
-						{isEditing ? "Enregistrer" : "Creer la tache"}
+						{isEditing ? "Enregistrer" : "Créer la tâche"}
 					</Button>
 				</div>
 			</form>

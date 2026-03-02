@@ -9,7 +9,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Modal, Button, Icon, EmptyState } from "@/components/ui";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { RecruitmentSessionFormData, RecruitmentSessionType } from "@/features/recruitment/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/recruitment",
+	section: "protected",
+	module: "talent",
+	description: "Espace recrutement du groupe.",
+	requiredPermissions: [{ module: "talent", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Recruitment sessions overview with creation, filtering and session cards.
@@ -42,14 +51,14 @@ export default function RecruitmentPage() {
 			setFormEntity("");
 			setFormStartDate("");
 		} catch {
-			showError("Erreur lors de la creation de la session");
+			showError("Erreur lors de la création de la session");
 		}
 	};
 
 	return (
 		<PageContainer
 			title="Sessions"
-			description="Gerez les sessions de recrutement"
+			description="Gérez les sessions de recrutement"
 			actions={
 				<Button variant="primary" onClick={() => setFormModalOpen(true)}>
 					<Icon name="plus" size="sm" />
@@ -100,7 +109,7 @@ export default function RecruitmentPage() {
 				<EmptyState
 					icon="recruitment"
 					title="Aucune session"
-					description="Aucune session de recrutement trouvee. Creez-en une pour commencer."
+					description="Aucune session de recrutement trouvée. Créez-en une pour commencer."
 					actionLabel="Nouvelle session"
 					onAction={() => setFormModalOpen(true)}
 				/>
@@ -111,7 +120,7 @@ export default function RecruitmentPage() {
 				isOpen={formModalOpen}
 				onClose={() => setFormModalOpen(false)}
 				title="Nouvelle session de recrutement"
-				description="Creez une nouvelle session de recrutement"
+				description="Créez une nouvelle session de recrutement"
 				size="md"
 			>
 				<div className="space-y-4">

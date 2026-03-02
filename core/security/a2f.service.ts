@@ -34,14 +34,14 @@ export async function generateA2FSecret(userId: string, userEmail: string) {
 	return { secret, qrCodeUrl };
 }
 
-// Check a TOTP code against a secret
+// Check a TOTP code against à secret
 function checkTOTP(code: string, secret: string): boolean {
 	const result = verifySync({ token: code, secret });
 	return result.valid;
 }
 
 /**
- * Enable A2F for a user after verifying a code
+ * Enable A2F for a user after verifying à code
  * @param userId User ID
  * @param code OTP code to verify
  * @returns True if verification succeeded and A2F was enabled

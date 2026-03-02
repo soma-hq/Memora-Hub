@@ -113,7 +113,7 @@ export function useMeetingActions() {
 			startTime: data.startTime ?? "",
 			endTime: data.endTime ?? "",
 			location: data.location ?? "",
-			type: data.type ?? "reunion",
+			type: data.type ?? "réunion",
 			participants: data.participants ?? [],
 			notes: data.notes,
 			isOnline: data.isOnline ?? false,
@@ -124,7 +124,7 @@ export function useMeetingActions() {
 	}, []);
 
 	/**
-	 * Deletes a meeting by ID
+	 * Deletes à meeting by ID
 	 * @param id - Meeting ID to delete
 	 * @returns Nothing
 	 */

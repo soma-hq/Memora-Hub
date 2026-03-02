@@ -7,7 +7,13 @@ import Image from "next/image";
 import { LoginForm } from "@/features/auth";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { LoginFormData } from "@/lib/validators/schemas";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "login",
+	section: "auth",
+	description: "Page de connexion à Memora Hub.",
+});
 
 /**
  * Login page with email/password authentication and demo credentials.

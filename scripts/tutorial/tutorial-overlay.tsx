@@ -6,16 +6,22 @@ import { useRouter, usePathname } from "next/navigation";
 import { Icon, Button } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { useHubStore } from "@/store/hub.store";
-import type { TutorialStep } from "@/scripts/types";
+import type { TutorialStep, PearlMood } from "@/scripts/types";
 import {
-
 	HUB_TUTORIAL,
 	hasTutorialCompleted,
 	markTutorialCompleted,
 	hasMinimumRole,
 } from "@/scripts/tutorial/hub-tutorial";
+import { defineScriptConfig } from "@/structures";
 
-/** Rect position of the spotlight target */
+const SCRIPT_CONFIG = defineScriptConfig({
+	name: "tutorial-overlay",
+	category: "tutorial",
+	description: "Overlay interactif du tutoriel avec effet spotlight et guide PEARL.",
+});
+
+// Rect position
 interface SpotlightRect {
 	top: number;
 	left: number;
@@ -28,6 +34,7 @@ interface SpotlightRect {
  * @param {string} selector - CSS selector
  * @returns {SpotlightRect | null} Rect or null if element not found
  */
+
 function getTargetRect(selector: string): SpotlightRect | null {
 	const el = document.querySelector(selector);
 	if (!el) return null;
@@ -41,9 +48,112 @@ function getTargetRect(selector: string): SpotlightRect | null {
 	};
 }
 
+// PEARL mood visual configurations
+const PEARL_MOOD_CONFIG: Record<
+	PearlMood,
+	{ animation: string; bgGradient: string; emoji: string; glowColor: string }
+> = {
+	happy: {
+		animation: "pearlBounce",
+		bgGradient: "from-emerald-500/20 to-teal-500/20",
+		emoji: "~",
+		glowColor: "rgba(16, 185, 129, 0.3)",
+	},
+	excited: {
+		animation: "pearlSparkle",
+		bgGradient: "from-amber-500/20 to-orange-500/20",
+		emoji: "!",
+		glowColor: "rgba(245, 158, 11, 0.3)",
+	},
+	curious: {
+		animation: "pearlTilt",
+		bgGradient: "from-blue-500/20 to-cyan-500/20",
+		emoji: "?",
+		glowColor: "rgba(59, 130, 246, 0.3)",
+	},
+	encouraging: {
+		animation: "pearlNod",
+		bgGradient: "from-purple-500/20 to-violet-500/20",
+		emoji: "+",
+		glowColor: "rgba(139, 92, 246, 0.3)",
+	},
+	proud: {
+		animation: "pearlGlow",
+		bgGradient: "from-pink-500/20 to-rose-500/20",
+		emoji: "*",
+		glowColor: "rgba(236, 72, 153, 0.3)",
+	},
+};
+
 /**
- * Interactive tutorial overlay with spotlight effect for first-time users.
- * Supports forced page navigation between steps and permission-based step filtering.
+ * PEARL Avatar component
+ * @param {Object} props - Component props
+ * @param {PearlMood} props.mood - Current PEARL mood
+ * @returns {JSX.Element} Animated PEARL avatar
+ */
+function PearlAvatar({ mood }: { mood: PearlMood }) {
+	const config = PEARL_MOOD_CONFIG[mood];
+
+	return (
+		<div
+			className={cn(
+				"relative flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full",
+				"bg-gradient-to-br",
+				config.bgGradient,
+				"border border-white/10",
+			)}
+			style={{
+				animation: `${config.animation} 2s ease-in-out infinite`,
+				boxShadow: `0 0 20px ${config.glowColor}, 0 0 40px ${config.glowColor}`,
+			}}
+		>
+			<Icon name="sparkles" size="sm" className="text-white" />
+
+			{/* Mood indicator dot */}
+			<div className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-gray-800 bg-gray-900 text-[8px] font-bold text-white">
+				{config.emoji}
+			</div>
+		</div>
+	);
+}
+
+/**
+ * PEARL speech bubble component
+ * @param {Object} props - Component props
+ * @param {string} props.message - What PEARL says
+ * @param {PearlMood} props.mood - Current PEARL mood for styling
+ * @returns {JSX.Element} Chat bubble with PEARL's message
+ */
+function PearlBubble({ message, mood }: { message: string; mood: PearlMood }) {
+	const config = PEARL_MOOD_CONFIG[mood];
+
+	return (
+		<div className="relative ml-2 flex-1">
+			{/* Tail pointer */}
+			<div className="absolute top-3 -left-1.5 h-3 w-3 rotate-45 border-b border-l border-white/5 bg-gray-800" />
+			{/* Bubble body */}
+			<div
+				className="relative rounded-xl rounded-tl-sm border border-white/5 bg-gray-800 px-3.5 py-2.5"
+				style={{
+					boxShadow: `inset 0 1px 0 rgba(255,255,255,0.03), 0 2px 8px rgba(0,0,0,0.2)`,
+				}}
+			>
+				<p className="text-[13px] leading-relaxed text-gray-200">{message}</p>
+				{/* PEARL signature */}
+				<div className="mt-1.5 flex items-center gap-1">
+					<div
+						className={cn("h-1 w-1 rounded-full bg-gradient-to-r", config.bgGradient)}
+						style={{ animation: "pearlPulse 1.5s ease-in-out infinite" }}
+					/>
+					<span className="text-[9px] font-semibold tracking-widest text-gray-600 uppercase">PEARL</span>
+				</div>
+			</div>
+		</div>
+	);
+}
+
+/**
+ * Supports forced page navigation between steps and permission-based step filtering
  * @returns {JSX.Element | null} Tutorial overlay or null if not active
  */
 export function TutorialOverlay() {
@@ -79,10 +189,11 @@ export function TutorialOverlay() {
 	}, []);
 
 	/**
-	 * Resolves a route template by replacing {groupId} with the active group.
+	 * Resolves a route template
 	 * @param {string} route - Route template
 	 * @returns {string} Resolved route
 	 */
+
 	const resolveRoute = useCallback(
 		(route: string): string => {
 			return route.replace("{groupId}", activeGroupId || "default");
@@ -91,15 +202,16 @@ export function TutorialOverlay() {
 	);
 
 	/**
-	 * Positions the tooltip relative to the spotlight rect.
+	 * Positions the tooltip relative to the spotlight rect
 	 * @param {SpotlightRect} r - Spotlight rectangle
 	 * @param {TutorialStep} s - Current step
 	 * @returns {void}
 	 */
+
 	const positionTooltip = useCallback((r: SpotlightRect, s: TutorialStep) => {
 		const style: React.CSSProperties = { position: "absolute" };
-		const tooltipW = 360;
-		const tooltipH = 180;
+		const tooltipW = 400;
+		const tooltipH = 260;
 		const gap = 16;
 
 		switch (s.placement) {
@@ -227,6 +339,8 @@ export function TutorialOverlay() {
 
 	if (!active || !step) return null;
 
+	const moodConfig = PEARL_MOOD_CONFIG[step.pearlMood];
+
 	// Render
 	return (
 		<>
@@ -251,7 +365,7 @@ export function TutorialOverlay() {
 						<div
 							className="absolute inset-0 animate-pulse rounded-xl"
 							style={{
-								boxShadow: "0 0 0 2px rgba(236, 72, 153, 0.5), 0 0 16px rgba(236, 72, 153, 0.2)",
+								boxShadow: `0 0 0 2px ${moodConfig.glowColor}, 0 0 16px ${moodConfig.glowColor}`,
 							}}
 						/>
 					</div>
@@ -261,28 +375,38 @@ export function TutorialOverlay() {
 			{/* Clickable backdrop to prevent interaction behind */}
 			<div className="fixed inset-0 z-[9997]" onClick={(e) => e.stopPropagation()} />
 
-			{/* Navigation loading indicator */}
+			{/* Navigation loading indicator with PEARL */}
 			{isNavigating && (
 				<div className="fixed inset-0 z-[9999] flex items-center justify-center">
 					<div className="flex flex-col items-center gap-3 rounded-2xl border border-gray-700/50 bg-gray-900 px-8 py-6 shadow-2xl">
-						<div className="border-t-primary-500 h-8 w-8 animate-spin rounded-full border-2 border-gray-600" />
-						<p className="text-sm font-medium text-gray-300">Navigation en cours...</p>
+						<div
+							className="from-primary-500/20 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-pink-500/20"
+							style={{ animation: "pearlSparkle 1s ease-in-out infinite" }}
+						>
+							<Icon name="sparkles" size="md" className="text-primary-400" />
+						</div>
+						<p className="text-sm font-medium text-gray-300">PEARL te guide...</p>
 					</div>
 				</div>
 			)}
 
-			{/* Tooltip card */}
+			{/* Tooltip card with PEARL guide */}
 			{rect && !isAnimating && !isNavigating && (
 				<div
-					className="fixed z-[9999] w-[360px] animate-[tutorialFadeIn_300ms_ease-out_both]"
+					className="fixed z-[9999] w-[400px] animate-[tutorialFadeIn_300ms_ease-out_both]"
 					style={tooltipStyle}
 				>
 					<div className="rounded-2xl border border-gray-700/50 bg-gray-900 p-5 shadow-2xl backdrop-blur-sm">
-						{/* Step indicator */}
+						{/* Step indicator + skip */}
 						<div className="mb-3 flex items-center justify-between">
 							<div className="flex items-center gap-2">
-								<div className="bg-primary-500/20 flex h-6 w-6 items-center justify-center rounded-full">
-									<Icon name="sparkles" size="xs" className="text-primary-400" />
+								<div
+									className={cn(
+										"flex h-6 w-6 items-center justify-center rounded-full bg-gradient-to-br",
+										moodConfig.bgGradient,
+									)}
+								>
+									<Icon name="sparkles" size="xs" className="text-white" />
 								</div>
 								<span className="text-primary-400 text-[10px] font-bold tracking-wider uppercase">
 									Etape {stepIndex + 1}/{filteredSteps.length}
@@ -296,9 +420,15 @@ export function TutorialOverlay() {
 							</button>
 						</div>
 
-						{/* Content */}
-						<h3 className="mb-1.5 text-base font-bold text-white">{step.title}</h3>
-						<p className="mb-4 text-sm leading-relaxed text-gray-400">{step.description}</p>
+						{/* PEARL chat bubble section */}
+						<div className="mb-4 flex items-start">
+							<PearlAvatar mood={step.pearlMood} />
+							<PearlBubble message={step.pearlMessage} mood={step.pearlMood} />
+						</div>
+
+						{/* Step title (secondary info below PEARL's message) */}
+						<h3 className="mb-1 text-sm font-bold text-white">{step.title}</h3>
+						<p className="mb-3 text-xs leading-relaxed text-gray-500">{step.description}</p>
 
 						{/* Navigation indicator if step requires page change */}
 						{step.navigateTo && (
@@ -355,13 +485,41 @@ export function TutorialOverlay() {
 				</div>
 			)}
 
-			{/* Animation keyframes */}
+			{/* PEARL animation keyframes */}
 			<style
 				dangerouslySetInnerHTML={{
 					__html: `
 				@keyframes tutorialFadeIn {
 					from { opacity: 0; transform: translateY(8px); }
 					to { opacity: 1; transform: translateY(0); }
+				}
+				@keyframes pearlBounce {
+					0%, 100% { transform: translateY(0); }
+					50% { transform: translateY(-3px); }
+				}
+				@keyframes pearlSparkle {
+					0%, 100% { transform: scale(1) rotate(0deg); filter: brightness(1); }
+					25% { transform: scale(1.08) rotate(3deg); filter: brightness(1.3); }
+					50% { transform: scale(1) rotate(-2deg); filter: brightness(1.1); }
+					75% { transform: scale(1.05) rotate(1deg); filter: brightness(1.2); }
+				}
+				@keyframes pearlTilt {
+					0%, 100% { transform: rotate(0deg); }
+					25% { transform: rotate(8deg); }
+					75% { transform: rotate(-5deg); }
+				}
+				@keyframes pearlNod {
+					0%, 100% { transform: translateY(0) scale(1); }
+					30% { transform: translateY(-2px) scale(1.03); }
+					60% { transform: translateY(1px) scale(0.98); }
+				}
+				@keyframes pearlGlow {
+					0%, 100% { filter: brightness(1) drop-shadow(0 0 4px rgba(236, 72, 153, 0.3)); }
+					50% { filter: brightness(1.15) drop-shadow(0 0 12px rgba(236, 72, 153, 0.6)); }
+				}
+				@keyframes pearlPulse {
+					0%, 100% { opacity: 0.4; transform: scale(1); }
+					50% { opacity: 1; transform: scale(1.5); }
 				}
 			`,
 				}}

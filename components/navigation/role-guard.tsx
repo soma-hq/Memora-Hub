@@ -2,35 +2,51 @@
 
 import { usePermission } from "@/hooks/usePermission";
 import type { ReactNode } from "react";
-import type { Role } from "@/core/config/roles";
-import type { Capability } from "@/core/config/capabilities";
-
+import type { RoleId } from "@/core/config/roles";
+import type { Permission, Module } from "@/core/config/capabilities";
 
 interface RoleGuardProps {
 	children: ReactNode;
-	capability?: Capability;
-	minRole?: Role;
+	/** Required module access (checks if user has any permission on the module) */
+	requiredModule?: Module;
+	/** Required permission on the module (defaults to "view") */
+	requiredPermission?: Permission;
+	/** Minimum role level required */
+	requiredRole?: RoleId;
+	/** Required entity access */
+	requiredEntity?: string;
+	/** Content to render when access is denied */
 	fallback?: ReactNode;
 }
 
 /**
- * Role/capability access guard.
- * @param {RoleGuardProps} props - Component props
- * @param {ReactNode} props.children - Protected content
- * @param {Capability} [props.capability] - Required capability
- * @param {Role} [props.minRole] - Minimum role
- * @param {ReactNode} [props.fallback=null] - Fallback on deny
- * @returns {JSX.Element} Authorized content or fallback
+ * Discord-style access guard component.
+ * Wraps children and only renders them if the current user meets the permission requirements.
+ * @param {RoleGuardProps} props - Guard configuration
+ * @returns {JSX.Element} Protected content or fallback
  */
+export function RoleGuard({
+	children,
+	requiredModule,
+	requiredPermission = "view",
+	requiredRole,
+	requiredEntity,
+	fallback = null,
+}: RoleGuardProps) {
+	const { can, canAccessEntity, hasMinRole } = usePermission();
 
-export function RoleGuard({ children, capability, minRole, fallback = null }: RoleGuardProps) {
-	const { can, hasMinRole } = usePermission();
-
-	if (capability && !can(capability)) {
+	// Check module + permission
+	if (requiredModule && !can(requiredModule, requiredPermission)) {
 		return <>{fallback}</>;
 	}
 
-	if (minRole && !hasMinRole(minRole)) {
+	// Check minimum role
+	if (requiredRole && !hasMinRole(requiredRole)) {
+		return <>{fallback}</>;
+	}
+
+	// Check entity access
+	if (requiredEntity && !canAccessEntity(requiredEntity)) {
 		return <>{fallback}</>;
 	}
 

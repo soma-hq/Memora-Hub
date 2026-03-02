@@ -6,7 +6,6 @@ import { Icon } from "../display/icon";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 
-
 export interface SelectMenuOption {
 	label: string;
 	value: string;
@@ -257,14 +256,12 @@ export function SelectMenu({
 										{option.label}
 									</span>
 
-									{/* Check circle */}
-									<div className="shrink-0">
-										{selected ? (
-											<div className="bg-primary-500 flex h-5 w-5 items-center justify-center rounded-full">
-												<Icon name="check" size="xs" className="text-white" />
-											</div>
-										) : (
-											<div className="h-5 w-5 rounded-full border-2 border-gray-300 dark:border-gray-600" />
+									{/* Check indicator */}
+									<div className="flex h-5 w-5 shrink-0 items-center justify-center">
+										{selected && (
+											<span className="text-primary-500 dark:text-primary-400 text-sm font-bold">
+												&#10003;
+											</span>
 										)}
 									</div>
 								</button>

@@ -12,7 +12,16 @@ import { sessionStatusVariantMap, sessionTypeVariantMap, CANDIDATE_DECISIONS } f
 import { PageContainer } from "@/components/layout/page-container";
 import { Modal, Badge, Icon, Tabs, EmptyState } from "@/components/ui";
 import type { Candidate } from "@/features/recruitment/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/recruitment/sessions/[sessionId]",
+	section: "protected",
+	module: "talent",
+	description: "Détail d'une session de recrutement.",
+	requiredPermissions: [{ module: "talent", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Recruitment session detail with candidate list, questionnaire and timeline.
@@ -41,7 +50,7 @@ export default function SessionDetailPage() {
 				<EmptyState
 					icon="folder"
 					title="Session introuvable"
-					description="Cette session de recrutement n'existe pas ou a ete supprimee."
+					description="Cette session de recrutement n'existe pas ou à ete supprimee."
 				/>
 			</PageContainer>
 		);

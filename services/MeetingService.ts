@@ -3,7 +3,6 @@ import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
 import type { CreateMeetingFormData } from "@/lib/validators/schemas";
 
-
 /** Meeting CRUD and attendee service */
 export class MeetingService {
 	/**
@@ -142,7 +141,7 @@ export class MeetingService {
 	}
 
 	/**
-	 * Delete a meeting
+	 * Delete à meeting
 	 * @param id Meeting ID
 	 * @param performedBy Actor user ID
 	 */
@@ -200,6 +199,58 @@ export class MeetingService {
 			},
 			orderBy: { date: "asc" },
 			take: limit,
+		});
+	}
+
+	/**
+	 * Search meetings by title or notes within a group
+	 * @param groupId Group ID
+	 * @param query Search query
+	 * @returns Matching meetings
+	 */
+
+	static async search(groupId: string, query: string) {
+		return prisma.meeting.findMany({
+			where: {
+				groupId,
+				OR: [
+					{ title: { contains: query, mode: "insensitive" } },
+					{ notes: { contains: query, mode: "insensitive" } },
+				],
+			},
+			include: {
+				attendees: {
+					include: {
+						user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+					},
+				},
+			},
+			orderBy: { date: "desc" },
+		});
+	}
+
+	/**
+	 * Get meetings within a date range for a group
+	 * @param groupId Group ID
+	 * @param startDate Range start
+	 * @param endDate Range end
+	 * @returns Meetings in the date range
+	 */
+
+	static async getByDateRange(groupId: string, startDate: Date, endDate: Date) {
+		return prisma.meeting.findMany({
+			where: {
+				groupId,
+				date: { gte: startDate, lte: endDate },
+			},
+			include: {
+				attendees: {
+					include: {
+						user: { select: { id: true, firstName: true, lastName: true, avatar: true } },
+					},
+				},
+			},
+			orderBy: { date: "asc" },
 		});
 	}
 }

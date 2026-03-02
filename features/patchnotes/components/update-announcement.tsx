@@ -68,7 +68,7 @@ export function UpdateAnnouncement() {
 					<div className="relative">
 						<div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-white backdrop-blur-sm">
 							<Icon name="rocket" size="xs" />
-							MISE A JOUR v{latest.version}
+							MISE À JOUR v{latest.version}
 						</div>
 						<h2 className="text-2xl font-bold text-white">{latest.title}</h2>
 						<p className="mt-2 text-sm text-white/80">{latest.summary}</p>
@@ -78,7 +78,7 @@ export function UpdateAnnouncement() {
 				{/* Changes preview */}
 				<div className="px-6 py-5">
 					<p className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-						Nouveautes
+						Nouveautés
 					</p>
 					<div className="space-y-2">
 						{latest.changes.slice(0, 6).map((change, idx) => (

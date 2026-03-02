@@ -12,11 +12,10 @@ const store = new Map<string, CacheEntry>();
  */
 export class CacheManager {
 	/**
-	 * Get cached value or null
-	 * @param key Cache key
+	 * Retrieve a cached value by key, returning null if missing or expired
+	 * @param key Cache key to look up
 	 * @returns Cached value or null
 	 */
-
 	static async get<T>(key: string): Promise<T | null> {
 		const entry = store.get(key);
 		if (!entry) return null;
@@ -28,30 +27,27 @@ export class CacheManager {
 	}
 
 	/**
-	 * Set a cached value
+	 * Store a value in the cache with a time-to-live
 	 * @param key Cache key
 	 * @param value Value to cache
-	 * @param ttlSeconds TTL in seconds
+	 * @param ttlSeconds Time-to-live in seconds
 	 */
-
 	static async set<T>(key: string, value: T, ttlSeconds = 60): Promise<void> {
 		store.set(key, { value, expiresAt: Date.now() + ttlSeconds * 1000 });
 	}
 
 	/**
-	 * Invalidate cache entry
-	 * @param key Cache key
+	 * Remove a single cache entry by exact key
+	 * @param key Cache key to invalidate
 	 */
-
 	static async invalidate(key: string): Promise<void> {
 		store.delete(key);
 	}
 
 	/**
-	 * Invalidate by key prefix
-	 * @param pattern Key prefix
+	 * Remove all cache entries whose key starts with the given prefix
+	 * @param pattern Key prefix to match against
 	 */
-
 	static async invalidatePattern(pattern: string): Promise<void> {
 		for (const key of store.keys()) {
 			if (key.startsWith(pattern)) store.delete(key);

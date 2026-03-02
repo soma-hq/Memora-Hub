@@ -2,7 +2,7 @@
 import type { BadgeVariant } from "@/core/design/states";
 
 
-/** Member of a group */
+/** Member of à group */
 export interface GroupMember {
 	id: string;
 	name: string;

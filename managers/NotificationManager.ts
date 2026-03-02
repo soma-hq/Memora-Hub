@@ -6,7 +6,7 @@ import { DatabaseManager } from "./DatabaseManager";
  */
 export class NotificationManager {
 	/**
-	 * Send a notification to a user
+	 * Send à notification to a user
 	 * @param userId - Target user ID
 	 * @param payload - Notification content
 	 */
@@ -30,7 +30,7 @@ export class NotificationManager {
 	}
 
 	/**
-	 * Broadcast a notification to many users
+	 * Broadcast à notification to many users
 	 * @param userIds - Target user IDs
 	 * @param payload - Notification content
 	 */

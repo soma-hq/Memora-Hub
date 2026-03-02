@@ -1,22 +1,27 @@
 "use client";
 
-// Features & Components
 import { PageContainer } from "@/components/layout/page-container";
 import { Badge, Icon } from "@/components/ui";
 import { usePersonalTasks } from "@/features/personnel/hooks";
 import {
-
 	taskPriorityVariantMap,
 	taskPriorityLabels,
 	TASK_PRIORITIES,
 	TASK_STATUSES,
 	taskStatusLabels,
 } from "@/features/personnel/types";
-
-// Utils & hooks
 import { cn } from "@/lib/utils/cn";
 import type { PersonalTask, TaskPriority, TaskStatus } from "@/features/personnel/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/personnel/tasks",
+	section: "protected",
+	module: "personnel",
+	description: "Tâches du personnel.",
+	requiredPermissions: [{ module: "personnel", action: "view" }],
+	entityScoped: true,
+});
 
 interface ColumnConfig {
 	status: TaskStatus;

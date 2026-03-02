@@ -2,12 +2,11 @@
 
 // React
 import { useMemo } from "react";
-import { Badge, Icon, Avatar, EmptyState } from "@/components/ui";
+import { Badge, Icon, Avatar, EmptyState, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { Task, TaskStatusValue } from "../types";
 import { statusVariantMap, priorityVariantMap, TaskStatusLabel } from "../types";
 import { TaskStatus } from "@/constants";
-
 
 /** Props for the TaskBoard component */
 interface TaskBoardProps {
@@ -52,7 +51,7 @@ export function TaskBoard({ tasks, onToggle, onTaskClick, className }: TaskBoard
 
 	if (tasks.length === 0) {
 		return (
-			<EmptyState icon="tasks" title="Aucune tache" description="Creez votre premiere tache pour commencer." />
+			<EmptyState icon="tasks" title="Aucune tâche" description="Créez votre première tâche pour commencer." />
 		);
 	}
 
@@ -103,9 +102,7 @@ function BoardColumn({ status, tasks, onToggle, onTaskClick }: BoardColumnProps)
 
 			<div className="flex min-h-[200px] flex-col gap-3">
 				{tasks.length === 0 && (
-					<div className="flex flex-1 items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-8 dark:border-gray-700">
-						<p className="text-xs text-gray-400">Aucune tache</p>
-					</div>
+					<StyledEmptyState icon="tasks" title="Aucune tâche" description="Glissez une tâche ici." />
 				)}
 
 				{tasks.map((task) => (

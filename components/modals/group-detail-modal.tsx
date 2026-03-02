@@ -132,8 +132,8 @@ export function GroupDetailModal({ isOpen, onClose, group }: GroupDetailModalPro
 										[
 											"Utilisateurs",
 											"Projets",
-											"Taches",
-											"Reunions",
+											"Tâches",
+											"Réunions",
 											"Recrutement",
 											"Formation",
 										].map((p) => (
@@ -145,7 +145,7 @@ export function GroupDetailModal({ isOpen, onClose, group }: GroupDetailModalPro
 											</span>
 										))}
 									{role === "Manager" &&
-										["Projets", "Taches", "Reunions"].map((p) => (
+										["Projets", "Tâches", "Réunions"].map((p) => (
 											<span
 												key={p}
 												className="bg-warning-50 text-warning-700 dark:bg-warning-900/20 rounded px-2 py-0.5 text-xs"
@@ -154,7 +154,7 @@ export function GroupDetailModal({ isOpen, onClose, group }: GroupDetailModalPro
 											</span>
 										))}
 									{role === "Collaborator" &&
-										["Taches (lecture/ecriture)", "Reunions (lecture)"].map((p) => (
+										["Tâches (lecture/ecriture)", "Réunions (lecture)"].map((p) => (
 											<span
 												key={p}
 												className="bg-success-50 text-success-700 dark:bg-success-900/20 rounded px-2 py-0.5 text-xs"
@@ -163,7 +163,7 @@ export function GroupDetailModal({ isOpen, onClose, group }: GroupDetailModalPro
 											</span>
 										))}
 									{role === "Guest" &&
-										["Taches (lecture seule)"].map((p) => (
+										["Tâches (lecture seule)"].map((p) => (
 											<span
 												key={p}
 												className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-700 dark:text-gray-300"

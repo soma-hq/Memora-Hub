@@ -1,125 +1,132 @@
-import type { Role } from "@/core/config/roles";
-import type { Capability } from "@/core/config/capabilities";
-import { CAPABILITIES } from "@/core/config/capabilities";
+import type { RoleId } from "@/core/config/roles";
+import type { Permission, Module } from "@/core/config/capabilities";
+import { ALL_PERMISSIONS, READ_WRITE_PERMISSIONS, ALL_MODULES } from "@/core/config/capabilities";
 
-const C = CAPABILITIES;
+/**
+ * Discord-style capability map.
+ * Maps each role to its allowed permissions per module.
+ * "manage" implicitly grants all other permissions on that module.
+ */
+export const CAPABILITY_MAP: Record<RoleId, Partial<Record<Module, Permission[]>>> = {
+	// Owner: manage ALL modules (absolute control)
+	owner: Object.fromEntries(ALL_MODULES.map((m) => [m, ALL_PERMISSIONS])) as Record<Module, Permission[]>,
 
-const ALL_CAPABILITIES = Object.values(CAPABILITIES);
+	// Marsha Teams: manage all modules except admin
+	marsha_teams: Object.fromEntries(
+		ALL_MODULES.map((m) => [m, m === "admin" ? ([] as Permission[]) : ALL_PERMISSIONS]),
+	) as Record<Module, Permission[]>,
 
-export const CAPABILITY_MAP: Record<Role, Capability[]> = {
-	Owner: ALL_CAPABILITIES,
+	// Legacy Resp Live: view+create+edit on twitch, youtube, tasks, projects, meetings, personnel, logs + absences, groups (view), notifications
+	legacy_resp_live: {
+		moderation_twitch: READ_WRITE_PERMISSIONS,
+		moderation_youtube: READ_WRITE_PERMISSIONS,
+		tasks: READ_WRITE_PERMISSIONS,
+		projects: READ_WRITE_PERMISSIONS,
+		meetings: READ_WRITE_PERMISSIONS,
+		personnel: READ_WRITE_PERMISSIONS,
+		logs: READ_WRITE_PERMISSIONS,
+		absences: READ_WRITE_PERMISSIONS,
+		groups: ["view"] as Permission[],
+		notifications: ["view"] as Permission[],
+	},
 
-	Admin: [
-		C.USERS_VIEW,
-		C.USERS_CREATE,
-		C.USERS_EDIT,
-		C.USERS_DELETE,
-		C.GROUPS_VIEW,
-		C.GROUPS_EDIT,
-		C.PROJECTS_VIEW,
-		C.PROJECTS_CREATE,
-		C.PROJECTS_EDIT,
-		C.PROJECTS_DELETE,
-		C.PROJECTS_ARCHIVE,
-		C.PROJECTS_MANAGE_MEMBERS,
-		C.PROJECTS_VIEW_STATS,
-		C.PROJECTS_EXPORT,
-		C.TASKS_VIEW,
-		C.TASKS_CREATE,
-		C.TASKS_EDIT,
-		C.TASKS_DELETE,
-		C.TASKS_ASSIGN,
-		C.TASKS_MANAGE_SUBTASKS,
-		C.TASKS_CHANGE_STATUS,
-		C.TASKS_CHANGE_PRIORITY,
-		C.TASKS_VIEW_ALL,
-		C.TASKS_EXPORT,
-		C.MEETINGS_VIEW,
-		C.MEETINGS_CREATE,
-		C.MEETINGS_EDIT,
-		C.MEETINGS_DELETE,
-		C.MEETINGS_MANAGE_ATTENDEES,
-		C.MEETINGS_VIEW_NOTES,
-		C.MEETINGS_EDIT_NOTES,
-		C.MEETINGS_EXPORT,
-		C.ABSENCES_VIEW,
-		C.ABSENCES_CREATE,
-		C.ABSENCES_APPROVE,
-		C.RECRUITMENT_VIEW,
-		C.RECRUITMENT_CREATE,
-		C.RECRUITMENT_EDIT,
-		C.TRAINING_VIEW,
-		C.TRAINING_CREATE,
-		C.TRAINING_EDIT,
-		C.STATS_VIEW,
-		C.SETTINGS_VIEW,
-		C.SETTINGS_EDIT,
-	],
+	// Legacy Resp Discord: view+create+edit on discord, tasks, projects, meetings, personnel, logs + absences, groups (view), notifications
+	legacy_resp_discord: {
+		moderation_discord: READ_WRITE_PERMISSIONS,
+		tasks: READ_WRITE_PERMISSIONS,
+		projects: READ_WRITE_PERMISSIONS,
+		meetings: READ_WRITE_PERMISSIONS,
+		personnel: READ_WRITE_PERMISSIONS,
+		logs: READ_WRITE_PERMISSIONS,
+		absences: READ_WRITE_PERMISSIONS,
+		groups: ["view"] as Permission[],
+		notifications: ["view"] as Permission[],
+	},
 
-	Manager: [
-		C.PROJECTS_VIEW,
-		C.PROJECTS_CREATE,
-		C.PROJECTS_EDIT,
-		C.PROJECTS_MANAGE_MEMBERS,
-		C.PROJECTS_VIEW_STATS,
-		C.PROJECTS_EXPORT,
-		C.TASKS_VIEW,
-		C.TASKS_CREATE,
-		C.TASKS_EDIT,
-		C.TASKS_ASSIGN,
-		C.TASKS_MANAGE_SUBTASKS,
-		C.TASKS_CHANGE_STATUS,
-		C.TASKS_CHANGE_PRIORITY,
-		C.TASKS_VIEW_ALL,
-		C.TASKS_EXPORT,
-		C.MEETINGS_VIEW,
-		C.MEETINGS_CREATE,
-		C.MEETINGS_EDIT,
-		C.MEETINGS_MANAGE_ATTENDEES,
-		C.MEETINGS_VIEW_NOTES,
-		C.MEETINGS_EDIT_NOTES,
-		C.MEETINGS_EXPORT,
-		C.ABSENCES_VIEW,
-		C.ABSENCES_CREATE,
-		C.ABSENCES_APPROVE,
-		C.RECRUITMENT_VIEW,
-		C.TRAINING_VIEW,
-		C.SETTINGS_VIEW,
-	],
+	// Legacy Resp Polyvalent: view+create+edit on polyvalent, tasks, projects, meetings, personnel, logs + absences, groups (view), notifications
+	legacy_resp_polyvalent: {
+		moderation_polyvalent: READ_WRITE_PERMISSIONS,
+		tasks: READ_WRITE_PERMISSIONS,
+		projects: READ_WRITE_PERMISSIONS,
+		meetings: READ_WRITE_PERMISSIONS,
+		personnel: READ_WRITE_PERMISSIONS,
+		logs: READ_WRITE_PERMISSIONS,
+		absences: READ_WRITE_PERMISSIONS,
+		groups: ["view"] as Permission[],
+		notifications: ["view"] as Permission[],
+	},
 
-	Collaborator: [
-		C.PROJECTS_VIEW,
-		C.TASKS_VIEW,
-		C.TASKS_CREATE,
-		C.TASKS_EDIT,
-		C.TASKS_MANAGE_SUBTASKS,
-		C.TASKS_CHANGE_STATUS,
-		C.MEETINGS_VIEW,
-		C.MEETINGS_VIEW_NOTES,
-		C.ABSENCES_VIEW,
-		C.ABSENCES_CREATE,
-		C.TRAINING_VIEW,
-		C.SETTINGS_VIEW,
-	],
-
-	Guest: [C.TASKS_VIEW, C.MEETINGS_VIEW, C.SETTINGS_VIEW],
+	// Momentum & Talent: view+create+edit on momentum, talent, tasks + recruitment, training, notifications (view)
+	momentum_talent: {
+		momentum: READ_WRITE_PERMISSIONS,
+		talent: READ_WRITE_PERMISSIONS,
+		tasks: READ_WRITE_PERMISSIONS,
+		recruitment: READ_WRITE_PERMISSIONS,
+		training: READ_WRITE_PERMISSIONS,
+		notifications: ["view"] as Permission[],
+	},
 };
 
 /**
- * Check if a role includes a specific capability
- * @param role - Role to check
- * @param capability - Capability to look for
- * @returns True if role has the capability
+ * Check if a role has a specific permission on a module.
+ * "manage" permission on a module implicitly includes all other permissions.
+ * @param roleId - Role to check
+ * @param module - Target module
+ * @param permission - Permission action to verify
+ * @returns True if the role has the permission
  */
-export function roleHasCapability(role: Role, capability: Capability): boolean {
-	return CAPABILITY_MAP[role]?.includes(capability) ?? false;
+export function hasPermission(roleId: RoleId, module: Module, permission: Permission): boolean {
+	const rolePerms = CAPABILITY_MAP[roleId];
+	if (!rolePerms) return false;
+
+	const modulePerms = rolePerms[module];
+	if (!modulePerms || modulePerms.length === 0) return false;
+
+	// "manage" grants all permissions
+	if (modulePerms.includes("manage")) return true;
+
+	return modulePerms.includes(permission);
 }
 
 /**
- * Get all capabilities granted to a role
- * @param role - Role to query
- * @returns Array of capabilities for the role
+ * Check if a role has any access to a module (at least "view").
+ * @param roleId - Role to check
+ * @param module - Target module
+ * @returns True if the role can access the module
  */
-export function getCapabilitiesForRole(role: Role): Capability[] {
-	return CAPABILITY_MAP[role] ?? [];
+export function hasModuleAccess(roleId: RoleId, module: Module): boolean {
+	const rolePerms = CAPABILITY_MAP[roleId];
+	if (!rolePerms) return false;
+
+	const modulePerms = rolePerms[module];
+	return !!modulePerms && modulePerms.length > 0;
+}
+
+/**
+ * Get all permissions a role has on a module.
+ * If "manage" is present, returns all permissions.
+ * @param roleId - Role to check
+ * @param module - Target module
+ * @returns Array of permissions for the role on the module
+ */
+export function getPermissionsForModule(roleId: RoleId, module: Module): Permission[] {
+	const rolePerms = CAPABILITY_MAP[roleId];
+	if (!rolePerms) return [];
+
+	const modulePerms = rolePerms[module];
+	if (!modulePerms || modulePerms.length === 0) return [];
+
+	// "manage" means all permissions
+	if (modulePerms.includes("manage")) return [...ALL_PERMISSIONS];
+
+	return [...modulePerms];
+}
+
+/**
+ * Get all modules a role has access to.
+ * @param roleId - Role to check
+ * @returns Array of modules the role can access
+ */
+export function getAccessibleModules(roleId: RoleId): Module[] {
+	return ALL_MODULES.filter((m) => hasModuleAccess(roleId, m));
 }

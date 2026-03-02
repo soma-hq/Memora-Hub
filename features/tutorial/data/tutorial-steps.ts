@@ -1,6 +1,5 @@
 import type { TutorialStep } from "../types";
 
-
 /** Tutorial steps for the Memora Hub first-time walkthrough */
 export const TUTORIAL_STEPS: TutorialStep[] = [
 	{
@@ -8,7 +7,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		targetSelector: "[data-tutorial='sidebar']",
 		title: "La Navigation",
 		description:
-			"Voici ta barre laterale. Tu y retrouveras tous les modules : Dashboard, Equipe, Projets, Moderation, et bien plus.",
+			"Voici ta barre latérale. Tu y retrouveras tous les modules : Dashboard, Équipe, Projets, Modération, et bien plus.",
 		placement: "right",
 	},
 	{
@@ -24,7 +23,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		targetSelector: "[data-tutorial='notifications']",
 		title: "Les Notifications",
 		description:
-			"Tu recevras ici toutes les notifications importantes : sanctions, mises a jour d'equipe, rappels...",
+			"Tu recevras ici toutes les notifications importantes : sanctions, mises à jour d'equipe, rappels...",
 		placement: "bottom",
 	},
 	{
@@ -32,7 +31,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		targetSelector: "[data-tutorial='patchnotes']",
 		title: "Les Patchnotes",
 		description:
-			"Chaque mise a jour du Hub sera signalee ici. Tu pourras consulter le changelog complet des nouveautes.",
+			"Chaque mise à jour du Hub sera signalee ici. Tu pourras consulter le changelog complet des nouveautes.",
 		placement: "bottom",
 	},
 	{
@@ -40,7 +39,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		targetSelector: "[data-tutorial='assistant']",
 		title: "Ton Assistant IA",
 		description:
-			"Besoin d'aide ? Ton assistant IA est la pour repondre a tes questions sur le fonctionnement du Hub et de Marsha.",
+			"Besoin d'aide ? Ton assistant IA est la pour repondre à tes questions sur le fonctionnement du Hub et de Marsha.",
 		placement: "bottom",
 	},
 	{
@@ -48,7 +47,7 @@ export const TUTORIAL_STEPS: TutorialStep[] = [
 		targetSelector: "[data-tutorial='profile']",
 		title: "Ton Profil",
 		description:
-			"Accede a ton profil, tes parametres et ta deconnexion depuis ce menu. Tu peux aussi y changer le theme.",
+			"Accede à ton profil, tes parametres et ta deconnexion depuis ce menu. Tu peux aussi y changer le theme.",
 		placement: "bottom",
 		nextLabel: "Terminer",
 	},

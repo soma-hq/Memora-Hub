@@ -1,5 +1,5 @@
 /**
- * Converts text to a URL-friendly slug
+ * Converts text to à URL-friendly slug
  * @param text - Text to slugify
  * @returns Lowercase hyphenated string
  */

@@ -16,8 +16,8 @@ interface MobileNavItem {
 const mobileItems: MobileNavItem[] = [
 	{ label: "Dashboard", href: "/hub/default", icon: "home" },
 	{ label: "Projets", href: "/hub/default/projects", icon: "folder" },
-	{ label: "Taches", href: "/hub/default/tasks", icon: "tasks" },
-	{ label: "Reunions", href: "/hub/default/meetings", icon: "calendar" },
+	{ label: "Tâches", href: "/hub/default/tasks", icon: "tasks" },
+	{ label: "Réunions", href: "/hub/default/meetings", icon: "calendar" },
 	{ label: "Plus", href: "/settings/account", icon: "more" },
 ];
 

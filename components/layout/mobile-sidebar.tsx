@@ -116,7 +116,7 @@ export function MobileSidebar() {
 				{ label: "Tâches", href: `/hub/${groupId}/tasks`, icon: "tasks" },
 				{ label: "Réunions", href: `/hub/${groupId}/meetings`, icon: "calendar" },
 				{ label: "Squad", href: "/users", icon: "users" },
-				{ label: "Entités", href: "/admin/access", icon: "group" },
+				{ label: "Entités", href: "/admin/accèss", icon: "group" },
 				{ label: "Statistiques", href: "/stats", icon: "stats" },
 			],
 		},

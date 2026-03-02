@@ -5,7 +5,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/centre-info/echelle",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Échelle de priorité de la modération Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 // Data
 interface Member {
@@ -61,7 +70,7 @@ const HIERARCHY: HierarchyLevel[] = [
 	},
 	{
 		title: "Referents & Tuteurs",
-		subtitle: "Premiers a contacter en cas de besoin sur Discord ou Twitch",
+		subtitle: "Premiers à contacter en cas de besoin sur Discord ou Twitch",
 		badgeVariant: "primary",
 		borderColor: "border-l-primary-500",
 		iconBgColor: "bg-primary-100 dark:bg-primary-900/20",

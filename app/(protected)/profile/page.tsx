@@ -10,9 +10,15 @@ import { UserArchives } from "@/features/users/components/user-archives";
 import { cn } from "@/lib/utils/cn";
 import type { BadgeVariant } from "@/core/design/states";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "profile",
+	section: "protected",
+	description: "Profil utilisateur et informations personnelles.",
+});
 
-type ProfileTab = "profil" | "acces" | "infos" | "activite";
+type ProfileTab = "profil" | "accès" | "infos" | "activite";
 
 interface TabDef {
 	id: ProfileTab;
@@ -22,7 +28,7 @@ interface TabDef {
 
 const TABS: TabDef[] = [
 	{ id: "profil", label: "Profil", icon: "profile" },
-	{ id: "acces", label: "Accès", icon: "shield" },
+	{ id: "accès", label: "Accès", icon: "shield" },
 	{ id: "infos", label: "Informations personnelles", icon: "edit" },
 	{ id: "activite", label: "Activité récente", icon: "clock" },
 ];
@@ -493,7 +499,7 @@ function ProfilView({ onEditProfile }: { onEditProfile: () => void }) {
 	);
 }
 
-function AccesView() {
+function AccessView() {
 	return (
 		<div className="space-y-5">
 			{/* Team overview */}
@@ -853,7 +859,7 @@ export default function ProfilePage() {
 
 			{/* Tab content */}
 			{activeTab === "profil" && <ProfilView onEditProfile={() => router.push("/settings/account")} />}
-			{activeTab === "acces" && <AccesView />}
+			{activeTab === "accès" && <AccessView />}
 			{activeTab === "infos" && <InfosView />}
 			{activeTab === "activite" && <ActiviteView />}
 		</PageContainer>

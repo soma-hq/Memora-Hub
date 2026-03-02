@@ -8,11 +8,9 @@ import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { MobileNav } from "@/components/navigation/mobile-nav";
 import { SearchModal } from "@/components/modals/search-modal";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { UpdateAnnouncement } from "@/features/patchnotes/components/update-announcement";
 import { AlertBanner } from "@/features/alerts/components/alert-banner";
 import { TutorialOverlay } from "@/scripts/tutorial/tutorial-overlay";
 import { useUIStore } from "@/store/ui.store";
-
 
 /**
  * Protected layout providing sidebar, header and mobile navigation for authenticated pages.
@@ -63,7 +61,6 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 			<MobileNav />
 			<MobileSidebar />
 			<SearchModal isOpen={searchOpen} onClose={closeSearch} />
-			<UpdateAnnouncement />
 			<AlertBanner />
 			<TutorialOverlay />
 		</div>

@@ -1,11 +1,10 @@
-import type { UserRole } from "@/constants";
+import type { RoleId } from "@/core/config/roles";
 import type { Team } from "@/core/config/teams";
 import type { AbsenceMode } from "@/features/absences/absence-mode";
 export { PageAccessModeLabel } from "@/constants";
 export type { PageAccessModeValue } from "@/constants";
 // Re-export variant map from design system
 export { roleVariant } from "@/core/design/states";
-
 
 /** Access entry linking a user to a group with a role */
 export interface GroupAccess {
@@ -20,10 +19,18 @@ export interface User {
 	name: string;
 	email: string;
 	role: string;
+	/** Discord-style role ID from the permission system */
+	roleId: RoleId;
 	avatar: string;
 	group: string;
 	status: "active" | "inactive";
 	groupAccess?: GroupAccess[];
+	/** Entity IDs the user can access. ["*"] = all entities */
+	entityAccess: string[];
+	/** TOTP base32 secret for two-factor authentication */
+	twoFactorSecret?: string;
+	/** Whether two-factor authentication is enabled */
+	twoFactorEnabled: boolean;
 }
 
 /** Access entry linking a user to an entity with permissions */
@@ -69,14 +76,24 @@ export interface UserProfile {
 	roleSecondary: string;
 	arrivalDate: string;
 
+	// Discord-style permission system fields
+	/** Role ID from the permission system */
+	roleId: RoleId;
+	/** Entity IDs this user can access. ["*"] = all entities */
+	entityAccess: string[];
+	/** TOTP base32 secret for two-factor authentication */
+	twoFactorSecret?: string;
+	/** Whether two-factor authentication is enabled */
+	twoFactorEnabled: boolean;
+
 	// Status
 	status: "active" | "inactive";
 
 	// Absence mode
 	absenceMode?: AbsenceMode;
 
-	// Multi-entity access
-	entityAccess: EntityAccess[];
+	// Multi-entity access (legacy)
+	entityAccessDetails: EntityAccess[];
 }
 
 /** Division icon paths indexed by division level */
@@ -90,15 +107,15 @@ export const DIVISION_ICONS: Record<number, string> = {
 /** Division display labels indexed by division level */
 export const DIVISION_LABELS: Record<number, string> = {
 	0: "Recrue",
-	1: "❱",
-	2: "❱❱",
-	3: "❱❱❱",
+	1: "-->",
+	2: "-->-->",
+	3: "-->-->-->",
 };
 
 /** Marsha Squad team-level icon paths */
 export const MARSHA_ICONS: Record<string, string> = {
-	Executive: "/icons/marsha/marshaExecutive.png",
-	"Marsha Team": "/icons/marsha/marshaTeams.png",
+	Owner: "/icons/marsha/marshaExecutive.png",
+	"Marsha Teams": "/icons/marsha/marshaTeams.png",
 	Legacy: "/icons/marsha/marshaLegacy.png",
 };
 
@@ -125,9 +142,9 @@ export const MARSHA_HIERARCHY: MarshaHierarchy[] = [
 		level: 5,
 	},
 	{ role: "legacy", label: "Legacy", description: "Administration managériale. Hors division.", level: 4 },
-	{ role: "division3", label: "Division ❱❱❱", description: "Membres confirmés, référents.", level: 3 },
-	{ role: "division2", label: "Division ❱❱", description: "Membres intermédiaires.", level: 2 },
-	{ role: "division1", label: "Division ❱", description: "Membres juniors.", level: 1 },
+	{ role: "division3", label: "Division 3", description: "Membres confirmés, référents.", level: 3 },
+	{ role: "division2", label: "Division 2", description: "Membres intermédiaires.", level: 2 },
+	{ role: "division1", label: "Division 1", description: "Membres juniors.", level: 1 },
 	{ role: "division0", label: "Marsha Academy", description: "Recrues en période d'intégration.", level: 0 },
 ];
 
@@ -136,26 +153,28 @@ export interface UserFormValues {
 	firstName: string;
 	lastName: string;
 	email: string;
-	role: string;
+	roleId: RoleId;
 	password?: string;
+	entityAccess: string[];
+	twoFactorEnabled: boolean;
 	groupAccess: GroupAccess[];
 }
 
-/** Available role options for select inputs */
-export const roleOptions: { label: string; value: UserRole }[] = [
-	{ label: "Owner", value: "Owner" },
-	{ label: "Admin", value: "Admin" },
-	{ label: "Manager", value: "Manager" },
-	{ label: "Collaborateur", value: "Collaborator" },
-	{ label: "Invite", value: "Guest" },
+/** Available role options for select inputs (Discord-style) */
+export const roleOptions: { label: string; value: RoleId }[] = [
+	{ label: "Owner", value: "owner" },
+	{ label: "Marsha Teams", value: "marsha_teams" },
+	{ label: "Resp. Live & YouTube", value: "legacy_resp_live" },
+	{ label: "Resp. Discord", value: "legacy_resp_discord" },
+	{ label: "Resp. Polyvalent", value: "legacy_resp_polyvalent" },
+	{ label: "Momentum & Talent", value: "momentum_talent" },
 ];
 
 /** Available group options for select inputs */
 export const availableGroups = [
-	{ label: "Bazalthe", value: "bazalthe" },
-	{ label: "Inoxtag", value: "inoxtag" },
-	{ label: "Doigby", value: "doigby" },
 	{ label: "Michou", value: "michou" },
+	{ label: "Doigby", value: "doigby" },
+	{ label: "Inoxtag", value: "inoxtag" },
 	{ label: "Anthony", value: "anthony" },
 ] as const;
 

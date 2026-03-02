@@ -75,7 +75,7 @@ export function useAssistant() {
 	}, [adminMode, setContext]);
 
 	/**
-	 * Send a message from the user
+	 * Send à message from the user
 	 * @param content Message content
 	 */
 

@@ -31,7 +31,7 @@ export interface Meeting {
 	link?: string;
 }
 
-/** Form data for creating or editing a meeting */
+/** Form data for creating or editing à meeting */
 export interface MeetingFormData {
 	title: string;
 	date: string;

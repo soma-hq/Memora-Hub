@@ -1,10 +1,8 @@
-// Next.js
 import type { Metadata } from "next";
 import { DM_Sans, DM_Serif_Display, DM_Mono } from "next/font/google";
 import "./globals.css";
 import { ToastProvider } from "@/components/providers/toast-provider";
 import { ThemeProvider } from "@/components/providers/theme-provider";
-
 
 // Fonts
 const dmSans = DM_Sans({
@@ -32,7 +30,7 @@ export const metadata: Metadata = {
 };
 
 /**
- * Root layout wrapping all pages with fonts, theme and toast providers.
+ * Root layout
  * @param props - Component props
  * @param props.children - Nested page content
  * @returns The root HTML layout

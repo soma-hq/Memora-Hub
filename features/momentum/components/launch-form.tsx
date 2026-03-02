@@ -87,7 +87,7 @@ export function LaunchForm({ onSubmit, onCancel, isLoading = false }: LaunchForm
 						className={selectClasses}
 						disabled={isLoading}
 					>
-						<option value="">Selectionner une entite...</option>
+						<option value="">Sélectionner une entité...</option>
 						{ENTITIES.map((e) => (
 							<option key={e.value} value={e.value}>
 								{e.label}

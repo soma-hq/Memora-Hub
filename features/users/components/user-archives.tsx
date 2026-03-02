@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Badge, Card, Icon } from "@/components/ui";
+import { Badge, Card, Icon, StyledEmptyState } from "@/components/ui";
 import {
-
 	ProjectStatusLabel,
 	TaskStatusLabel,
 	TaskPriorityLabel,
@@ -12,7 +11,6 @@ import {
 	AbsenceStatusLabel,
 } from "@/constants";
 import {
-
 	projectStatusVariant,
 	taskStatusVariant,
 	taskPriorityVariant,
@@ -29,10 +27,9 @@ import { cn } from "@/lib/utils/cn";
 import { formatDate } from "@/lib/utils/date";
 import { useUserRelations } from "@/hooks/use-data-store";
 
-
 // ── Constants ─────────────────────────────────────────────────────────────────
 
-type ArchiveTab = "projets" | "taches" | "reunions" | "absences";
+type ArchiveTab = "projets" | "tâches" | "réunions" | "absences";
 
 interface TabConfig {
 	id: ArchiveTab;
@@ -42,8 +39,8 @@ interface TabConfig {
 
 const ARCHIVE_TABS: TabConfig[] = [
 	{ id: "projets", label: "Projets", icon: "folder" },
-	{ id: "taches", label: "Tâches", icon: "tasks" },
-	{ id: "reunions", label: "Réunions", icon: "calendar" },
+	{ id: "tâches", label: "Tâches", icon: "tasks" },
+	{ id: "réunions", label: "Réunions", icon: "calendar" },
 	{ id: "absences", label: "Absences", icon: "absence" },
 ];
 
@@ -99,9 +96,9 @@ export function UserArchives({ userId }: UserArchivesProps) {
 		switch (activeTab) {
 			case "projets":
 				return allProjects.length;
-			case "taches":
+			case "tâches":
 				return allTasks.length;
-			case "reunions":
+			case "réunions":
 				return allMeetings.length;
 			case "absences":
 				return absences.length;
@@ -166,11 +163,11 @@ export function UserArchives({ userId }: UserArchivesProps) {
 								userId={userId}
 							/>
 						)}
-						{activeTab === "taches" && (
-							<TachesTable items={allTasks.slice(startIdx, endIdx)} archivedIds={archivedTaskIds} />
+						{activeTab === "tâches" && (
+							<TasksTable items={allTasks.slice(startIdx, endIdx)} archivedIds={archivedTaskIds} />
 						)}
-						{activeTab === "reunions" && (
-							<ReunionsTable items={allMeetings.slice(startIdx, endIdx)} pastIds={pastMeetingIds} />
+						{activeTab === "réunions" && (
+							<MeetingsTable items={allMeetings.slice(startIdx, endIdx)} pastIds={pastMeetingIds} />
 						)}
 						{activeTab === "absences" && (
 							<AbsencesTable items={absences.slice(startIdx, endIdx)} isArchived={isAbsencePast} />
@@ -198,28 +195,28 @@ function ArchivedBadge() {
 // ── Empty state ───────────────────────────────────────────────────────────────
 
 const EMPTY_LABELS: Record<ArchiveTab, string> = {
-	projets: "Aucun projet trouvé pour cet utilisateur",
-	taches: "Aucune tâche trouvée pour cet utilisateur",
-	reunions: "Aucune réunion trouvée pour cet utilisateur",
-	absences: "Aucune absence trouvée pour cet utilisateur",
+	projets: "Aucun projet trouvé",
+	tâches: "Aucune tâche trouvée",
+	réunions: "Aucune réunion trouvée",
+	absences: "Aucune absence trouvée",
+};
+
+const EMPTY_DESCRIPTIONS: Record<ArchiveTab, string> = {
+	projets: "Cet utilisateur n'est associé à aucun projet pour le moment.",
+	tâches: "Cet utilisateur n'a aucune tâche assignée pour le moment.",
+	réunions: "Cet utilisateur n'a participé à aucune réunion pour le moment.",
+	absences: "Aucune absence n'a été enregistrée pour cet utilisateur.",
 };
 
 const EMPTY_ICONS: Record<ArchiveTab, IconName> = {
 	projets: "folder",
-	taches: "tasks",
-	reunions: "calendar",
+	tâches: "tasks",
+	réunions: "calendar",
 	absences: "absence",
 };
 
 function EmptyState({ tab }: { tab: ArchiveTab }) {
-	return (
-		<div className="flex flex-col items-center justify-center py-12">
-			<div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
-				<Icon name={EMPTY_ICONS[tab]} size="lg" className="text-gray-300 dark:text-gray-600" />
-			</div>
-			<p className="text-sm text-gray-500 dark:text-gray-400">{EMPTY_LABELS[tab]}</p>
-		</div>
-	);
+	return <StyledEmptyState icon={EMPTY_ICONS[tab]} title={EMPTY_LABELS[tab]} description={EMPTY_DESCRIPTIONS[tab]} />;
 }
 
 // ── Pagination ────────────────────────────────────────────────────────────────
@@ -313,13 +310,13 @@ function ProjetsTable({ items, archivedIds, userId }: { items: Project[]; archiv
 	);
 }
 
-// ── Taches table ──────────────────────────────────────────────────────────────
+// ── Tâches table ──────────────────────────────────────────────────────────────
 
 /**
  * Tasks sub-table
  */
 
-function TachesTable({ items, archivedIds }: { items: Task[]; archivedIds: Set<string> }) {
+function TasksTable({ items, archivedIds }: { items: Task[]; archivedIds: Set<string> }) {
 	return (
 		<table className="w-full text-left">
 			<thead>
@@ -362,13 +359,13 @@ function TachesTable({ items, archivedIds }: { items: Task[]; archivedIds: Set<s
 	);
 }
 
-// ── Reunions table ────────────────────────────────────────────────────────────
+// ── Réunions table ────────────────────────────────────────────────────────────
 
 /**
  * Meetings sub-table
  */
 
-function ReunionsTable({ items, pastIds }: { items: Meeting[]; pastIds: Set<string> }) {
+function MeetingsTable({ items, pastIds }: { items: Meeting[]; pastIds: Set<string> }) {
 	return (
 		<table className="w-full text-left">
 			<thead>

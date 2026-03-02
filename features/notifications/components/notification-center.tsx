@@ -250,7 +250,7 @@ function NotificationEmpty({ filter }: NotificationEmptyProps) {
 				{filter === "unread" ? "Aucune notification non lue" : "Aucune notification"}
 			</p>
 			<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-				{filter === "unread" ? "Vous etes a jour." : "Les nouvelles notifications apparaitront ici."}
+				{filter === "unread" ? "Vous etes à jour." : "Les nouvelles notifications apparaitront ici."}
 			</p>
 		</div>
 	);

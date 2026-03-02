@@ -49,7 +49,7 @@ export function NotificationList({ onNotificationClick, className }: Notificatio
 						<p className="text-xs text-gray-500 dark:text-gray-400">
 							{unreadCount > 0
 								? `${unreadCount} non lue${unreadCount > 1 ? "s" : ""}`
-								: "Tout est a jour"}
+								: "Tout est à jour"}
 						</p>
 					</div>
 				</div>

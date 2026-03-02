@@ -1,11 +1,9 @@
 "use client";
 
-// React
 import { useState } from "react";
 import { Input, Textarea, Select, Button, Icon, Avatar } from "@/components/ui";
 import type { Project, ProjectFormData, ProjectMember, ProjectStatusValue } from "../types";
 import { ProjectStatusLabel } from "../types";
-
 
 /** Status options for select input */
 const STATUS_OPTIONS = Object.entries(ProjectStatusLabel).map(([value, label]) => ({ label, value }));
@@ -208,7 +206,7 @@ export function ProjectForm({ project, onSubmit, onCancel, isLoading = false }: 
 				</Button>
 				<Button type="submit" variant="primary" isLoading={isLoading}>
 					<Icon name="check" size="xs" />
-					{isEditing ? "Mettre a jour" : "Creer le projet"}
+					{isEditing ? "Mettre à jour" : "Créer le projet"}
 				</Button>
 			</div>
 		</form>

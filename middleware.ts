@@ -1,15 +1,14 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
-
-/** Routes accessible without authentication */
+// Routes accessible without authentication
 const PUBLIC_ROUTES = ["/login", "/a2f", "/onboarding"];
 
-/** Routes that redirect authenticated users to the hub */
+// Routes that redirect authenticated users to the hub
 const REDIRECT_IF_AUTH = ["/login"];
 
 /**
- * Handles authentication redirects for all matched routes.
+ * Handles authentication
  * @param request - Incoming Next.js request
  * @returns {NextResponse} Redirect or passthrough response
  */
@@ -35,7 +34,7 @@ export function middleware(request: NextRequest) {
 	return NextResponse.next();
 }
 
-/** Route matcher excluding API, static assets, and public files */
+// Route matcher excluding API, static assets, and public files
 export const config = {
 	matcher: ["/((?!api|_next/static|_next/image|favicon.ico|icon|logos|avatar|banners|.*\\..*$).*)"],
 };

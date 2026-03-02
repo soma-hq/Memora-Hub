@@ -7,7 +7,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-twitch/centre-info",
+	section: "protected",
+	module: "moderation_twitch",
+	description: "Centre d'informations de la modération Twitch.",
+	requiredPermissions: [{ module: "moderation_twitch", action: "view" }],
+	entityScoped: true,
+});
 
 interface InfoSection {
 	title: string;

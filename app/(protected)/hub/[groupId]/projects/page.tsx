@@ -10,7 +10,16 @@ import { ProjectCreationWizard } from "@/features/projects/components/project-cr
 import { showSuccess, showError } from "@/lib/utils/toast";
 import { useProjectActions } from "@/features/projects/hooks";
 import type { ProjectFormData } from "@/features/projects/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/projects",
+	section: "protected",
+	module: "projects",
+	description: "Liste des projets du groupe.",
+	requiredPermissions: [{ module: "projects", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Projects page with list view and multi-step creation wizard.
@@ -34,9 +43,9 @@ export default function ProjectsPage() {
 		async (data: ProjectFormData) => {
 			try {
 				await createProject(data);
-				showSuccess("Projet cree avec succes !");
+				showSuccess("Projet créé avec succès !");
 			} catch {
-				showError("Erreur lors de la creation du projet.");
+				showError("Erreur lors de la création du projet.");
 			}
 		},
 		[createProject],
@@ -46,7 +55,7 @@ export default function ProjectsPage() {
 	return (
 		<PageContainer
 			title="Projets"
-			description="Gerez et suivez l'avancement de vos projets"
+			description="Gérez et suivez l'avancement de vos projets"
 			actions={
 				<Button variant="primary" onClick={() => setWizardOpen(true)}>
 					<Icon name="plus" size="sm" />

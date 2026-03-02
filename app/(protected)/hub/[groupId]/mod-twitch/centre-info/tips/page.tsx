@@ -6,7 +6,16 @@ import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-twitch/centre-info/tips",
+	section: "protected",
+	module: "moderation_twitch",
+	description: "Conseils et astuces de modération Twitch.",
+	requiredPermissions: [{ module: "moderation_twitch", action: "view" }],
+	entityScoped: true,
+});
 
 // Data
 interface Tip {
@@ -31,7 +40,7 @@ const TIPS: Tip[] = [
 		iconColor: "text-error-500",
 		points: [
 			"Reglementation Twitch TOS : 13 ans minimum (certains pays ont des ages differents).",
-			"Ne JAMAIS demander l'age a un utilisateur pour ensuite le bannir.",
+			"Ne JAMAIS demander l'age à un utilisateur pour ensuite le bannir.",
 			"Eviter toute discussion concernant l'age avec les viewers.",
 			'Procedure : capturer le message/clip, signaler au Trust & Safety Twitch, puis tempban 30 jours avec la raison "Underaged X age" en joignant une capture.',
 		],
@@ -60,9 +69,9 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-info-100 dark:bg-info-900/20",
 		iconColor: "text-info-500",
 		points: [
-			"Inviter le viewer a ouvrir un ticket pour contester.",
-			"Ne jamais intervenir si vous etes a l'origine de la sanction (conflit d'interet).",
-			"Seul un responsable est habilite a gerer ce type d'echange.",
+			"Inviter le viewer à ouvrir un ticket pour contester.",
+			"Ne jamais intervenir si vous etes à l'origine de la sanction (conflit d'interet).",
+			"Seul un responsable est habilite à gerer ce type d'echange.",
 		],
 	},
 	{
@@ -75,7 +84,7 @@ const TIPS: Tip[] = [
 		iconColor: "text-primary-500",
 		points: [
 			"Copier le nom Twitch de la personne concernee immediatement.",
-			"Faire appel a d'autres moderateurs si la situation vous depasse.",
+			"Faire appel à d'autres moderateurs si la situation vous depasse.",
 		],
 	},
 	{
@@ -106,7 +115,7 @@ export default function TwitchTipsPage() {
 				<Icon name="sparkles" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
 					Ces conseils couvrent les situations les plus frequentes sur Twitch. En cas de doute, n&apos;hesitez
-					pas a contacter un referent ou un responsable.
+					pas à contacter un referent ou un responsable.
 				</p>
 			</div>
 

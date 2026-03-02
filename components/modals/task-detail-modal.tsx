@@ -4,7 +4,6 @@
 import { Modal, ModalFooter, Button, Badge, Icon, Avatar, Tag, Divider, ProgressBar, Timeline } from "@/components/ui";
 import type { BadgeVariant } from "@/core/design/states";
 
-
 interface TaskData {
 	id: string;
 	title: string;
@@ -28,8 +27,8 @@ interface TaskDetailModalProps {
 const statusVariant: Record<string, BadgeVariant> = {
 	"A faire": "neutral",
 	"En cours": "info",
-	"En revision": "warning",
-	Termine: "success",
+	"En révision": "warning",
+	Terminé: "success",
 };
 
 const priorityVariant: Record<string, BadgeVariant> = {
@@ -44,27 +43,27 @@ const mockActivity = [
 		icon: "edit" as const,
 		title: (
 			<>
-				<span className="font-medium">Jeremy</span> a modifie la description
+				<span className="font-medium">Jeremy</span> a modifié la description
 			</>
 		),
-		time: "Il y a 2h",
+		time: "Il y à 2h",
 	},
 	{
 		id: "2",
 		icon: "check" as const,
 		title: (
 			<>
-				<span className="font-medium">Marie</span> a termine la sous-tache &ldquo;Maquettes&rdquo;
+				<span className="font-medium">Marie</span> a terminé la sous-tâche &ldquo;Maquettes&rdquo;
 			</>
 		),
-		time: "Il y a 5h",
+		time: "Il y à 5h",
 	},
 	{
 		id: "3",
 		icon: "profile" as const,
 		title: (
 			<>
-				Assignee a <span className="font-medium">Marie Delta</span>
+				Assignee à <span className="font-medium">Marie Delta</span>
 			</>
 		),
 		time: "Hier",
@@ -74,10 +73,10 @@ const mockActivity = [
 		icon: "plus" as const,
 		title: (
 			<>
-				Tache creee par <span className="font-medium">Jeremy Alpha</span>
+				Tâche créée par <span className="font-medium">Jeremy Alpha</span>
 			</>
 		),
-		time: "Il y a 3j",
+		time: "Il y à 3j",
 	},
 ];
 
@@ -94,8 +93,8 @@ export function TaskDetailModal({ isOpen, onClose, task }: TaskDetailModalProps)
 
 	// Computed
 	const subtasks = task.subtasks || [
-		{ id: "1", title: "Creer les maquettes", done: true },
-		{ id: "2", title: "Developper le front", done: false },
+		{ id: "1", title: "Créer les maquettes", done: true },
+		{ id: "2", title: "Développer le front", done: false },
 		{ id: "3", title: "Tests unitaires", done: false },
 	];
 
@@ -109,7 +108,7 @@ export function TaskDetailModal({ isOpen, onClose, task }: TaskDetailModalProps)
 				<div className="flex flex-wrap items-center gap-2">
 					<Badge variant={statusVariant[task.status] || "neutral"}>{task.status}</Badge>
 					<Badge variant={priorityVariant[task.priority] || "neutral"} showDot={false}>
-						Priorite: {task.priority}
+						Priorité: {task.priority}
 					</Badge>
 					{task.tags?.map((tag) => (
 						<Tag key={tag} color="primary">
@@ -130,22 +129,22 @@ export function TaskDetailModal({ isOpen, onClose, task }: TaskDetailModalProps)
 					<div className="flex items-center gap-3">
 						<Avatar src={task.assigneeAvatar} name={task.assignee} size="sm" />
 						<div>
-							<p className="text-xs text-gray-400">Assigne a</p>
+							<p className="text-xs text-gray-400">Assigné à</p>
 							<p className="font-medium text-gray-700 dark:text-gray-300">{task.assignee}</p>
 						</div>
 					</div>
 					<div className="flex items-center gap-3">
 						<Icon name="calendar" size="sm" className="text-gray-400" />
 						<div>
-							<p className="text-xs text-gray-400">Echeance</p>
+							<p className="text-xs text-gray-400">Échéance</p>
 							<p className="font-medium text-gray-700 dark:text-gray-300">{task.dueDate}</p>
 						</div>
 					</div>
 					<div className="flex items-center gap-3">
 						<Icon name="clock" size="sm" className="text-gray-400" />
 						<div>
-							<p className="text-xs text-gray-400">Creee</p>
-							<p className="font-medium text-gray-700 dark:text-gray-300">Il y a 3 jours</p>
+							<p className="text-xs text-gray-400">Créée</p>
+							<p className="font-medium text-gray-700 dark:text-gray-300">Il y à 3 jours</p>
 						</div>
 					</div>
 				</div>
@@ -165,7 +164,7 @@ export function TaskDetailModal({ isOpen, onClose, task }: TaskDetailModalProps)
 				<Divider />
 				<div>
 					<div className="mb-3 flex items-center justify-between">
-						<h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Sous-taches</h4>
+						<h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Sous-tâches</h4>
 						<span className="text-xs text-gray-400">
 							{subtasks.filter((s) => s.done).length}/{subtasks.length}
 						</span>
@@ -195,7 +194,7 @@ export function TaskDetailModal({ isOpen, onClose, task }: TaskDetailModalProps)
 				{/* Activity */}
 				<Divider />
 				<div>
-					<h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Activite</h4>
+					<h4 className="mb-3 text-sm font-medium text-gray-700 dark:text-gray-300">Activité</h4>
 					<Timeline items={mockActivity} />
 				</div>
 			</div>

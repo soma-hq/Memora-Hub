@@ -1,10 +1,9 @@
 "use client";
 
-import { Badge } from "@/components/ui";
+import { Badge, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { Competency, CompetencyLevel } from "../types";
 import { competencyLevelVariantMap, COMPETENCY_LEVELS } from "../types";
-
 
 /** Props for the CompetencyGrid component */
 interface CompetencyGridProps {
@@ -24,7 +23,7 @@ interface CompetencyGridProps {
 export function CompetencyGrid({ competencies, onLevelChange, readOnly = false }: CompetencyGridProps) {
 	// Handlers
 	/**
-	 * Cycles a competency to its next level
+	 * Cycles à competency to its next level
 	 * @param competency - Competency to cycle
 	 */
 
@@ -37,7 +36,13 @@ export function CompetencyGrid({ competencies, onLevelChange, readOnly = false }
 	}
 
 	if (competencies.length === 0) {
-		return <p className="py-6 text-center text-sm text-gray-400 dark:text-gray-500">Aucune competence definie.</p>;
+		return (
+			<StyledEmptyState
+				icon="sparkles"
+				title="Aucune compétence définie"
+				description="Ajoutez des compétences."
+			/>
+		);
 	}
 
 	// Render

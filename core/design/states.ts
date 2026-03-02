@@ -95,7 +95,7 @@ export const absenceTypeVariant: Record<AbsenceTypeValue, BadgeVariant> = {
 
 // Meeting type badge variants
 export const meetingTypeVariant: Record<MeetingTypeValue, BadgeVariant> = {
-	reunion: "info",
+	réunion: "info",
 	standup: "success",
 	revue: "warning",
 	retrospective: "primary",
@@ -148,7 +148,7 @@ export const absenceTypeDotColors: Record<AbsenceTypeValue, string> = {
 
 // Meeting type dot colors
 export const meetingTypeDotColors: Record<MeetingTypeValue, string> = {
-	reunion: "bg-info-500",
+	réunion: "bg-info-500",
 	standup: "bg-success-500",
 	revue: "bg-warning-500",
 	retrospective: "bg-primary-500",

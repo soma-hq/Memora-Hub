@@ -1,16 +1,27 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { Input, SelectMenu, Badge, Icon, Avatar, Card, Button, Pagination, EmptyState, SkeletonTable, Tooltip } from "@/components/ui";
+import {
+	Input,
+	SelectMenu,
+	Badge,
+	Icon,
+	Avatar,
+	Card,
+	Button,
+	Pagination,
+	EmptyState,
+	SkeletonTable,
+	Tooltip,
+} from "@/components/ui";
 import type { SelectMenuOption } from "@/components/ui";
 import type { User } from "@/features/users/types";
 import type { UserRole } from "@/constants";
 import { roleVariant, roleOptions, statusLabels } from "@/features/users/types";
 
-
 const ITEMS_PER_PAGE = 6;
 
-/** Role filter options including a "show all" entry */
+/** Role filter options including à "show all" entry */
 const ROLE_FILTER_OPTIONS: SelectMenuOption[] = [
 	{ label: "Tous les roles", value: "", icon: "filter" },
 	...roleOptions.map((opt) => ({ label: opt.label, value: opt.value, icon: "profile" }) as SelectMenuOption),
@@ -143,7 +154,7 @@ export function UserList({
 					description={
 						search || roleFilter
 							? "Essayez de modifier vos critères de recherche ou de filtre."
-							: "Commencez par ajouter un premier utilisateur a votre equipe."
+							: "Commencez par ajouter un premier utilisateur à votre equipe."
 					}
 					actionLabel={!search && !roleFilter ? "Nouvel utilisateur" : undefined}
 					onAction={!search && !roleFilter ? onCreate : undefined}

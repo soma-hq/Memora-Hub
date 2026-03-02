@@ -9,7 +9,7 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 	const body = await request.json();
 	if (body.done !== undefined) {
 		const subtask = await TaskService.toggleSubtask(subtaskId);
-		if (!subtask) return NextResponse.json({ error: "Sous-tache introuvable" }, { status: 404 });
+		if (!subtask) return NextResponse.json({ error: "Sous-tâche introuvable" }, { status: 404 });
 		return NextResponse.json(subtask);
 	}
 	return NextResponse.json({ error: "Donnees invalides" }, { status: 400 });

@@ -1,9 +1,19 @@
 "use client";
-
-// React
 import { useState, useMemo, useCallback } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button, Tag, Tooltip, Modal, ModalFooter, Input, Toggle } from "@/components/ui";
+import {
+	Card,
+	Badge,
+	Icon,
+	Button,
+	Tag,
+	Tooltip,
+	Modal,
+	ModalFooter,
+	Input,
+	Toggle,
+	SectionHeaderBanner,
+} from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 import {
@@ -13,9 +23,19 @@ import {
 	levelTextIconVariant,
 	levelDotVariant,
 } from "@/core/design";
+import { definePageConfig } from "@/structures";
+
+const PAGE_CONFIG = definePageConfig({
+	name: "admin/alerts",
+	section: "owner",
+	module: "admin",
+	description: "Gestion des alertes système.",
+	requiredRole: "owner",
+	requiredPermissions: [{ module: "admin", action: "manage" }],
+	ownerOnly: true,
+});
 
 // Types
-
 type AlertType = "access_denied" | "update" | "access_granted";
 type ViewMode = "list" | "timeline";
 
@@ -49,29 +69,28 @@ interface AlertTypeConfig {
 const alertTypeConfig: Record<AlertType, AlertTypeConfig> = {
 	access_denied: {
 		icon: "shield",
-		label: "Acces refuse",
+		label: "Accès refusé",
 		summaryLabel: "Critiques",
 		level: "error",
 	},
 	update: {
 		icon: "news",
-		label: "Mise a jour",
+		label: "Mise à jour",
 		summaryLabel: "Informations",
 		level: "info",
 	},
 	access_granted: {
 		icon: "check",
-		label: "Acces accorde",
-		summaryLabel: "Resolues",
+		label: "Accès accordé",
+		summaryLabel: "Résolues",
 		level: "success",
 	},
 };
 
-// Alerts source (replaced demo data)
+// Alerts source
 const demoAlerts: Alert[] = [];
 
 // Shared styles
-
 const selectClasses = cn(
 	"rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm",
 	"text-gray-700 shadow-sm transition-all duration-200",
@@ -79,10 +98,8 @@ const selectClasses = cn(
 	"dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200",
 );
 
-// Utility functions
-
 /**
- * Formats an ISO timestamp to a human-readable French locale date string.
+ * Formats an ISO timestamp
  * @param isoString - ISO 8601 date string
  * @returns Formatted date and time string (e.g. "27 fev. 2025, 15:45")
  */
@@ -110,7 +127,7 @@ function relativeTime(isoString: string): string {
 	const diffHours = Math.floor(diffMinutes / 60);
 	const diffDays = Math.floor(diffHours / 24);
 
-	if (diffMinutes < 1) return "a l'instant";
+	if (diffMinutes < 1) return "à l'instant";
 	if (diffMinutes < 60) return `il y a ${diffMinutes} min`;
 	if (diffHours < 24) return `il y a ${diffHours}h`;
 	if (diffDays === 1) return "hier";
@@ -118,7 +135,7 @@ function relativeTime(isoString: string): string {
 }
 
 /**
- * Extracts the date portion from an ISO timestamp for date range filtering.
+ * Extracts the date
  * @param isoString - ISO 8601 date string
  * @returns Date string in YYYY-MM-DD format
  */
@@ -129,9 +146,7 @@ function extractDate(isoString: string): string {
 // Component
 
 /**
- * Admin alerts management page with filtering, dismissal, and timeline views.
- * Displays system alerts categorized by type (access_denied, update, access_granted)
- * with summary cards, search/filter controls, and expandable alert details.
+ * Admin alerts management page
  * @returns The admin alerts page
  */
 export default function AdminAlertsPage() {
@@ -272,7 +287,7 @@ export default function AdminAlertsPage() {
 			level: "info",
 		},
 		{
-			label: "Resolues",
+			label: "Résolues",
 			count: alertCounts.access_granted,
 			icon: "check",
 			level: "success",
@@ -395,7 +410,7 @@ export default function AdminAlertsPage() {
 									className="gap-1.5 text-gray-600 dark:text-gray-400"
 								>
 									<Icon name={isExpanded ? "chevronUp" : "chevronDown"} size="sm" />
-									{isExpanded ? "Reduire" : "Details"}
+									{isExpanded ? "Réduire" : "Détails"}
 								</Button>
 								<Button
 									variant="ghost"
@@ -417,7 +432,7 @@ export default function AdminAlertsPage() {
 									)}
 								>
 									<p className="mb-3 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-										Informations detaillees
+										Informations détaillées
 									</p>
 
 									<div className="space-y-2">
@@ -441,7 +456,7 @@ export default function AdminAlertsPage() {
 										</div>
 										<div className="text-sm">
 											<span className="font-medium text-gray-700 dark:text-gray-300">
-												Metadonnees :
+												Métadonnées :
 											</span>
 											<div className="mt-1 space-y-1 pl-4">
 												{Object.entries(alert.metadata).map(([key, value]) => (
@@ -600,8 +615,8 @@ export default function AdminAlertsPage() {
 
 	return (
 		<PageContainer
-			title="Alertes systeme"
-			description="Surveillance et gestion des alertes de securite, mises a jour et acces"
+			title="Alertes système"
+			description="Surveillance et gestion des alertes de sécurité, mises à jour et accès"
 		>
 			{/* Summary cards */}
 			<div className="mb-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -662,9 +677,9 @@ export default function AdminAlertsPage() {
 						aria-label="Filtrer par type"
 					>
 						<option value="all">Tous les types</option>
-						<option value="access_denied">Acces refuse</option>
-						<option value="update">Mise a jour</option>
-						<option value="access_granted">Acces accorde</option>
+						<option value="access_denied">Accès refuse</option>
+						<option value="update">Mise à jour</option>
+						<option value="access_granted">Accès accorde</option>
 					</select>
 				</div>
 
@@ -711,23 +726,17 @@ export default function AdminAlertsPage() {
 			</div>
 
 			{/* View toggle and section header */}
-			<div className="mb-4 flex items-center justify-between">
-				<h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-					Fil des alertes
-					<Badge variant="neutral" showDot={false} className="ml-2">
-						{filteredAlerts.length}
-					</Badge>
-				</h2>
-
-				<div className="flex items-center gap-3">
-					<Toggle
-						checked={viewMode === "timeline"}
-						onChange={(checked) => setViewMode(checked ? "timeline" : "list")}
-						size="sm"
-						label={viewMode === "timeline" ? "Chronologie" : "Liste"}
-					/>
-				</div>
-			</div>
+			<SectionHeaderBanner icon="bell" title="Fil des alertes" accentColor="red" className="mb-4">
+				<Badge variant="neutral" showDot={false}>
+					{filteredAlerts.length}
+				</Badge>
+				<Toggle
+					checked={viewMode === "timeline"}
+					onChange={(checked) => setViewMode(checked ? "timeline" : "list")}
+					size="sm"
+					label={viewMode === "timeline" ? "Chronologie" : "Liste"}
+				/>
+			</SectionHeaderBanner>
 
 			{/* Alert list or timeline */}
 			{filteredAlerts.length > 0 ? (
@@ -746,7 +755,7 @@ export default function AdminAlertsPage() {
 						Aucune alerte ne correspond aux filtres
 					</p>
 					<p className="mt-1 text-sm text-gray-400 dark:text-gray-500">
-						Modifiez vos criteres de recherche ou reinitialiser les filtres.
+						Modifiez vos critères de recherche ou réinitialisez les filtres.
 					</p>
 					{hasActiveFilters && (
 						<Button
@@ -756,7 +765,7 @@ export default function AdminAlertsPage() {
 							className="mt-4 gap-1.5"
 						>
 							<Icon name="refresh" size="sm" />
-							Reinitialiser les filtres
+							Réinitialiser les filtres
 						</Button>
 					)}
 				</div>
@@ -796,7 +805,7 @@ export default function AdminAlertsPage() {
 						{/* Metadata table */}
 						<div>
 							<p className="mb-2 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-								Metadonnees
+								Métadonnées
 							</p>
 							<div
 								className={cn(

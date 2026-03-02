@@ -23,7 +23,7 @@ const variantMap = {
 };
 
 /**
- * Modal dialog that asks the user to confirm a potentially destructive action.
+ * Modal dialog that asks the user to confirm à potentially destructive action.
  * @param {ConfirmActionProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal

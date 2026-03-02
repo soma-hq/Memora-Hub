@@ -5,7 +5,16 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/centre-info/tickets",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Gestion des tickets Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 /**
  * Cross-platform ticket system page explaining moderation ticket procedures.
@@ -66,7 +75,7 @@ export default function TicketsPolyvalentPage() {
 					</div>
 					<p className={cn(textClasses.body, "leading-relaxed")}>
 						Il est formellement interdit de traiter des cas de moderation par messages prives, que ce soit
-						via les DM Discord ou les whispers Twitch. Cela protege a la fois le moderateur et le membre, en
+						via les DM Discord ou les whispers Twitch. Cela protege à la fois le moderateur et le membre, en
 						garantissant une tracabilite et une transparence totale des echanges cross-plateforme.
 					</p>
 				</Card>

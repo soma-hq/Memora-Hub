@@ -1,6 +1,5 @@
 // Constants & types
 import type {
-
 	ActionResult,
 	DetectedIntent,
 	MessageAttachment,
@@ -10,7 +9,6 @@ import type {
 	ChatMessage,
 } from "./types";
 import {
-
 	NAVIGATION_TARGETS,
 	FLOW_DEFINITIONS,
 	GREETING_RESPONSES,
@@ -21,9 +19,8 @@ import { requiresFlow, requiresNavigation } from "./intent-engine";
 import { getContextualSuggestions, hasPermissionForAction } from "./context-engine";
 import type { AssistantContext } from "./types";
 
-
 /**
- * Resolve a navigation target from the extracted entity and context
+ * Resolve à navigation target from the extracted entity and context
  * @param entities Extracted entities from intent
  * @param context Current assistant context
  * @returns Path and label, or null if target not found
@@ -117,7 +114,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 	if (!hasPermissionForAction(action, context.currentUserRole)) {
 		return {
 			success: false,
-			message: "Desole, vous n'avez pas les permissions necessaires pour effectuer cette action.",
+			message: "Désolé, vous n'avez pas les permissions nécessaires pour effectuer cette action.",
 			followUpSuggestions: WELCOME_SUGGESTIONS.slice(0, 4),
 		};
 	}
@@ -146,7 +143,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			if (navTarget) {
 				return {
 					success: true,
-					message: `Je vous emmene vers **${navTarget.label}**.`,
+					message: `Je vous emmène vers **${navTarget.label}**.`,
 					navigateTo: navTarget.path,
 					followUpSuggestions: getContextualSuggestions({
 						...context,
@@ -168,7 +165,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 
 			return {
 				success: false,
-				message: "Je n'ai pas trouve cette page. Voici les pages disponibles :",
+				message: "Je n'ai pas trouvé cette page. Voici les pages disponibles :",
 				attachment: { type: "navigation", links: navLinks },
 				followUpSuggestions: WELCOME_SUGGESTIONS.slice(0, 4),
 			};
@@ -179,26 +176,26 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			const statusLabel = entities.status ? ` (${entities.status})` : "";
 			return {
 				success: true,
-				message: `Voici vos taches${statusLabel} :`,
+				message: `Voici vos tâches${statusLabel} :`,
 				attachment: {
 					type: "list",
-					title: `Taches${statusLabel}`,
+					title: `Tâches${statusLabel}`,
 					items: tasks,
-					emptyText: "Aucune tache trouvee.",
+					emptyText: "Aucune tâche trouvée.",
 				},
 				followUpSuggestions: [
 					{
 						id: "fs-create-task",
-						label: "Creer une tache",
+						label: "Créer une tâche",
 						icon: "plus",
-						query: "Creer une nouvelle tache",
+						query: "Créer une nouvelle tâche",
 						category: "task",
 					},
 					{
 						id: "fs-filter-inprogress",
 						label: "En cours seulement",
 						icon: "filter",
-						query: "Montre-moi mes taches en cours",
+						query: "Montre-moi mes tâches en cours",
 						category: "task",
 					},
 				],
@@ -221,14 +218,14 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 						id: "fs-create-project",
 						label: "Nouveau projet",
 						icon: "plus",
-						query: "Creer un nouveau projet",
+						query: "Créer un nouveau projet",
 						category: "project",
 					},
 					{
 						id: "fs-project-tasks",
-						label: "Voir les taches",
+						label: "Voir les tâches",
 						icon: "tasks",
-						query: "Montre-moi les taches",
+						query: "Montre-moi les tâches",
 						category: "task",
 					},
 				],
@@ -239,19 +236,19 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			const meetings = getMeetingList();
 			return {
 				success: true,
-				message: "Voici vos prochaines reunions :",
+				message: "Voici vos prochaines réunions :",
 				attachment: {
 					type: "list",
-					title: "Reunions a venir",
+					title: "Réunions à venir",
 					items: meetings,
-					emptyText: "Aucune reunion planifiee.",
+					emptyText: "Aucune réunion planifiée.",
 				},
 				followUpSuggestions: [
 					{
 						id: "fs-new-meeting",
-						label: "Nouvelle reunion",
+						label: "Nouvelle réunion",
 						icon: "plus",
-						query: "Planifier une reunion",
+						query: "Planifier une réunion",
 						category: "meeting",
 					},
 				],
@@ -285,7 +282,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			const notifications = getNotificationList();
 			return {
 				success: true,
-				message: "Voici vos notifications recentes :",
+				message: "Voici vos notifications récentes :",
 				attachment: {
 					type: "list",
 					title: "Notifications",
@@ -307,7 +304,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 		case "mark_notifications_read": {
 			return {
 				success: true,
-				message: "Toutes vos notifications ont ete marquees comme lues.",
+				message: "Toutes vos notifications ont été marquées comme lues.",
 				followUpSuggestions: getContextualSuggestions(context),
 			};
 		}
@@ -317,12 +314,12 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			const users = getUserList();
 			return {
 				success: true,
-				message: "Voici les membres de l'equipe :",
+				message: "Voici les membres de l'équipe :",
 				attachment: {
 					type: "list",
-					title: "Equipe",
+					title: "Équipe",
 					items: users,
-					emptyText: "Aucun utilisateur trouve.",
+					emptyText: "Aucun utilisateur trouvé.",
 				},
 				followUpSuggestions: getContextualSuggestions(context),
 			};
@@ -332,12 +329,12 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			const query = entities.query || intent.rawQuery;
 			return {
 				success: true,
-				message: `Resultats de recherche pour **"${query}"** :`,
+				message: `Résultats de recherche pour **"${query}"** :`,
 				attachment: {
 					type: "list",
 					title: `Recherche : ${query}`,
 					items: [],
-					emptyText: "Aucun resultat.",
+					emptyText: "Aucun résultat.",
 				},
 				followUpSuggestions: getContextualSuggestions(context),
 			};
@@ -345,10 +342,10 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 
 		case "change_theme": {
 			const targetTheme = entities.theme || "dark";
-			const themeLabel = targetTheme === "dark" ? "sombre" : targetTheme === "light" ? "clair" : "systeme";
+			const themeLabel = targetTheme === "dark" ? "sombre" : targetTheme === "light" ? "clair" : "système";
 			return {
 				success: true,
-				message: `Le theme a ete change en mode **${themeLabel}**.`,
+				message: `Le thème a été changé en mode **${themeLabel}**.`,
 				data: { theme: targetTheme },
 				followUpSuggestions: getContextualSuggestions(context),
 			};
@@ -357,7 +354,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 		case "toggle_admin_mode": {
 			return {
 				success: true,
-				message: context.adminMode ? "Le **mode admin** a ete desactive." : "Le **mode admin** a ete active.",
+				message: context.adminMode ? "Le **mode admin** a été désactivé." : "Le **mode admin** a été activé.",
 				data: { adminMode: !context.adminMode },
 				followUpSuggestions: getContextualSuggestions(context),
 			};
@@ -367,7 +364,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			const format = entities.format || "pdf";
 			return {
 				success: true,
-				message: `L'export en **${format.toUpperCase()}** est en cours de preparation. Vous recevrez une notification quand il sera pret.`,
+				message: `L'export en **${format.toUpperCase()}** est en cours de préparation. Vous recevrez une notification quand il sera prêt.`,
 				followUpSuggestions: getContextualSuggestions(context),
 			};
 		}
@@ -376,14 +373,14 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			return {
 				success: true,
 				message: entities.name
-					? `La tache **"${entities.name}"** a ete marquee comme terminee.`
-					: "La tache a ete marquee comme terminee.",
+					? `La tâche **"${entities.name}"** a été marquée comme terminée.`
+					: "La tâche a été marquée comme terminée.",
 				followUpSuggestions: [
 					{
 						id: "fs-list-tasks",
-						label: "Voir mes taches",
+						label: "Voir mes tâches",
 						icon: "tasks",
-						query: "Montre-moi mes taches",
+						query: "Montre-moi mes tâches",
 						category: "task",
 					},
 				],
@@ -393,10 +390,10 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 		case "show_stats": {
 			return {
 				success: true,
-				message: "Voici un apercu de vos indicateurs :",
+				message: "Voici un aperçu de vos indicateurs :",
 				attachment: {
 					type: "stats",
-					title: "Indicateurs cles",
+					title: "Indicateurs clés",
 					stats: [],
 				},
 				followUpSuggestions: [
@@ -404,7 +401,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 						id: "fs-go-stats",
 						label: "Page statistiques",
 						icon: "stats",
-						query: "Emmene-moi vers les statistiques",
+						query: "Emmène-moi vers les statistiques",
 						category: "navigation",
 					},
 				],
@@ -414,7 +411,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 		case "approve_absence": {
 			return {
 				success: true,
-				message: "La demande d'absence a ete **approuvee**. Le collaborateur a ete notifie.",
+				message: "La demande d'absence a été **approuvée**. Le collaborateur a été notifié.",
 				followUpSuggestions: [
 					{
 						id: "fs-list-abs",
@@ -430,7 +427,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 		case "reject_absence": {
 			return {
 				success: true,
-				message: "La demande d'absence a ete **refusee**. Le collaborateur a ete notifie.",
+				message: "La demande d'absence a été **refusée**. Le collaborateur a été notifié.",
 				followUpSuggestions: [
 					{
 						id: "fs-list-abs",
@@ -447,14 +444,14 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 			return {
 				success: true,
 				message: entities.name
-					? `La reunion **"${entities.name}"** a ete annulee. Les participants ont ete notifies.`
-					: "La reunion a ete annulee. Les participants ont ete notifies.",
+					? `La réunion **"${entities.name}"** a été annulée. Les participants ont été notifiés.`
+					: "La réunion a été annulée. Les participants ont été notifiés.",
 				followUpSuggestions: [
 					{
 						id: "fs-list-meetings",
-						label: "Voir les reunions",
+						label: "Voir les réunions",
 						icon: "calendar",
-						query: "Montre-moi mes reunions",
+						query: "Montre-moi mes réunions",
 						category: "meeting",
 					},
 				],
@@ -490,7 +487,7 @@ export function executeAction(intent: DetectedIntent, context: AssistantContext)
 						id: "fs-new-training",
 						label: "Nouvelle formation",
 						icon: "plus",
-						query: "Creer une formation",
+						query: "Créer une formation",
 						category: "training",
 					},
 				],
@@ -539,7 +536,7 @@ export function getFlowForAction(action: string): (typeof FLOW_DEFINITIONS)[numb
 }
 
 /**
- * Initialize a new active flow from a flow definition
+ * Initialize a new active flow from à flow definition
  * @param flowDef Flow definition to initialize
  * @param prefilledData Optional pre-filled data from entity extraction
  * @returns Initialized active flow state
@@ -560,7 +557,7 @@ export function initializeFlow(
 }
 
 /**
- * Generate a summary message for a completed flow
+ * Generate à summary message for a completed flow
  * @param action The action that was completed
  * @param data The collected form data
  * @returns Human-readable summary message
@@ -570,61 +567,61 @@ export function getFlowCompletionMessage(action: string, data: Record<string, st
 	switch (action) {
 		case "create_task":
 			return (
-				`La tache **"${data.title}"** a ete creee avec succes !\n\n` +
-				(data.priority ? `- Priorite : ${data.priority}\n` : "") +
+				`La tâche **"${data.title}"** a été créée avec succès !\n\n` +
+				(data.priority ? `- Priorité : ${data.priority}\n` : "") +
 				(data.status ? `- Statut : ${data.status}\n` : "") +
-				(data.assignee ? `- Assignee a : ${data.assignee}\n` : "") +
-				(data.dueDate ? `- Echeance : ${data.dueDate}\n` : "")
+				(data.assignee ? `- Assignée à : ${data.assignee}\n` : "") +
+				(data.dueDate ? `- Échéance : ${data.dueDate}\n` : "")
 			);
 
 		case "create_project":
 			return (
-				`Le projet **"${data.name}"** a ete cree avec succes !\n\n` +
-				(data.status ? `- Statut : ${data.status === "todo" ? "A faire" : "En cours"}\n` : "") +
-				(data.startDate ? `- Debut : ${data.startDate}\n` : "") +
-				(data.endDate ? `- Fin prevue : ${data.endDate}\n` : "")
+				`Le projet **"${data.name}"** a été créé avec succès !\n\n` +
+				(data.status ? `- Statut : ${data.status === "todo" ? "À faire" : "En cours"}\n` : "") +
+				(data.startDate ? `- Début : ${data.startDate}\n` : "") +
+				(data.endDate ? `- Fin prévue : ${data.endDate}\n` : "")
 			);
 
 		case "create_meeting":
 			return (
-				`La reunion **"${data.title}"** a ete planifiee !\n\n` +
+				`La réunion **"${data.title}"** a été planifiée !\n\n` +
 				`- Date : ${data.date}\n` +
 				`- Heure : ${data.time}\n` +
-				(data.duration ? `- Duree : ${data.duration}\n` : "") +
+				(data.duration ? `- Durée : ${data.duration}\n` : "") +
 				(data.location ? `- Lieu : ${data.location}\n` : "")
 			);
 
 		case "request_absence":
 			return (
-				`Votre demande d'absence a ete soumise !\n\n` +
-				`- Type : ${data.type === "conge_paye" ? "Conge paye" : data.type === "rtt" ? "RTT" : data.type === "maladie" ? "Maladie" : "Autre"}\n` +
+				`Votre demande d'absence a été soumise !\n\n` +
+				`- Type : ${data.type === "conge_paye" ? "Congé payé" : data.type === "rtt" ? "RTT" : data.type === "maladie" ? "Maladie" : "Autre"}\n` +
 				`- Du : ${data.startDate}\n` +
 				`- Au : ${data.endDate}\n` +
 				(data.reason ? `- Motif : ${data.reason}\n` : "") +
-				"\nVotre responsable sera notifie pour validation."
+				"\nVotre responsable sera notifié pour validation."
 			);
 
 		case "create_job_offer":
 			return (
-				`L'offre d'emploi **"${data.title}"** a ete publiee !\n\n` +
+				`L'offre d'emploi **"${data.title}"** a été publiée !\n\n` +
 				`- Contrat : ${data.contractType?.toUpperCase()}\n` +
 				"\nL'offre est maintenant visible dans le module recrutement."
 			);
 
 		case "create_training":
 			return (
-				`La formation **"${data.title}"** a ete creee !\n\n` +
-				(data.category ? `- Categorie : ${data.category}\n` : "") +
+				`La formation **"${data.title}"** a été créée !\n\n` +
+				(data.category ? `- Catégorie : ${data.category}\n` : "") +
 				"\nLa formation est disponible dans le module formations."
 			);
 
 		default:
-			return "L'action a ete effectuee avec succes !";
+			return "L'action a été effectuée avec succès !";
 	}
 }
 
 /**
- * Get follow-up suggestions after completing a flow
+ * Get follow-up suggestions after completing à flow
  * @param action Completed flow action
  * @param context Current context
  * @returns Relevant follow-up suggestions
@@ -636,23 +633,23 @@ export function getFlowCompletionSuggestions(action: string, context: AssistantC
 			return [
 				{
 					id: "fc-list-tasks",
-					label: "Voir mes taches",
+					label: "Voir mes tâches",
 					icon: "tasks",
-					query: "Montre-moi mes taches",
+					query: "Montre-moi mes tâches",
 					category: "task",
 				},
 				{
 					id: "fc-another-task",
-					label: "Creer une autre tache",
+					label: "Créer une autre tâche",
 					icon: "plus",
-					query: "Creer une nouvelle tache",
+					query: "Créer une nouvelle tâche",
 					category: "task",
 				},
 				{
 					id: "fc-go-tasks",
-					label: "Aller aux taches",
+					label: "Aller aux tâches",
 					icon: "tasks",
-					query: "Emmene-moi vers les taches",
+					query: "Emmène-moi vers les tâches",
 					category: "navigation",
 				},
 			];
@@ -668,9 +665,9 @@ export function getFlowCompletionSuggestions(action: string, context: AssistantC
 				},
 				{
 					id: "fc-add-task",
-					label: "Ajouter une tache",
+					label: "Ajouter une tâche",
 					icon: "plus",
-					query: "Creer une tache",
+					query: "Créer une tâche",
 					category: "task",
 				},
 			];
@@ -679,16 +676,16 @@ export function getFlowCompletionSuggestions(action: string, context: AssistantC
 			return [
 				{
 					id: "fc-list-meetings",
-					label: "Voir les reunions",
+					label: "Voir les réunions",
 					icon: "calendar",
-					query: "Mes prochaines reunions",
+					query: "Mes prochaines réunions",
 					category: "meeting",
 				},
 				{
 					id: "fc-another-meeting",
 					label: "Planifier une autre",
 					icon: "plus",
-					query: "Planifier une reunion",
+					query: "Planifier une réunion",
 					category: "meeting",
 				},
 			];
@@ -706,7 +703,7 @@ export function getFlowCompletionSuggestions(action: string, context: AssistantC
 					id: "fc-go-absences",
 					label: "Page absences",
 					icon: "calendar",
-					query: "Emmene-moi vers les absences",
+					query: "Emmène-moi vers les absences",
 					category: "navigation",
 				},
 			];

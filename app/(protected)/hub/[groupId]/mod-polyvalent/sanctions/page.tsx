@@ -5,7 +5,16 @@ import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Tag } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/sanctions",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Gestion des sanctions Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 // Constants & types
 
@@ -106,8 +115,8 @@ const SANCTION_TYPES: SanctionType[] = [
 		platform: "Discord",
 		icon: "eye",
 		color: "error",
-		defaultReason: "Diffusion de contenu a caractere explicite ou inapproprie sur Discord",
-		note: "Sanction specifique a Discord. Sur Twitch, le contenu NSFW releve directement des TOS Twitch et est gere par la plateforme.",
+		defaultReason: "Diffusion de contenu à caractere explicite ou inapproprie sur Discord",
+		note: "Sanction specifique à Discord. Sur Twitch, le contenu NSFW releve directement des TOS Twitch et est gere par la plateforme.",
 		sanctions: {
 			3: { first: "Warn", repeat: "Tempban 7d", multi: "Ban" },
 			2: { first: "Tempban 7d", repeat: "Ban", multi: "Ban" },
@@ -135,7 +144,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		icon: "users",
 		color: "warning",
 		defaultReason: "Utilisation de bots pour generer des follows artificiels ou perturber le compteur de followers",
-		note: "Sanction specifique a Twitch. Signaler egalement a Twitch via le Trust & Safety.",
+		note: "Sanction specifique à Twitch. Signaler egalement à Twitch via le Trust & Safety.",
 		sanctions: {
 			3: { first: "Ban Twitch 7d", repeat: "Ban Twitch", multi: "Ban Twitch" },
 			2: { first: "Ban Twitch", repeat: "Ban Twitch", multi: "Ban Twitch" },
@@ -178,7 +187,7 @@ const SANCTION_TYPES: SanctionType[] = [
 		platform: "Both",
 		icon: "users",
 		color: "error",
-		defaultReason: "Participation a un raid haineux coordonne sur Discord et/ou Twitch",
+		defaultReason: "Participation à un raid haineux coordonne sur Discord et/ou Twitch",
 		fixed: true,
 		sanctions: {
 			3: { first: "Ban / Ban Twitch", repeat: "Ban / Ban Twitch", multi: "Ban / Ban Twitch" },
@@ -254,7 +263,7 @@ const PLATFORM_CONFIG: Record<Platform, { label: string; variant: "info" | "prim
 // Helpers
 
 /**
- * Maps a sanction text value to a Tag color based on severity keywords.
+ * Maps à sanction text value to à Tag color based on severity keywords.
  * @param value - The sanction description string
  * @returns The appropriate tag color
  */
@@ -314,7 +323,7 @@ export default function SanctionsPolyvalentPage() {
 	const currentConfig = LIVECON_CONFIG[livecon];
 
 	/**
-	 * Toggles the expanded state of a sanction card.
+	 * Toggles the expanded state of à sanction card.
 	 * @param id - The sanction identifier
 	 */
 	function toggleCard(id: string) {
@@ -433,8 +442,8 @@ export default function SanctionsPolyvalentPage() {
 												{sanction.platform === "Both"
 													? "Sanctions appliquees sur les deux plateformes"
 													: sanction.platform === "Discord"
-														? "Sanction specifique a Discord"
-														: "Sanction specifique a Twitch"}
+														? "Sanction specifique à Discord"
+														: "Sanction specifique à Twitch"}
 											</span>
 										</div>
 

@@ -6,7 +6,16 @@ import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses } from "@/core/design/typography";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-youtube/centre-info/tips",
+	section: "protected",
+	module: "moderation_youtube",
+	description: "Conseils et astuces de modération YouTube.",
+	requiredPermissions: [{ module: "moderation_youtube", action: "view" }],
+	entityScoped: true,
+});
 
 // Data
 interface Tip {
@@ -31,7 +40,7 @@ const TIPS: Tip[] = [
 		iconColor: "text-error-500",
 		points: [
 			"Reglementation YouTube TOS : 13 ans minimum (certains pays ont des ages differents).",
-			"Ne JAMAIS demander l'age a un utilisateur pour ensuite le bloquer.",
+			"Ne JAMAIS demander l'age à un utilisateur pour ensuite le bloquer.",
 			"Eviter toute discussion concernant l'age avec les membres.",
 			'Procedure : capturer les preuves, signaler le compte via YouTube, puis bloquer 30 jours avec la raison "Underaged X age" en joignant une capture.',
 		],
@@ -60,9 +69,9 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-info-100 dark:bg-info-900/20",
 		iconColor: "text-info-500",
 		points: [
-			"Inviter le membre a ouvrir un ticket pour contester.",
-			"Ne jamais intervenir si vous etes a l'origine de la sanction (conflit d'interet).",
-			"Seul un responsable est habilite a gerer ce type d'echange.",
+			"Inviter le membre à ouvrir un ticket pour contester.",
+			"Ne jamais intervenir si vous etes à l'origine de la sanction (conflit d'interet).",
+			"Seul un responsable est habilite à gerer ce type d'echange.",
 		],
 	},
 	{
@@ -76,7 +85,7 @@ const TIPS: Tip[] = [
 		points: [
 			"Utiliser les outils natifs YouTube : masquer, mettre en mode lent, bloquer temporairement.",
 			"Capturer les preuves avant d'agir si le message risque de disparaitre.",
-			"Faire appel a d'autres moderateurs si la situation vous depasse.",
+			"Faire appel à d'autres moderateurs si la situation vous depasse.",
 			"En cas de raid live chat, activer le mode abonnes uniquement et signaler immediatement.",
 		],
 	},
@@ -91,7 +100,7 @@ const TIPS: Tip[] = [
 		points: [
 			"Creer une note avec les elements suspects observes (commentaires, messages live, liens).",
 			"Ne pas confronter directement — documenter d'abord, agir ensuite selon la procedure.",
-			"Verifier si le compte a deja ete signale sur d'autres chaines partenaires.",
+			"Verifier si le compte à deja ete signale sur d'autres chaines partenaires.",
 		],
 	},
 ];
@@ -109,7 +118,7 @@ export default function TipsYouTubePage() {
 				<Icon name="sparkles" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
 					Ces conseils couvrent les situations les plus frequentes sur YouTube. En cas de doute,
-					n&apos;hesitez pas a contacter un referent ou un responsable.
+					n&apos;hesitez pas à contacter un referent ou un responsable.
 				</p>
 			</div>
 

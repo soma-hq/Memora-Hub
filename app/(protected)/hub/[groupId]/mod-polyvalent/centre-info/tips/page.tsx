@@ -6,7 +6,16 @@ import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses } from "@/core/design/typography";
 import type { IconName } from "@/core/design/icons";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/mod-polyvalent/centre-info/tips",
+	section: "protected",
+	module: "moderation_polyvalent",
+	description: "Conseils et astuces de modération Polyvalent.",
+	requiredPermissions: [{ module: "moderation_polyvalent", action: "view" }],
+	entityScoped: true,
+});
 
 // Data
 interface Tip {
@@ -31,7 +40,7 @@ const TIPS: Tip[] = [
 		iconColor: "text-error-500",
 		points: [
 			"Reglementation Discord TOS : 13 ans minimum. Twitch TOS : 13 ans minimum egalement.",
-			"Ne JAMAIS demander l'age a un utilisateur pour ensuite le bannir, quelle que soit la plateforme.",
+			"Ne JAMAIS demander l'age à un utilisateur pour ensuite le bannir, quelle que soit la plateforme.",
 			"Eviter toute discussion concernant l'age avec les membres sur Discord et Twitch.",
 			'Procedure Discord : copier le lien du message, signaler au Trust & Safety, puis ban avec la raison "Underaged X age" pendant 30 jours en joignant une capture.',
 			"Procedure Twitch : signaler au Trust & Safety Twitch, puis ban temporaire de 30 jours via le panneau de moderation.",
@@ -62,9 +71,9 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-info-100 dark:bg-info-900/20",
 		iconColor: "text-info-500",
 		points: [
-			"Inviter le membre a ouvrir un ticket pour contester, en precisant la plateforme concernee.",
-			"Ne jamais intervenir si vous etes a l'origine de la sanction (conflit d'interet).",
-			"Seul un responsable est habilite a gerer ce type d'echange.",
+			"Inviter le membre à ouvrir un ticket pour contester, en precisant la plateforme concernee.",
+			"Ne jamais intervenir si vous etes à l'origine de la sanction (conflit d'interet).",
+			"Seul un responsable est habilite à gerer ce type d'echange.",
 			"Un membre sanctionne sur Twitch peut contester via le meme systeme de tickets Discord.",
 		],
 	},
@@ -79,7 +88,7 @@ const TIPS: Tip[] = [
 		points: [
 			"Discord : copier l'ID de la personne concernee immediatement en cas de debordement vocal.",
 			"Twitch : utiliser les outils de moderation natifs (timeout, ban) pour les perturbations en live.",
-			"Faire appel a d'autres moderateurs si la situation vous depasse, quelle que soit la plateforme.",
+			"Faire appel à d'autres moderateurs si la situation vous depasse, quelle que soit la plateforme.",
 			"Documenter les incidents vocaux/live avec des captures ou enregistrements si possible.",
 		],
 	},
@@ -124,7 +133,7 @@ export default function TipsPolyvalentPage() {
 				<Icon name="sparkles" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
 					Ces conseils couvrent les situations les plus frequentes sur Discord et Twitch. En cas de doute,
-					n&apos;hesitez pas a contacter un referent ou un responsable.
+					n&apos;hesitez pas à contacter un referent ou un responsable.
 				</p>
 			</div>
 

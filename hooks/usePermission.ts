@@ -1,62 +1,88 @@
 "use client";
 
 import { useMemo } from "react";
-import { useHubStore } from "@/store/hub.store";
-import type { Role } from "@/core/config/roles";
-import type { Capability } from "@/core/config/capabilities";
-import { roleHasCapability, getCapabilitiesForRole } from "@/core/permissions/capabilityMap";
+import { useDataStore } from "@/store/data.store";
+import type { RoleId } from "@/core/config/roles";
 import { ROLE_HIERARCHY } from "@/core/config/roles";
-
+import type { Permission, Module } from "@/core/config/capabilities";
+import { hasPermission, hasModuleAccess, getAccessibleModules } from "@/core/permissions/capabilityMap";
 
 /**
- * Provides role-based permission checks for the current hub group.
- * @returns Permission state and helpers for the current hub context
+ * React hook providing Discord-style permission checks for the current user.
+ * Reads the current user from the data store and exposes permission helpers.
+ * @returns Permission state and helper functions for the current user context
  */
 export function usePermission() {
-	const { activeGroupId } = useHubStore();
-	const groupId = activeGroupId ?? "default";
+	const currentUser = useDataStore((s) => s.currentUser);
 
-	// Resolve role from authenticated session (defaults to Collaborator until auth context is wired)
-	const currentRole = useMemo<Role>(() => {
-		return "Collaborator";
-	}, []);
+	const roleId = useMemo<RoleId>(() => {
+		return currentUser?.roleId ?? "momentum_talent";
+	}, [currentUser]);
 
-	// Derive capability list from resolved role
-	const capabilities = useMemo(() => {
-		return getCapabilitiesForRole(currentRole);
-	}, [currentRole]);
+	const entityAccess = useMemo<string[]>(() => {
+		return currentUser?.entityAccess ?? [];
+	}, [currentUser]);
+
+	const accessibleModules = useMemo(() => {
+		return getAccessibleModules(roleId);
+	}, [roleId]);
 
 	/**
-	 * Checks if the current role has a specific capability.
-	 * @param capability - Capability to check
-	 * @returns {boolean} True if the role has the capability
+	 * Check if current user can perform an action on a module.
+	 * @param module - Target module
+	 * @param action - Permission action (defaults to "view")
+	 * @returns True if the user has the permission
 	 */
-	const can = (capability: Capability): boolean => {
-		return roleHasCapability(currentRole, capability);
+	const can = (module: Module, action: Permission = "view"): boolean => {
+		return hasPermission(roleId, module, action);
 	};
 
 	/**
-	 * Checks if the current role meets a minimum role threshold.
-	 * @param minRole - Minimum required role
-	 * @returns {boolean} True if current role is at or above the minimum
+	 * Check if current user can access a module at all.
+	 * @param module - Target module
+	 * @returns True if user has any access to the module
 	 */
-	const hasMinRole = (minRole: Role): boolean => {
-		return ROLE_HIERARCHY[currentRole] >= ROLE_HIERARCHY[minRole];
+	const canAccess = (module: Module): boolean => {
+		return hasModuleAccess(roleId, module);
 	};
 
-	// Convenience flags for common role checks
-	const isOwner = currentRole === "Owner";
-	const isAdmin = ROLE_HIERARCHY[currentRole] >= ROLE_HIERARCHY["Admin"];
-	const isManager = ROLE_HIERARCHY[currentRole] >= ROLE_HIERARCHY["Manager"];
+	/**
+	 * Check if current user can access a specific entity.
+	 * @param entityId - Target entity ID
+	 * @returns True if entity is in user's access list or user has wildcard
+	 */
+	const canAccessEntity = (entityId: string): boolean => {
+		if (entityAccess.includes("*")) return true;
+		return entityAccess.includes(entityId);
+	};
+
+	/**
+	 * Check if current role meets a minimum role threshold.
+	 * @param minRole - Minimum required role ID
+	 * @returns True if current role level >= min role level
+	 */
+	const hasMinRole = (minRole: RoleId): boolean => {
+		return ROLE_HIERARCHY[roleId] >= ROLE_HIERARCHY[minRole];
+	};
+
+	// Convenience flags
+	const isOwner = roleId === "owner";
+	const isAdmin = ROLE_HIERARCHY[roleId] >= ROLE_HIERARCHY["marsha_teams"];
+	const isLegacy = roleId.startsWith("legacy_");
+	const isMomentum = roleId === "momentum_talent";
 
 	return {
-		role: currentRole,
-		capabilities,
+		role: roleId,
+		entityAccess,
+		accessibleModules,
 		can,
+		canAccess,
+		canAccessEntity,
 		hasMinRole,
 		isOwner,
 		isAdmin,
-		isManager,
-		groupId: groupId,
+		isLegacy,
+		isMomentum,
+		currentUser,
 	};
 }

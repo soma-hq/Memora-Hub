@@ -11,7 +11,16 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { Junior, RemarkType } from "@/features/momentum/types";
 import { sessionStatusVariantMap, pimStatusVariantMap, dispositifVariantMap } from "@/features/momentum/types";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/momentum/management",
+	section: "protected",
+	module: "momentum",
+	description: "Gestion et administration Momentum.",
+	requiredPermissions: [{ module: "momentum", action: "manage" }],
+	entityScoped: true,
+});
 
 const selectClasses = cn(
 	"rounded-lg border px-3 py-2 text-sm transition-colors duration-200 appearance-none",
@@ -30,9 +39,9 @@ const textareaClasses = cn(
 );
 
 const BILAN_DECISIONS = [
-	{ value: "Période suivante accordée", label: "Periode suivante accordee", variant: "success" as const },
-	{ value: "Période suivante refusée", label: "Periode suivante refusee", variant: "error" as const },
-	{ value: "PIM validée", label: "PIM validee", variant: "primary" as const },
+	{ value: "Période suivante accordée", label: "Période suivante accordée", variant: "success" as const },
+	{ value: "Période suivante refusée", label: "Période suivante refusée", variant: "error" as const },
+	{ value: "PIM validée", label: "PIM validée", variant: "primary" as const },
 	{ value: "En attente", label: "En attente", variant: "warning" as const },
 ];
 
@@ -70,7 +79,7 @@ export default function MomentumManagementPage() {
 	const [bilanSessionId, setBilanSessionId] = useState("");
 	const [bilanJuniorId, setBilanJuniorId] = useState("");
 	const [bilanPeriod, setBilanPeriod] = useState("P1");
-	const [bilanDecision, setBilanDecision] = useState("En attente");
+	const [bilanDécision, setBilanDécision] = useState("En attente");
 	const [bilanSummary, setBilanSummary] = useState("");
 
 	// Action confirmation modal
@@ -129,16 +138,16 @@ export default function MomentumManagementPage() {
 			juniorName: junior?.junior.name || "Unknown",
 			sessionId: bilanSessionId,
 			period: bilanPeriod,
-			decision: bilanDecision,
+			decision: bilanDécision,
 			summary: bilanSummary.trim(),
 			date: new Date().toISOString().split("T")[0],
 		});
-		showSuccess("Bilan cree avec succes.");
+		showSuccess("Bilan créé avec succès.");
 		setBilanModalOpen(false);
 		setBilanSessionId("");
 		setBilanJuniorId("");
 		setBilanPeriod("P1");
-		setBilanDecision("En attente");
+		setBilanDécision("En attente");
 		setBilanSummary("");
 	};
 
@@ -153,7 +162,7 @@ export default function MomentumManagementPage() {
 		if (!actionSessionId || !actionJuniorId || !currentAction) return;
 		try {
 			performAction(currentAction.type, actionSessionId, actionJuniorId);
-			showSuccess(`Action "${currentAction.label}" appliquee avec succes.`);
+			showSuccess(`Action "${currentAction.label}" appliquée avec succès.`);
 			setActionModalOpen(false);
 		} catch {
 			showError("Erreur lors de l'action.");
@@ -170,7 +179,7 @@ export default function MomentumManagementPage() {
 			juniorNotified: true,
 			createdAt: new Date().toISOString().split("T")[0],
 		});
-		showSuccess("Remarque ajoutee. Le Junior a ete notifie.");
+		showSuccess("Remarque ajoutée. Le Junior a été notifié.");
 		setRemarkModalOpen(false);
 		setRemarkContent("");
 		setRemarkJuniorId("");
@@ -182,23 +191,23 @@ export default function MomentumManagementPage() {
 			label: "Valider une PIM",
 			type: "validate_pim",
 			icon: "check" as const,
-			description: "Valider definitivement la PIM d'un Junior et confirmer son integration.",
+			description: "Valider définitivement la PIM d'un Junior et confirmer son intégration.",
 			color: "bg-success-100 dark:bg-success-900/20",
 			iconColor: "text-success-500",
 		},
 		{
-			label: "Accorder Periode 2",
+			label: "Accorder Période 2",
 			type: "grant_p2",
 			icon: "sparkles" as const,
-			description: "Autoriser le passage en Periode 2 apres un bilan P1 concluant.",
+			description: "Autoriser le passage en Période 2 après un bilan P1 concluant.",
 			color: "bg-primary-100 dark:bg-primary-900/20",
 			iconColor: "text-primary-500",
 		},
 		{
-			label: "Refuser Periode 2",
+			label: "Refuser Période 2",
 			type: "deny_p2",
 			icon: "close" as const,
-			description: "Refuser le passage en Periode 2 suite a un bilan P1 insuffisant.",
+			description: "Refuser le passage en Période 2 suite à un bilan P1 insuffisant.",
 			color: "bg-error-100 dark:bg-error-900/20",
 			iconColor: "text-error-500",
 		},
@@ -214,7 +223,7 @@ export default function MomentumManagementPage() {
 			label: "Annuler une PIM",
 			type: "cancel_pim",
 			icon: "delete" as const,
-			description: "Annuler definitivement la PIM d'un Junior. Action irreversible.",
+			description: "Annuler définitivement la PIM d'un Junior. Action irréversible.",
 			color: "bg-gray-100 dark:bg-gray-700",
 			iconColor: "text-gray-500",
 		},
@@ -222,11 +231,11 @@ export default function MomentumManagementPage() {
 
 	return (
 		<PageContainer title="Management" description="Tableau de bord de pilotage pour Marsha Teams et Legacy.">
-			{/* Access restriction banner */}
+			{/* Accèss restriction banner */}
 			<div className="border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-900/20 mb-6 flex items-center gap-3 rounded-lg border px-4 py-2.5">
 				<Icon name="shield" size="sm" className="text-warning-500 shrink-0" />
 				<span className="text-warning-700 dark:text-warning-400 text-sm">
-					Acces restreint — Cette section est reservee aux membres de Marsha Teams et Legacy.
+					Accès restreint — Cette section est réservée aux membres de Marsha Teams et Legacy.
 				</span>
 			</div>
 
@@ -240,7 +249,7 @@ export default function MomentumManagementPage() {
 						<EmptyState
 							icon="folder"
 							title="Aucune session active"
-							description="Il n'y a actuellement aucune session PIM active a piloter."
+							description="Il n'y à actuellement aucune session PIM active à piloter."
 						/>
 					) : (
 						<div className="space-y-4">
@@ -330,7 +339,7 @@ export default function MomentumManagementPage() {
 				<div className="space-y-5">
 					<div className="flex items-center justify-between">
 						<p className="text-sm text-gray-500 dark:text-gray-400">
-							{allBilans.length} bilan{allBilans.length !== 1 ? "s" : ""} enregistre
+							{allBilans.length} bilan{allBilans.length !== 1 ? "s" : ""} enregistré
 							{allBilans.length !== 1 ? "s" : ""}
 						</p>
 						<Button
@@ -350,7 +359,7 @@ export default function MomentumManagementPage() {
 						<EmptyState
 							icon="document"
 							title="Aucun bilan"
-							description="Aucun bilan n'a encore ete enregistre. Creez le premier bilan pour commencer le suivi."
+							description="Aucun bilan n'a encore été enregistré. Créez le premier bilan pour commencer le suivi."
 							actionLabel="Nouveau bilan"
 							onAction={() => {
 								setBilanSessionId(activeSessions[0]?.id || "");
@@ -416,9 +425,9 @@ export default function MomentumManagementPage() {
 											<th className="px-4 py-3">Dispositif</th>
 											<th className="px-4 py-3">Fonction</th>
 											<th className="px-4 py-3">Statut</th>
-											<th className="px-4 py-3">Periode</th>
-											<th className="px-4 py-3">Competences</th>
-											<th className="px-4 py-3">Referent</th>
+											<th className="px-4 py-3">Période</th>
+											<th className="px-4 py-3">Compétences</th>
+											<th className="px-4 py-3">Référent</th>
 										</tr>
 									</thead>
 									<tbody>
@@ -548,8 +557,8 @@ export default function MomentumManagementPage() {
 							<div className="flex items-center gap-3 text-sm text-gray-500 dark:text-gray-400">
 								<Icon name="bell" size="sm" className="text-gray-400" />
 								<p>
-									Les remarques negatives sont automatiquement notifiees aux Juniors concernes.
-									Utilisez cette fonctionnalite avec discernement.
+									Les remarques négatives sont automatiquement notifiées aux Juniors concernés.
+									Utilisez cette fonctionnalité avec discernement.
 								</p>
 							</div>
 						</Card>
@@ -587,7 +596,7 @@ export default function MomentumManagementPage() {
 				isOpen={bilanModalOpen}
 				onClose={() => setBilanModalOpen(false)}
 				title="Nouveau bilan"
-				description="Creez un bilan RRJ pour documenter l'evaluation d'un Junior."
+				description="Créez un bilan RRJ pour documenter l'évaluation d'un Junior."
 				size="md"
 			>
 				<div className="space-y-4">
@@ -605,7 +614,7 @@ export default function MomentumManagementPage() {
 								}}
 								className={cn(selectClasses, "w-full")}
 							>
-								<option value="">Selectionner une session...</option>
+								<option value="">Sélectionner une session...</option>
 								{activeSessions.map((s) => (
 									<option key={s.id} value={s.id}>
 										{s.entity}
@@ -632,7 +641,7 @@ export default function MomentumManagementPage() {
 								className={cn(selectClasses, "w-full")}
 								disabled={!bilanSessionId}
 							>
-								<option value="">Selectionner un Junior...</option>
+								<option value="">Sélectionner un Junior...</option>
 								{availableJuniorsForSession.map((j) => (
 									<option key={j.id} value={j.id}>
 										{j.name}
@@ -650,7 +659,7 @@ export default function MomentumManagementPage() {
 					{/* Period select */}
 					<div>
 						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Periode
+							Période
 						</label>
 						<div className="relative">
 							<select
@@ -672,20 +681,20 @@ export default function MomentumManagementPage() {
 						</div>
 					</div>
 
-					{/* Decision select */}
+					{/* Décision select */}
 					<div>
 						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Decision
+							Décision
 						</label>
 						<div className="flex flex-wrap gap-2">
 							{BILAN_DECISIONS.map((d) => (
 								<button
 									key={d.value}
 									type="button"
-									onClick={() => setBilanDecision(d.value)}
+									onClick={() => setBilanDécision(d.value)}
 									className={cn(
 										"rounded-lg border px-3 py-2 text-xs font-medium transition-colors",
-										bilanDecision === d.value
+										bilanDécision === d.value
 											? d.variant === "success"
 												? "border-success-300 bg-success-50 text-success-700 dark:border-success-700 dark:bg-success-900/20 dark:text-success-400"
 												: d.variant === "error"
@@ -705,12 +714,12 @@ export default function MomentumManagementPage() {
 					{/* Summary */}
 					<div>
 						<label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Resume du bilan
+							Résumé du bilan
 						</label>
 						<textarea
 							value={bilanSummary}
 							onChange={(e) => setBilanSummary(e.target.value)}
-							placeholder="Rediger le resume du bilan RRJ..."
+							placeholder="Rédiger le résumé du bilan RRJ..."
 							rows={4}
 							className={textareaClasses}
 						/>
@@ -739,7 +748,7 @@ export default function MomentumManagementPage() {
 				isOpen={actionModalOpen}
 				onClose={() => setActionModalOpen(false)}
 				title={currentAction?.label}
-				description="Selectionnez la session et le Junior concernes par cette action."
+				description="Sélectionnez la session et le Junior concernés par cette action."
 				size="md"
 			>
 				<div className="space-y-4">
@@ -757,7 +766,7 @@ export default function MomentumManagementPage() {
 								}}
 								className={cn(selectClasses, "w-full")}
 							>
-								<option value="">Selectionner une session...</option>
+								<option value="">Sélectionner une session...</option>
 								{activeSessions.map((s) => (
 									<option key={s.id} value={s.id}>
 										{s.entity}
@@ -784,7 +793,7 @@ export default function MomentumManagementPage() {
 								className={cn(selectClasses, "w-full")}
 								disabled={!actionSessionId}
 							>
-								<option value="">Selectionner un Junior...</option>
+								<option value="">Sélectionner un Junior...</option>
 								{(sessions.find((s) => s.id === actionSessionId)?.juniors || []).map((j) => (
 									<option key={j.id} value={j.id}>
 										{j.name}
@@ -804,7 +813,7 @@ export default function MomentumManagementPage() {
 						<div className="border-error-200 bg-error-50 dark:border-error-800 dark:bg-error-900/20 flex items-center gap-2 rounded-lg border px-3 py-2">
 							<Icon name="flag" size="sm" className="text-error-500 shrink-0" />
 							<span className="text-error-700 dark:text-error-400 text-xs">
-								Cette action est irreversible. La PIM sera definitivement annulee.
+								Cette action est irréversible. La PIM sera définitivement annulée.
 							</span>
 						</div>
 					)}
@@ -835,7 +844,7 @@ export default function MomentumManagementPage() {
 				isOpen={remarkModalOpen}
 				onClose={() => setRemarkModalOpen(false)}
 				title="Ajouter une remarque"
-				description="Ajoutez une remarque pour un Junior. Les remarques negatives sont notifiees."
+				description="Ajoutez une remarque pour un Junior. Les remarques négatives sont notifiées."
 				size="md"
 			>
 				<div className="space-y-4">
@@ -850,7 +859,7 @@ export default function MomentumManagementPage() {
 								onChange={(e) => setRemarkJuniorId(e.target.value)}
 								className={cn(selectClasses, "w-full")}
 							>
-								<option value="">Selectionner un Junior...</option>
+								<option value="">Sélectionner un Junior...</option>
 								{allJuniors.map((item) => (
 									<option key={item.junior.id} value={item.junior.id}>
 										{item.junior.name} ({item.sessionEntity})
@@ -893,7 +902,7 @@ export default function MomentumManagementPage() {
 										: "border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700",
 								)}
 							>
-								Negative
+								Négative
 							</button>
 						</div>
 					</div>
@@ -906,7 +915,7 @@ export default function MomentumManagementPage() {
 						<textarea
 							value={remarkContent}
 							onChange={(e) => setRemarkContent(e.target.value)}
-							placeholder="Ecrire la remarque..."
+							placeholder="Écrire la remarque..."
 							rows={4}
 							className={textareaClasses}
 						/>
@@ -916,7 +925,7 @@ export default function MomentumManagementPage() {
 					<div className="flex items-center gap-2 rounded-lg bg-gray-50 px-3 py-2 dark:bg-gray-800/50">
 						<Icon name="bell" size="sm" className="text-gray-400" />
 						<span className="text-xs text-gray-500 dark:text-gray-400">
-							Le Junior sera automatiquement notifie de cette remarque.
+							Le Junior sera automatiquement notifié de cette remarque.
 						</span>
 					</div>
 

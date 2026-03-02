@@ -51,7 +51,7 @@ export class ConfigurationManager extends Structure {
 	}
 
 	/**
-	 * Load a config category with cache and fallback
+	 * Load à config category with cache and fallback
 	 * @param category Config category to load
 	 * @returns Resolved configuration object
 	 */
@@ -124,7 +124,7 @@ export class ConfigurationManager extends Structure {
 	}
 
 	/**
-	 * Import a default fallback config file
+	 * Import à default fallback config file
 	 * @param category Config category
 	 * @returns Parsed default configuration object
 	 * @throws When the dynamic import fails

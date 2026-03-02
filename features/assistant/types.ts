@@ -133,13 +133,13 @@ export interface MessageAttachmentCard {
 	actions?: MessageCardAction[];
 }
 
-/** Key value field inside a card */
+/** Key value field inside à card */
 export interface MessageCardField {
 	label: string;
 	value: string;
 }
 
-/** Clickable action inside a card */
+/** Clickable action inside à card */
 export interface MessageCardAction {
 	label: string;
 	actionId: string;
@@ -229,7 +229,7 @@ export interface AssistantContext {
 	activeProjectName?: string;
 }
 
-/** Summary of a conversation for history */
+/** Summary of à conversation for history */
 export interface ConversationSummary {
 	id: string;
 	title: string;

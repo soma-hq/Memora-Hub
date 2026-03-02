@@ -2,9 +2,15 @@
 
 // React
 import { useState } from "react";
-import { Button, Input, Card, Badge, Icon } from "@/components/ui";
+import { Button, Input, Badge, Icon, SectionCard, Card } from "@/components/ui";
 import { showSuccess } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "settings/security",
+	section: "protected",
+	description: "Paramètres de sécurité du compte.",
+});
 
 /**
  * Security settings page for password management and two-factor authentication.
@@ -16,8 +22,7 @@ export default function SecurityPage() {
 	return (
 		<div className="max-w-2xl space-y-6">
 			{/* Change password */}
-			<Card padding="lg">
-				<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Changer le mot de passe</h3>
+			<SectionCard title="Changer le mot de passe" icon="shield" color="primary" padding="lg">
 				<form
 					className="space-y-4"
 					onSubmit={(e) => {
@@ -48,22 +53,22 @@ export default function SecurityPage() {
 						<Button type="submit">Modifier le mot de passe</Button>
 					</div>
 				</form>
-			</Card>
+			</SectionCard>
 
 			{/* A2F */}
-			<Card padding="lg">
-				<div className="flex items-start justify-between">
-					<div>
-						<h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-							Double authentification (A2F)
-						</h3>
-						<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-							Ajoutez une couche de sécurité supplémentaire à votre compte.
-						</p>
-					</div>
+			<SectionCard
+				title="Double authentification (A2F)"
+				icon="shield"
+				color="primary"
+				padding="lg"
+				badge={
 					<Badge variant={a2fEnabled ? "success" : "neutral"}>{a2fEnabled ? "Activée" : "Désactivée"}</Badge>
-				</div>
-				<div className="mt-4 flex items-center gap-4 rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800">
+				}
+			>
+				<p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+					Ajoutez une couche de sécurité supplémentaire à votre compte.
+				</p>
+				<Card className="flex items-center gap-4 bg-gray-50 dark:bg-gray-800">
 					<div className="bg-primary-100 dark:bg-primary-900/20 rounded-lg p-3">
 						<Icon name="shield" style="solid" size="lg" className="text-primary-500" />
 					</div>
@@ -84,12 +89,11 @@ export default function SecurityPage() {
 					>
 						{a2fEnabled ? "Désactiver" : "Activer"}
 					</Button>
-				</div>
-			</Card>
+				</Card>
+			</SectionCard>
 
 			{/* Sessions */}
-			<Card padding="lg">
-				<h3 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">Sessions actives</h3>
+			<SectionCard title="Sessions actives" icon="profile" color="primary" padding="lg">
 				<div className="space-y-3">
 					{[
 						{
@@ -105,10 +109,7 @@ export default function SecurityPage() {
 							lastActive: "Il y a 2h",
 						},
 					].map((session, idx) => (
-						<div
-							key={idx}
-							className="flex items-center justify-between rounded-lg border border-gray-200 p-3 dark:border-gray-700"
-						>
+						<Card key={idx} padding="sm" className="flex items-center justify-between">
 							<div>
 								<div className="flex items-center gap-2">
 									<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
@@ -129,10 +130,10 @@ export default function SecurityPage() {
 									Déconnecter
 								</Button>
 							)}
-						</div>
+						</Card>
 					))}
 				</div>
-			</Card>
+			</SectionCard>
 		</div>
 	);
 }

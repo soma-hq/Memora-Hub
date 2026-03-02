@@ -4,7 +4,6 @@
 import { useState, useMemo, useCallback } from "react";
 import type { Group, GroupFormData, GroupMember } from "@/features/groups/types";
 
-
 /** Mock members per group for development */
 const mockMembers: Record<string, GroupMember[]> = {
 	g1: [
@@ -39,8 +38,8 @@ const mockMembers: Record<string, GroupMember[]> = {
 const initialGroups: Group[] = [
 	{
 		id: "g1",
-		name: "Equipe Produit",
-		description: "Equipe responsable de la conception et du developpement des produits numeriques.",
+		name: "Équipe Produit",
+		description: "Équipe responsable de la conception et du développement des produits numériques.",
 		members: mockMembers.g1,
 		projects: 8,
 		status: "active",
@@ -58,7 +57,7 @@ const initialGroups: Group[] = [
 	{
 		id: "g3",
 		name: "Recherche & Innovation",
-		description: "Cellule dediee a la veille technologique et aux projets innovants.",
+		description: "Cellule dédiée à la veille technologique et aux projets innovants.",
 		members: mockMembers.g3,
 		projects: 12,
 		status: "active",
@@ -67,7 +66,7 @@ const initialGroups: Group[] = [
 	{
 		id: "g4",
 		name: "Support Client",
-		description: "Equipe de support technique et de relation client. Actuellement en pause.",
+		description: "Équipe de support technique et de relation client. Actuellement en pause.",
 		members: mockMembers.g4,
 		projects: 2,
 		status: "inactive",
@@ -147,7 +146,7 @@ export function useGroupActions(groups: Group[], setGroups: React.Dispatch<React
 	);
 
 	/**
-	 * Deletes a group by ID
+	 * Deletes à group by ID
 	 * @param id - Group ID to delete
 	 * @returns Nothing
 	 */
@@ -176,7 +175,7 @@ export function useGroupActions(groups: Group[], setGroups: React.Dispatch<React
 	);
 
 	/**
-	 * Removes a member from a group
+	 * Removes a member from à group
 	 * @param groupId - Target group ID
 	 * @param memberId - Member ID to remove
 	 * @returns Nothing

@@ -10,8 +10,7 @@ import type { Task, TaskStatusValue, TaskPriorityValue } from "../types";
 import { statusVariantMap, TaskStatusLabel, TaskPriorityLabel } from "../types";
 import { TaskStatus, TaskPriority } from "@/constants";
 
-
-/** Status filter options including a "show all" entry */
+/** Status filter options including à "show all" entry */
 const STATUS_OPTIONS: SelectMenuOption[] = [
 	{ label: "Tous les statuts", value: "", icon: "filter" },
 	...Object.entries(TaskStatusLabel).map(
@@ -24,7 +23,7 @@ const STATUS_OPTIONS: SelectMenuOption[] = [
 	),
 ];
 
-/** Priority filter options including a "show all" entry */
+/** Priority filter options including à "show all" entry */
 const PRIORITY_OPTIONS: SelectMenuOption[] = [
 	{ label: "Toutes les priorites", value: "", icon: "flag" },
 	...Object.entries(TaskPriorityLabel).map(([value, label]) => ({ label, value, icon: "flag" }) as SelectMenuOption),
@@ -92,7 +91,7 @@ export function TaskList({
 			<div className="flex flex-col gap-3 sm:flex-row">
 				<div className="flex-1">
 					<Input
-						placeholder="Rechercher une tache..."
+						placeholder="Rechercher une tâche..."
 						value={search}
 						onChange={(e) => onSearchChange(e.target.value)}
 						icon={<Icon name="search" size="sm" />}
@@ -119,8 +118,8 @@ export function TaskList({
 			{tasks.length === 0 && (
 				<EmptyState
 					icon="tasks"
-					title="Aucune tache trouvee"
-					description="Essayez de modifier vos filtres ou creez une nouvelle tache."
+					title="Aucune tâche trouvée"
+					description="Essayez de modifier vos filtres ou créez une nouvelle tâche."
 				/>
 			)}
 
@@ -133,7 +132,7 @@ export function TaskList({
 						<div className="mb-3 flex items-center gap-2">
 							<Badge variant={statusVariantMap[status]}>{TaskStatusLabel[status]}</Badge>
 							<span className="text-xs font-medium text-gray-400">
-								{statusTasks.length} tache{statusTasks.length > 1 ? "s" : ""}
+								{statusTasks.length} tâche{statusTasks.length > 1 ? "s" : ""}
 							</span>
 							<div className="h-px flex-1 bg-gray-200 dark:bg-gray-700" />
 						</div>

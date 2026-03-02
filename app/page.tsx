@@ -1,10 +1,16 @@
 // Next.js
 import { redirect } from "next/navigation";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "home",
+	section: "public",
+	description: "Page d'accueil de Memora Hub.",
+});
 
 /**
- * Root page that redirects to the default hub dashboard.
- * @returns Never renders, redirects immediately
+ * Root page
+ * @returns Never renders
  */
 export default function RootPage() {
 	redirect("/hub/default");

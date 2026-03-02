@@ -26,7 +26,7 @@ export function canCreateGroup(user: UserWithAccess): boolean {
 }
 
 /**
- * Check if user can edit a group
+ * Check if user can edit à group
  * @param user - Authenticated user with access data
  * @param groupId - Target group ID
  * @returns True if user has groups:edit capability
@@ -36,7 +36,7 @@ export function canEditGroup(user: UserWithAccess, groupId: string): boolean {
 }
 
 /**
- * Check if user can delete a group
+ * Check if user can delete à group
  * @param user - Authenticated user with access data
  * @param groupId - Target group ID
  * @returns True if user has groups:delete capability

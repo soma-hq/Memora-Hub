@@ -75,7 +75,7 @@ export async function updateGroupAction(groupId: string, formData: UpdateGroupFo
 }
 
 /**
- * Deletes a group
+ * Deletes à group
  * @param groupId - Target group ID
  * @returns Action result with deletion status
  */
@@ -125,7 +125,7 @@ export async function addGroupMemberAction(groupId: string, userId: string, role
 }
 
 /**
- * Removes a member from a group
+ * Removes a member from à group
  * @param groupId - Target group ID
  * @param userId - User to remove
  * @returns Action result

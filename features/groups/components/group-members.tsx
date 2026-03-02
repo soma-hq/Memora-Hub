@@ -2,11 +2,10 @@
 
 // React
 import { useState } from "react";
-import { Avatar, Badge, Button, Icon, Input, Select, EmptyState, Tag } from "@/components/ui";
+import { Avatar, Badge, Button, Icon, Input, Select, EmptyState, Tag, Card } from "@/components/ui";
 import type { GroupMember, GroupRole } from "@/features/groups/types";
 import { roleVariantMap, roleLabelMap } from "@/features/groups/types";
 import type { BadgeVariant } from "@/core/design/states";
-
 
 /** Props for the GroupMembers component */
 interface GroupMembersProps {
@@ -98,7 +97,7 @@ export function GroupMembers({ members, onAddMember, onRemoveMember, readOnly = 
 			</div>
 
 			{showAddForm && (
-				<div className="flex flex-col gap-3 rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/50">
+				<Card className="flex flex-col gap-3 bg-gray-50 dark:bg-gray-800/50">
 					<p className="text-sm font-medium text-gray-700 dark:text-gray-300">Nouveau membre</p>
 					<div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
 						<Input placeholder="Nom complet" value={newName} onChange={(e) => setNewName(e.target.value)} />
@@ -123,7 +122,7 @@ export function GroupMembers({ members, onAddMember, onRemoveMember, readOnly = 
 							Ajouter le membre
 						</Button>
 					</div>
-				</div>
+				</Card>
 			)}
 
 			{members.length > 3 && (
@@ -141,7 +140,7 @@ export function GroupMembers({ members, onAddMember, onRemoveMember, readOnly = 
 					title="Aucun membre"
 					description={
 						searchMember
-							? "Aucun membre ne correspond a votre recherche."
+							? "Aucun membre ne correspond à votre recherche."
 							: "Ce groupe n'a pas encore de membres."
 					}
 				/>

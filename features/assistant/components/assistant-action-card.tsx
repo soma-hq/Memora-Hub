@@ -1,10 +1,9 @@
 "use client";
 
 // Components
-import { Icon } from "@/components/ui";
+import { Icon, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type {
-
 	MessageAttachment,
 	MessageAttachmentList,
 	MessageAttachmentCard,
@@ -13,7 +12,6 @@ import type {
 	MessageAttachmentConfirm,
 } from "@/features/assistant/types";
 import type { IconName } from "@/core/design/icons";
-
 
 interface AssistantActionCardProps {
 	attachment: MessageAttachment;
@@ -44,7 +42,13 @@ const TREND_COLORS: Record<string, { color: string; arrow: string }> = {
 
 function ListCard({ attachment }: { attachment: MessageAttachmentList }) {
 	if (attachment.items.length === 0) {
-		return <div className="py-3 text-center text-xs text-gray-400">{attachment.emptyText || "Aucun element."}</div>;
+		return (
+			<StyledEmptyState
+				icon="document"
+				title={attachment.emptyText || "Aucun élément"}
+				description="Rien à afficher."
+			/>
+		);
 	}
 
 	return (

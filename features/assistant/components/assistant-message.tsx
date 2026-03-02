@@ -87,7 +87,7 @@ export function AssistantMessage({ message, isConsecutive }: AssistantMessagePro
 				isConsecutive && !isUser && "pl-[38px]",
 			)}
 		>
-			{/* Avatar - only for first bot message in a group */}
+			{/* Avatar - only for first bot message in à group */}
 			{!isUser && !isConsecutive && (
 				<div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-rose-50 dark:bg-rose-900/20">
 					<Icon name="sparkles" size="xs" className="text-rose-400" />

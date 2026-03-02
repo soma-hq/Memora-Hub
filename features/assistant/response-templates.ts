@@ -2,7 +2,6 @@
 import type { IntentAction, AssistantContext, Suggestion } from "./types";
 import { getContextualSuggestions } from "./context-engine";
 
-
 /** Personality modes the assistant can use */
 export type PersonalityMode = "professional" | "friendly" | "concise";
 
@@ -18,17 +17,17 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	create_task: {
 		success: {
 			templates: [
-				'Super, la tâche **"{title}"** a ete créée avec succes !',
+				'Super, la tâche **"{title}"** a été créée avec succès !',
 				'C\'est fait ! Ta tâche **"{title}"** est prête.',
 				'Tâche **"{title}"** créée. Tu peux la retrouver dans ta liste de tâches personnelles.',
-				'Parfait, j\'ai crée ta tâche **"{title}"** !',
+				'Parfait, j\'ai créé ta tâche **"{title}"** !',
 			],
 		},
 		error: {
 			templates: [
-				"Impossible de créer la tache. Vérifie les informations et réessaie.",
-				"Oups, la creation de la tâche a échoue. On réessaie ?",
-				"Malheureusement, une erreur est survenue lors de la création de ta tâche. J'ai prévenu le développeur de cet incident. Désolé ! 😬",
+				"Impossible de créer la tâche. Vérifie les informations et réessaie.",
+				"Oups, la création de la tâche a échoué. On réessaie ?",
+				"Malheureusement, une erreur est survenue lors de la création de ta tâche. J'ai prévenu le développeur de cet incident. Désolé !",
 			],
 		},
 	},
@@ -37,14 +36,14 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	create_project: {
 		success: {
 			templates: [
-				'Le projet **"{name}"** a ete crée avec succes !',
+				'Le projet **"{name}"** a été créé avec succès !',
 				'Projet **"{name}"** lancé !',
 				'C\'est parti ! Le projet **"{name}"** est prêt.',
 			],
 		},
 		error: {
 			templates: [
-				"La création du projet a échoué. Vérifie vos permissions.",
+				"La création du projet a échoué. Vérifiez vos permissions.",
 				"Impossible de créer le projet pour le moment.",
 			],
 		},
@@ -54,15 +53,15 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	create_meeting: {
 		success: {
 			templates: [
-				'La reunion **"{title}"** est planifiee pour le {date} a {time}.',
-				'Reunion **"{title}"** confirmee ! Les participants seront notifies.',
-				'C\'est note ! Reunion **"{title}"** le {date} a {time}.',
+				'La réunion **"{title}"** est planifiée pour le {date} à {time}.',
+				'Réunion **"{title}"** confirmée ! Les participants seront notifiés.',
+				'C\'est noté ! Réunion **"{title}"** le {date} à {time}.',
 			],
 		},
 		error: {
 			templates: [
-				"La planification de la reunion a echoue.",
-				"Impossible de creer la reunion. Un conflit d'horaire peut-etre ?",
+				"La planification de la réunion a échoué.",
+				"Impossible de créer la réunion. Un conflit d'horaire peut-être ?",
 			],
 		},
 	},
@@ -73,13 +72,13 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 			templates: [
 				"Ta demande d'absence du {startDate} au {endDate} a été soumise.",
 				"Demande enregistrée ! Ton responsable a été notifié pour la prendre en compte.",
-				"C'est fait, la demande d'absence est envoyé à tes responsables.",
+				"C'est fait, la demande d'absence est envoyée à tes responsables.",
 			],
 		},
 		error: {
 			templates: [
-				"La demande d'absence n'a pas pu etre envoyee.",
-				"Erreur lors de la soumission. Verifiez les dates.",
+				"La demande d'absence n'a pas pu être envoyée.",
+				"Erreur lors de la soumission. Vérifiez les dates.",
 			],
 		},
 	},
@@ -88,7 +87,7 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	navigate_to: {
 		success: {
 			templates: [
-				"Je vous emmene vers **{label}**.",
+				"Je vous emmène vers **{label}**.",
 				"Navigation vers **{label}** en cours...",
 				"Allons-y ! Direction **{label}**.",
 				"On y va ! Voici la page **{label}**.",
@@ -96,9 +95,9 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 		},
 		not_found: {
 			templates: [
-				"Je n'ai pas trouve cette page. Essayez d'etre plus precis.",
+				"Je n'ai pas trouvé cette page. Essayez d'être plus précis.",
 				"Page introuvable. Voici quelques suggestions :",
-				"Hmm, je ne connais pas cette destination. Ou voulez-vous aller ?",
+				"Hmm, je ne connais pas cette destination. Où voulez-vous aller ?",
 			],
 		},
 	},
@@ -107,15 +106,15 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	search_global: {
 		success: {
 			templates: [
-				'Voici les resultats pour **"{query}"** :',
-				'J\'ai trouve ceci pour **"{query}"** :',
-				'Resultats de recherche pour **"{query}"** :',
+				'Voici les résultats pour **"{query}"** :',
+				'J\'ai trouvé ceci pour **"{query}"** :',
+				'Résultats de recherche pour **"{query}"** :',
 			],
 		},
 		empty: {
 			templates: [
-				'Aucun resultat pour **"{query}"**. Essayez avec d\'autres termes.',
-				'Je n\'ai rien trouve pour **"{query}"**. Reformulez votre recherche ?',
+				'Aucun résultat pour **"{query}"**. Essayez avec d\'autres termes.',
+				'Je n\'ai rien trouvé pour **"{query}"**. Reformulez votre recherche ?',
 			],
 		},
 	},
@@ -123,12 +122,12 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	// Task list responses
 	list_tasks: {
 		success: {
-			templates: ["Voici vos taches :", "Voici la liste de vos taches en cours :", "Votre backlog :"],
+			templates: ["Voici vos tâches :", "Voici la liste de vos tâches en cours :", "Votre backlog :"],
 		},
 		empty: {
 			templates: [
-				"Vous n'avez aucune tache pour le moment. On en cree une ?",
-				"Liste vide ! C'est le moment de creer de nouvelles taches.",
+				"Vous n'avez aucune tâche pour le moment. On en crée une ?",
+				"Liste vide ! C'est le moment de créer de nouvelles tâches.",
 			],
 		},
 	},
@@ -137,9 +136,9 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	complete_task: {
 		success: {
 			templates: [
-				"Tache terminee ! Bien joue.",
-				"C'est fait, la tache est marquee comme terminee.",
-				"Une de moins ! La tache est terminee.",
+				"Tâche terminée ! Bien joué.",
+				"C'est fait, la tâche est marquée comme terminée.",
+				"Une de moins ! La tâche est terminée.",
 			],
 		},
 	},
@@ -149,22 +148,22 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 		morning: {
 			templates: [
 				"Bonjour ! Comment puis-je vous aider ce matin ?",
-				"Bon matin ! Pret pour une journee productive ?",
-				"Hello ! Quoi de prevu aujourd'hui ?",
+				"Bon matin ! Prêt pour une journée productive ?",
+				"Hello ! Quoi de prévu aujourd'hui ?",
 			],
 		},
 		afternoon: {
 			templates: [
-				"Bon apres-midi ! Que puis-je faire pour vous ?",
-				"Salut ! Comment va votre journee ?",
-				"Hey ! Besoin d'aide cet apres-midi ?",
+				"Bon après-midi ! Que puis-je faire pour vous ?",
+				"Salut ! Comment va votre journée ?",
+				"Hey ! Besoin d'aide cet après-midi ?",
 			],
 		},
 		evening: {
 			templates: [
 				"Bonsoir ! Encore au travail ? Comment puis-je vous aider ?",
-				"Bonsoir ! Finissons cette journee en beaute.",
-				"Hello ! On termine quelques taches ce soir ?",
+				"Bonsoir ! Finissons cette journée en beauté.",
+				"Hello ! On termine quelques tâches ce soir ?",
 			],
 		},
 	},
@@ -174,8 +173,8 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 		success: {
 			templates: [
 				"Voici tout ce que je peux faire pour vous :",
-				"Bien sur ! Voici mes capacites :",
-				"Je suis la pour vous aider ! Voici ce que je sais faire :",
+				"Bien sûr ! Voici mes capacités :",
+				"Je suis là pour vous aider ! Voici ce que je sais faire :",
 			],
 		},
 	},
@@ -184,22 +183,22 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	change_theme: {
 		dark: {
 			templates: [
-				"Mode sombre active. Vos yeux vous remercient !",
-				"C'est fait, le theme sombre est en place.",
-				"Theme sombre selectionne.",
+				"Mode sombre activé. Vos yeux vous remercient !",
+				"C'est fait, le thème sombre est en place.",
+				"Thème sombre sélectionné.",
 			],
 		},
 		light: {
 			templates: [
-				"Mode clair active. Plus lumineux !",
-				"Theme clair selectionne.",
+				"Mode clair activé. Plus lumineux !",
+				"Thème clair sélectionné.",
 				"C'est fait, retour au mode clair.",
 			],
 		},
 		system: {
 			templates: [
-				"Theme automatique active. Il suivra les preferences de votre systeme.",
-				"Le theme suit désormais votre systeme.",
+				"Thème automatique activé. Il suivra les préférences de votre système.",
+				"Le thème suit désormais votre système.",
 			],
 		},
 	},
@@ -208,9 +207,9 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	mark_notifications_read: {
 		success: {
 			templates: [
-				"Toutes vos notifications ont ete marquees comme lues.",
+				"Toutes vos notifications ont été marquées comme lues.",
 				"C'est fait, notifications lues !",
-				"Boite de notifications nettoyee.",
+				"Boîte de notifications nettoyée.",
 			],
 		},
 	},
@@ -219,9 +218,9 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	export_data: {
 		success: {
 			templates: [
-				"L'export en {format} est en cours de preparation.",
-				"Votre fichier {format} sera pret dans quelques instants.",
-				"Export {format} lance ! Vous recevrez une notification.",
+				"L'export en {format} est en cours de préparation.",
+				"Votre fichier {format} sera prêt dans quelques instants.",
+				"Export {format} lancé ! Vous recevrez une notification.",
 			],
 		},
 	},
@@ -231,9 +230,9 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 		default: {
 			templates: [
 				"Je n'ai pas bien compris. Pouvez-vous reformuler ?",
-				"Hmm, je ne suis pas sur de comprendre. Essayez autrement ?",
-				"Desole, je n'ai pas saisi votre demande. Voici ce que je peux faire :",
-				"Je ne comprends pas cette requete. Voulez-vous voir mes capacites ?",
+				"Hmm, je ne suis pas sûr de comprendre. Essayez autrement ?",
+				"Désolé, je n'ai pas saisi votre demande. Voici ce que je peux faire :",
+				"Je ne comprends pas cette requête. Voulez-vous voir mes capacités ?",
 			],
 		},
 	},
@@ -242,9 +241,9 @@ const RESPONSE_TEMPLATES: Record<string, Record<string, ResponseTemplate>> = {
 	permission_denied: {
 		default: {
 			templates: [
-				"Vous n'avez pas les permissions necessaires pour cette action.",
-				"Desole, cette action n'est pas autorisee avec votre role actuel.",
-				"Acces refuse. Contactez un administrateur pour obtenir les droits.",
+				"Vous n'avez pas les permissions nécessaires pour cette action.",
+				"Désolé, cette action n'est pas autorisée avec votre rôle actuel.",
+				"Accès refusé. Contactez un administrateur pour obtenir les droits.",
 			],
 		},
 	},
@@ -316,7 +315,7 @@ export function getTimeAwareGreeting(): string {
 }
 
 /**
- * Generate a conversational error message based on the error type
+ * Generate à conversational error message based on the error type
  * @param errorType Type of error that occurred
  * @param details Additional error details
  * @returns User-friendly error message
@@ -325,38 +324,38 @@ export function getTimeAwareGreeting(): string {
 export function getErrorMessage(errorType: string, details?: string): string {
 	const errorMessages: Record<string, string[]> = {
 		network: [
-			"Probleme de connexion. Verifiez votre reseau et reessayez.",
-			"La connexion a echoue. Verifiez votre acces Internet.",
+			"Problème de connexion. Vérifiez votre réseau et réessayez.",
+			"La connexion a échoué. Vérifiez votre accès Internet.",
 		],
 		permission: [
 			"Vous n'avez pas l'autorisation d'effectuer cette action.",
-			"Acces refuse. Contactez un administrateur.",
+			"Accès refusé. Contactez un administrateur.",
 		],
 		validation: [
-			"Les donnees saisies ne sont pas valides. Verifiez et reessayez.",
+			"Les données saisies ne sont pas valides. Vérifiez et réessayez.",
 			"Erreur de validation. Corrigez les champs en erreur.",
 		],
-		not_found: ["Element introuvable. Il a peut-etre ete supprime.", "Impossible de trouver cet element."],
+		not_found: ["Élément introuvable. Il a peut-être été supprimé.", "Impossible de trouver cet élément."],
 		server: [
-			"Erreur serveur. Reessayez dans quelques instants.",
-			"Une erreur interne est survenue. L'equipe technique est notifiee.",
+			"Erreur serveur. Réessayez dans quelques instants.",
+			"Une erreur interne est survenue. L'équipe technique est notifiée.",
 		],
-		timeout: ["L'operation a pris trop de temps. Reessayez.", "Delai d'attente depasse. Veuillez reessayer."],
-		generic: ["Une erreur inattendue s'est produite. Reessayez.", "Oups ! Quelque chose s'est mal passe."],
+		timeout: ["L'opération a pris trop de temps. Réessayez.", "Délai d'attente dépassé. Veuillez réessayer."],
+		generic: ["Une erreur inattendue s'est produite. Réessayez.", "Oups ! Quelque chose s'est mal passé."],
 	};
 
 	const messages = errorMessages[errorType] || errorMessages.generic;
 	let message = pickRandom(messages);
 
 	if (details) {
-		message += `\n\nDetails : ${details}`;
+		message += `\n\nDétails : ${details}`;
 	}
 
 	return message;
 }
 
 /**
- * Generate a transition message for multi-step flows
+ * Generate à transition message for multi-step flows
  * @param stepIndex Current step index (1-based)
  * @param totalSteps Total number of steps
  * @param stepLabel Label for the current step
@@ -365,19 +364,19 @@ export function getErrorMessage(errorType: string, details?: string): string {
 
 export function getFlowTransitionMessage(stepIndex: number, totalSteps: number, stepLabel: string): string {
 	if (stepIndex === 1) {
-		const intros = ["Tres bien, commencons !", "C'est parti !", "Allons-y !"];
-		return `${pickRandom(intros)} (Etape ${stepIndex}/${totalSteps})`;
+		const intros = ["Très bien, commençons !", "C'est parti !", "Allons-y !"];
+		return `${pickRandom(intros)} (Étape ${stepIndex}/${totalSteps})`;
 	}
 
 	if (stepIndex === totalSteps) {
-		return `Derniere etape ! (${stepIndex}/${totalSteps})`;
+		return `Dernière étape ! (${stepIndex}/${totalSteps})`;
 	}
 
 	const transitions = [
 		`Parfait ! Suite... (${stepIndex}/${totalSteps})`,
-		`Bien note. Continuons. (${stepIndex}/${totalSteps})`,
+		`Bien noté. Continuons. (${stepIndex}/${totalSteps})`,
 		`OK ! Prochaine question. (${stepIndex}/${totalSteps})`,
-		`C'est enregistre. (${stepIndex}/${totalSteps})`,
+		`C'est enregistré. (${stepIndex}/${totalSteps})`,
 	];
 
 	return pickRandom(transitions);
@@ -395,21 +394,21 @@ export function getIdlePrompt(context: AssistantContext): string {
 
 	if (hour < 10) {
 		prompts.push(
-			"Voulez-vous voir le planning de votre journee ?",
-			"Pret a attaquer la journee ? Je peux vous montrer vos taches.",
+			"Voulez-vous voir le planning de votre journée ?",
+			"Prêt à attaquer la journée ? Je peux vous montrer vos tâches.",
 		);
 	} else if (hour < 12) {
-		prompts.push("Avez-vous des taches a terminer avant la pause ?", "Un coup d'oeil sur vos reunions du jour ?");
+		prompts.push("Avez-vous des tâches à terminer avant la pause ?", "Un coup d'oeil sur vos réunions du jour ?");
 	} else if (hour < 14) {
-		prompts.push("Bon appetit ! A tout a l'heure.", "Besoin de planifier quelque chose pour cet apres-midi ?");
+		prompts.push("Bon appétit ! À tout à l'heure.", "Besoin de planifier quelque chose pour cet après-midi ?");
 	} else if (hour < 17) {
 		prompts.push(
-			"Comment se passe votre apres-midi ? Besoin d'aide ?",
-			"Un recap de votre avancement sur les taches en cours ?",
+			"Comment se passe votre après-midi ? Besoin d'aide ?",
+			"Un récap de votre avancement sur les tâches en cours ?",
 		);
 	} else {
 		prompts.push(
-			"La journee touche a sa fin. Un recapitulatif ?",
+			"La journée touche à sa fin. Un récapitulatif ?",
 			"Voulez-vous planifier quelque chose pour demain ?",
 		);
 	}
@@ -429,58 +428,58 @@ export function getPersonalizedSuggestions(mostUsedActions: string[], context: A
 	const actionSuggestionMap: Record<string, Suggestion> = {
 		create_task: {
 			id: "pers-create-task",
-			label: "Nouvelle tache",
+			label: "Nouvelle tâche",
 			icon: "plus",
-			description: "Votre action la plus utilisee",
-			query: "Creer une nouvelle tache",
+			description: "Votre action la plus utilisée",
+			query: "Créer une nouvelle tâche",
 			category: "task",
 		},
 		list_tasks: {
 			id: "pers-list-tasks",
-			label: "Mes taches",
+			label: "Mes tâches",
 			icon: "tasks",
-			description: "Votre action la plus utilisee",
-			query: "Montre-moi mes taches",
+			description: "Votre action la plus utilisée",
+			query: "Montre-moi mes tâches",
 			category: "task",
 		},
 		create_meeting: {
 			id: "pers-create-meeting",
-			label: "Planifier reunion",
+			label: "Planifier réunion",
 			icon: "calendar",
-			description: "Frequemment utilise",
-			query: "Planifier une reunion",
+			description: "Fréquemment utilisé",
+			query: "Planifier une réunion",
 			category: "meeting",
 		},
 		list_meetings: {
 			id: "pers-list-meetings",
-			label: "Reunions",
+			label: "Réunions",
 			icon: "calendar",
-			description: "Frequemment utilise",
-			query: "Mes prochaines reunions",
+			description: "Fréquemment utilisé",
+			query: "Mes prochaines réunions",
 			category: "meeting",
 		},
 		create_project: {
 			id: "pers-create-project",
 			label: "Nouveau projet",
 			icon: "folder",
-			description: "Frequemment utilise",
-			query: "Creer un nouveau projet",
+			description: "Fréquemment utilisé",
+			query: "Créer un nouveau projet",
 			category: "project",
 		},
 		search_global: {
 			id: "pers-search",
 			label: "Rechercher",
 			icon: "search",
-			description: "Frequemment utilise",
+			description: "Fréquemment utilisé",
 			query: "Rechercher ",
 			category: "search",
 		},
 		request_absence: {
 			id: "pers-absence",
-			label: "Poser un conge",
+			label: "Poser un congé",
 			icon: "calendar",
-			description: "Frequemment utilise",
-			query: "Je veux poser un conge",
+			description: "Fréquemment utilisé",
+			query: "Je veux poser un congé",
 			category: "absence",
 		},
 	};

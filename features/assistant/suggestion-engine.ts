@@ -8,18 +8,18 @@ const SUGGESTION_GROUPS: Record<string, Suggestion[]> = {
 	quickActions: [
 		{
 			id: "qa-create-task",
-			label: "Nouvelle tache",
+			label: "Nouvelle tâche",
 			icon: "plus",
 			description: "Creer rapidement",
-			query: "Creer une nouvelle tache",
+			query: "Creer une nouvelle tâche",
 			category: "task",
 		},
 		{
 			id: "qa-create-meeting",
-			label: "Planifier reunion",
+			label: "Planifier réunion",
 			icon: "calendar",
 			description: "Organiser un evenement",
-			query: "Planifier une reunion",
+			query: "Planifier une réunion",
 			category: "meeting",
 		},
 		{
@@ -34,10 +34,10 @@ const SUGGESTION_GROUPS: Record<string, Suggestion[]> = {
 	views: [
 		{
 			id: "v-my-tasks",
-			label: "Mes taches",
+			label: "Mes tâches",
 			icon: "tasks",
-			description: "Taches assignees",
-			query: "Montre-moi mes taches",
+			description: "Tâches assignees",
+			query: "Montre-moi mes tâches",
 			category: "task",
 		},
 		{
@@ -50,10 +50,10 @@ const SUGGESTION_GROUPS: Record<string, Suggestion[]> = {
 		},
 		{
 			id: "v-meetings",
-			label: "Reunions a venir",
+			label: "Réunions à venir",
 			icon: "calendar",
-			description: "Prochaines reunions",
-			query: "Mes prochaines reunions",
+			description: "Prochaines réunions",
+			query: "Mes prochaines réunions",
 			category: "meeting",
 		},
 		{
@@ -146,9 +146,9 @@ export function getFollowUpSuggestions(lastCategory: IntentCategory, context: As
 		case "task":
 			suggestions.push(...SUGGESTION_GROUPS.quickActions.filter((s) => s.category === "task"), {
 				id: "fu-view-tasks",
-				label: "Voir les taches",
+				label: "Voir les tâches",
 				icon: "tasks",
-				query: "Montre-moi mes taches",
+				query: "Montre-moi mes tâches",
 				category: "task",
 			});
 			break;
@@ -157,9 +157,9 @@ export function getFollowUpSuggestions(lastCategory: IntentCategory, context: As
 			suggestions.push(
 				{
 					id: "fu-project-tasks",
-					label: "Taches du projet",
+					label: "Tâches du projet",
 					icon: "tasks",
-					query: "Taches du projet",
+					query: "Tâches du projet",
 					category: "task",
 				},
 				{
@@ -176,16 +176,16 @@ export function getFollowUpSuggestions(lastCategory: IntentCategory, context: As
 			suggestions.push(
 				{
 					id: "fu-next-meetings",
-					label: "Prochaines reunions",
+					label: "Prochaines réunions",
 					icon: "calendar",
-					query: "Mes prochaines reunions",
+					query: "Mes prochaines réunions",
 					category: "meeting",
 				},
 				{
 					id: "fu-new-meeting",
-					label: "Planifier reunion",
+					label: "Planifier réunion",
 					icon: "plus",
-					query: "Planifier une reunion",
+					query: "Planifier une réunion",
 					category: "meeting",
 				},
 			);
@@ -241,7 +241,7 @@ export function getFollowUpSuggestions(lastCategory: IntentCategory, context: As
 export function getWelcomeSuggestions(context: AssistantContext): Suggestion[] {
 	const module = detectCurrentModule(context.currentPage);
 
-	// If on a specific module page, mix context-aware with general
+	// If on à specific module page, mix context-aware with general
 	if (module) {
 		const contextual = getContextualSuggestions(context).slice(0, 4);
 		const general = WELCOME_SUGGESTIONS.filter((ws) => !contextual.some((cs) => cs.category === ws.category)).slice(
@@ -264,26 +264,26 @@ export function getTrendingSuggestions(): Suggestion[] {
 	return [
 		{
 			id: "trend-tasks",
-			label: "Mes taches en cours",
+			label: "Mes tâches en cours",
 			icon: "tasks",
 			description: "Le plus utilise",
-			query: "Montre-moi mes taches en cours",
+			query: "Montre-moi mes tâches en cours",
 			category: "task",
 		},
 		{
 			id: "trend-create-task",
-			label: "Creer une tache",
+			label: "Creer une tâche",
 			icon: "plus",
 			description: "Action rapide",
-			query: "Creer une nouvelle tache",
+			query: "Creer une nouvelle tâche",
 			category: "task",
 		},
 		{
 			id: "trend-meetings",
-			label: "Prochaines reunions",
+			label: "Prochaines réunions",
 			icon: "calendar",
 			description: "Cette semaine",
-			query: "Mes prochaines reunions",
+			query: "Mes prochaines réunions",
 			category: "meeting",
 		},
 		{

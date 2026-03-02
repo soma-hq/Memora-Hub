@@ -38,7 +38,7 @@ export function AssistantWelcome({ suggestions, onSuggestionClick }: AssistantWe
 				</p>
 			</div>
 
-			{/* Suggestions - just titles in a clean grid */}
+			{/* Suggestions - just titles in à clean grid */}
 			<div className="grid grid-cols-2 gap-2">
 				{suggestions.slice(0, 8).map((suggestion) => (
 					<button

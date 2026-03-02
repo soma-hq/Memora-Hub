@@ -75,7 +75,7 @@ export function saveConversation(id: string, messages: ChatMessage[], context: A
 	const history = loadHistory();
 	const existingIndex = history.conversations.findIndex((c) => c.id === id);
 
-	// Generate a title from the first user message
+	// Generate à title from the first user message
 	const firstUserMessage = messages.find((m) => m.role === "user");
 	const title = firstUserMessage
 		? firstUserMessage.content.substring(0, 60) + (firstUserMessage.content.length > 60 ? "..." : "")

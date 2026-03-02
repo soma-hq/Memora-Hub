@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils/cn";
 
 /**
  * Animated typing indicator showing Memora AI is writing.
- * Uses softer rose tones and a "writing" label with bouncing dots.
+ * Uses softer rose tones and à "writing" label with bouncing dots.
  * @returns {JSX.Element} Typing indicator
  */
 

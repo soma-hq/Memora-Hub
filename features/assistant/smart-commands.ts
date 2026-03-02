@@ -1,6 +1,5 @@
 // Constants & types
 import type {
-
 	AssistantContext,
 	ChatMessage,
 	Suggestion,
@@ -12,7 +11,6 @@ import type {
 } from "./types";
 import { getContextualSuggestions } from "./context-engine";
 import { detectIntent } from "./intent-engine";
-
 
 /** Smart command type the user can invoke with / prefix */
 export interface SmartCommand {
@@ -68,40 +66,40 @@ export const SMART_COMMANDS: SmartCommand[] = [
 			const commandList = SMART_COMMANDS.map((cmd) => `- **/${cmd.command}** — ${cmd.description}`).join("\n");
 
 			return {
-				message: `Voici les commandes disponibles :\n\n${commandList}\n\nVous pouvez aussi ecrire en langage naturel !`,
+				message: `Voici les commandes disponibles :\n\n${commandList}\n\nVous pouvez aussi écrire en langage naturel !`,
 			};
 		},
 	},
 	{
-		command: "tache",
+		command: "tâche",
 		aliases: ["task", "t"],
-		description: "Creer une tache rapidement (/tache Mon titre)",
+		description: "Créer une tâche rapidement (/tâche Mon titre)",
 		category: "task",
 		execute: (args, context) => {
 			if (!args) {
 				return {
-					message: "Usage : **/tache [titre]**\n\nExemple : `/tache Corriger le bug de login`",
+					message: "Usage : **/tâche [titre]**\n\nExemple : `/tâche Corriger le bug de login`",
 				};
 			}
 			return {
 				message:
-					`Tache **"${args}"** creee avec succes !\n\n` +
-					"- Statut : A faire\n" +
-					"- Priorite : Moyenne\n\n" +
-					"Vous pouvez la retrouver dans votre liste de taches.",
+					`Tâche **"${args}"** créée avec succès !\n\n` +
+					"- Statut : À faire\n" +
+					"- Priorité : Moyenne\n\n" +
+					"Vous pouvez la retrouver dans votre liste de tâches.",
 				suggestions: [
 					{
 						id: "sc-view-tasks",
-						label: "Voir mes taches",
+						label: "Voir mes tâches",
 						icon: "tasks",
-						query: "Montre-moi mes taches",
+						query: "Montre-moi mes tâches",
 						category: "task",
 					},
 					{
 						id: "sc-another-task",
-						label: "Creer une autre tache",
+						label: "Créer une autre tâche",
 						icon: "plus",
-						query: "/tache ",
+						query: "/tâche ",
 						category: "task",
 					},
 				],
@@ -111,7 +109,7 @@ export const SMART_COMMANDS: SmartCommand[] = [
 	{
 		command: "projet",
 		aliases: ["project", "p"],
-		description: "Creer un projet rapidement (/projet Mon projet)",
+		description: "Créer un projet rapidement (/projet Mon projet)",
 		category: "project",
 		execute: (args) => {
 			if (!args) {
@@ -121,9 +119,9 @@ export const SMART_COMMANDS: SmartCommand[] = [
 			}
 			return {
 				message:
-					`Projet **"${args}"** cree avec succes !\n\n` +
-					"- Statut : A faire\n\n" +
-					"Ajoutez-y des taches pour commencer.",
+					`Projet **"${args}"** créé avec succès !\n\n` +
+					"- Statut : À faire\n\n" +
+					"Ajoutez-y des tâches pour commencer.",
 				suggestions: [
 					{
 						id: "sc-view-projects",
@@ -134,9 +132,9 @@ export const SMART_COMMANDS: SmartCommand[] = [
 					},
 					{
 						id: "sc-add-task",
-						label: "Ajouter une tache",
+						label: "Ajouter une tâche",
 						icon: "plus",
-						query: "Creer une tache",
+						query: "Créer une tâche",
 						category: "task",
 					},
 				],
@@ -144,19 +142,19 @@ export const SMART_COMMANDS: SmartCommand[] = [
 		},
 	},
 	{
-		command: "reunion",
+		command: "réunion",
 		aliases: ["meeting", "meet", "m"],
-		description: "Planifier une reunion (/reunion Titre)",
+		description: "Planifier une réunion (/réunion Titre)",
 		category: "meeting",
 		execute: (args) => {
 			if (!args) {
 				return {
 					message:
-						"Usage : **/reunion [titre]**\n\nExemple : `/reunion Standup quotidien`\n\nJe vous guiderai pour les details.",
+						"Usage : **/réunion [titre]**\n\nExemple : `/réunion Standup quotidien`\n\nJe vous guiderai pour les détails.",
 				};
 			}
 			return {
-				message: `Lancement de la planification de la reunion **"${args}"**.\n\nA quelle date ? (format : AAAA-MM-JJ)`,
+				message: `Lancement de la planification de la réunion **"${args}"**.\n\nÀ quelle date ? (format : AAAA-MM-JJ)`,
 			};
 		},
 	},
@@ -169,7 +167,7 @@ export const SMART_COMMANDS: SmartCommand[] = [
 			if (!args) {
 				return {
 					message:
-						"Usage : **/aller [page]**\n\nPages disponibles : accueil, projets, taches, reunions, absences, profil, parametres, statistiques, admin",
+						"Usage : **/aller [page]**\n\nPages disponibles : accueil, projets, tâches, réunions, absences, profil, paramètres, statistiques, admin",
 				};
 			}
 
@@ -183,14 +181,14 @@ export const SMART_COMMANDS: SmartCommand[] = [
 			}
 
 			return {
-				message: `Page **"${args}"** non trouvee. Essayez : accueil, projets, taches, reunions`,
+				message: `Page **"${args}"** non trouvée. Essayez : accueil, projets, tâches, réunions`,
 			};
 		},
 	},
 	{
 		command: "chercher",
 		aliases: ["search", "find", "s"],
-		description: "Rechercher dans l'application (/chercher mot-cle)",
+		description: "Rechercher dans l'application (/chercher mot-clé)",
 		category: "search",
 		execute: (args) => {
 			if (!args) {
@@ -200,12 +198,12 @@ export const SMART_COMMANDS: SmartCommand[] = [
 			}
 
 			return {
-				message: `Resultats pour **"${args}"** :`,
+				message: `Résultats pour **"${args}"** :`,
 				attachment: {
 					type: "list",
 					title: `Recherche : ${args}`,
 					items: [],
-					emptyText: "Aucun resultat.",
+					emptyText: "Aucun résultat.",
 				},
 			};
 		},
@@ -213,14 +211,14 @@ export const SMART_COMMANDS: SmartCommand[] = [
 	{
 		command: "conge",
 		aliases: ["absence", "leave"],
-		description: "Poser un conge (/conge)",
+		description: "Poser un congé (/conge)",
 		category: "absence",
 		execute: () => {
 			return {
 				message:
-					"Je vais vous guider pour poser votre conge.\n\n**Quel type d'absence ?**\n\n1. Conge paye\n2. RTT\n3. Maladie\n4. Autre",
+					"Je vais vous guider pour poser votre congé.\n\n**Quel type d'absence ?**\n\n1. Congé payé\n2. RTT\n3. Maladie\n4. Autre",
 				suggestions: [
-					{ id: "sc-cp", label: "Conge paye", icon: "calendar", query: "Conge paye", category: "absence" },
+					{ id: "sc-cp", label: "Congé payé", icon: "calendar", query: "Congé payé", category: "absence" },
 					{ id: "sc-rtt", label: "RTT", icon: "calendar", query: "RTT", category: "absence" },
 					{ id: "sc-maladie", label: "Maladie", icon: "calendar", query: "Maladie", category: "absence" },
 				],
@@ -230,19 +228,19 @@ export const SMART_COMMANDS: SmartCommand[] = [
 	{
 		command: "theme",
 		aliases: ["dark", "light"],
-		description: "Changer le theme (/theme sombre)",
+		description: "Changer le thème (/theme sombre)",
 		category: "settings",
 		execute: (args) => {
 			const themeName = args.toLowerCase();
 			if (themeName.includes("sombre") || themeName.includes("dark")) {
 				return {
-					message: "Theme sombre active.",
+					message: "Thème sombre activé.",
 					sideEffect: { theme: "dark" },
 				};
 			}
 			if (themeName.includes("clair") || themeName.includes("light")) {
 				return {
-					message: "Theme clair active.",
+					message: "Thème clair activé.",
 					sideEffect: { theme: "light" },
 				};
 			}
@@ -258,7 +256,7 @@ export const SMART_COMMANDS: SmartCommand[] = [
 		category: "stats",
 		execute: () => {
 			return {
-				message: "Voici vos indicateurs cles :",
+				message: "Voici vos indicateurs clés :",
 				attachment: {
 					type: "stats",
 					title: "KPIs",
@@ -270,18 +268,18 @@ export const SMART_COMMANDS: SmartCommand[] = [
 	{
 		command: "export",
 		aliases: ["exporter", "download", "dl"],
-		description: "Exporter des donnees (/export pdf)",
+		description: "Exporter des données (/export pdf)",
 		category: "export",
 		execute: (args) => {
 			const format = args?.toLowerCase() || "pdf";
 			const validFormats = ["pdf", "csv", "excel", "json"];
 			if (!validFormats.includes(format)) {
 				return {
-					message: `Format non supporte. Formats disponibles : ${validFormats.join(", ")}`,
+					message: `Format non supporté. Formats disponibles : ${validFormats.join(", ")}`,
 				};
 			}
 			return {
-				message: `Export **${format.toUpperCase()}** lance. Vous recevrez une notification quand le fichier sera pret.`,
+				message: `Export **${format.toUpperCase()}** lancé. Vous recevrez une notification quand le fichier sera prêt.`,
 			};
 		},
 	},
@@ -292,7 +290,7 @@ export const SMART_COMMANDS: SmartCommand[] = [
 		category: "notification",
 		execute: () => {
 			return {
-				message: "Voici vos notifications recentes :",
+				message: "Voici vos notifications récentes :",
 				attachment: {
 					type: "list",
 					title: "Notifications",
@@ -325,14 +323,14 @@ export const SMART_COMMANDS: SmartCommand[] = [
 	{
 		command: "equipe",
 		aliases: ["team", "membres", "users"],
-		description: "Voir les membres de l'equipe",
+		description: "Voir les membres de l'équipe",
 		category: "user",
 		execute: () => {
 			return {
-				message: "Voici les membres de votre equipe :",
+				message: "Voici les membres de votre équipe :",
 				attachment: {
 					type: "list",
-					title: "Equipe",
+					title: "Équipe",
 					items: [],
 					emptyText: "Aucun membre.",
 				},
@@ -342,30 +340,30 @@ export const SMART_COMMANDS: SmartCommand[] = [
 	{
 		command: "recap",
 		aliases: ["resume", "summary", "aujourd'hui"],
-		description: "Recapitulatif de votre journee",
+		description: "Récapitulatif de votre journée",
 		category: "stats",
 		execute: (_, context) => {
 			const hour = new Date().getHours();
-			const timeOfDay = hour < 12 ? "ce matin" : hour < 18 ? "cet apres-midi" : "ce soir";
+			const timeOfDay = hour < 12 ? "ce matin" : hour < 18 ? "cet après-midi" : "ce soir";
 
 			return {
 				message:
-					`Voici votre recapitulatif pour ${timeOfDay} :\n\n` +
-					"Aucune donnee disponible pour le moment.\n\n" +
-					"Besoin de details sur un point specifique ?",
+					`Voici votre récapitulatif pour ${timeOfDay} :\n\n` +
+					"Aucune donnée disponible pour le moment.\n\n" +
+					"Besoin de détails sur un point spécifique ?",
 				suggestions: [
 					{
 						id: "sc-tasks-detail",
-						label: "Detail taches",
+						label: "Détail tâches",
 						icon: "tasks",
-						query: "Montre-moi mes taches en cours",
+						query: "Montre-moi mes tâches en cours",
 						category: "task",
 					},
 					{
 						id: "sc-meetings-detail",
-						label: "Detail reunions",
+						label: "Détail réunions",
 						icon: "calendar",
-						query: "Mes reunions du jour",
+						query: "Mes réunions du jour",
 						category: "meeting",
 					},
 					{
@@ -391,15 +389,15 @@ export const SMART_COMMANDS: SmartCommand[] = [
 					"- **Ctrl+J** — Ouvrir/fermer l'assistant\n" +
 					"- **Ctrl+K** — Recherche globale\n" +
 					"- **Echap** — Fermer / Annuler le formulaire\n" +
-					"- **Entree** — Envoyer un message\n" +
+					"- **Entrée** — Envoyer un message\n" +
 					"- **Shift+Entree** — Saut de ligne\n\n" +
 					"**Commandes rapides :**\n\n" +
-					"- **/tache** — Creer une tache\n" +
-					"- **/projet** — Creer un projet\n" +
-					"- **/reunion** — Planifier une reunion\n" +
+					"- **/tâche** — Créer une tâche\n" +
+					"- **/projet** — Créer un projet\n" +
+					"- **/réunion** — Planifier une réunion\n" +
 					"- **/chercher** — Rechercher\n" +
 					"- **/stats** — Statistiques\n" +
-					"- **/recap** — Recapitulatif du jour\n" +
+					"- **/recap** — Récapitulatif du jour\n" +
 					"- **/clear** — Nouvelle conversation",
 			};
 		},

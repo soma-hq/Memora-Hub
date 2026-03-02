@@ -1,3 +1,6 @@
+/** PEARL mood states for visual expression */
+export type PearlMood = "happy" | "excited" | "curious" | "encouraging" | "proud";
+
 /** Represents a single step in an interactive tutorial script */
 export interface TutorialStep {
 	/** Unique step identifier */
@@ -18,6 +21,14 @@ export interface TutorialStep {
 	requiredRole?: "Owner" | "Admin" | "Manager" | "Moderator" | "Junior" | "Guest";
 	/** Optional delay in ms before showing the step (for page transitions) */
 	delay?: number;
+
+	// PEARL chatbot layer
+	/** What PEARL says to the user (tutoiement) */
+	pearlMessage: string;
+	/** PEARL's mood for visual animation */
+	pearlMood: PearlMood;
+	/** Element or area to highlight/emphasize in the message */
+	highlight?: string;
 }
 
 /** Configuration for a complete tutorial script */
@@ -46,6 +57,14 @@ export interface OnboardingStep {
 	icon?: string;
 	/** Whether to show the progress bar */
 	showProgress?: boolean;
+
+	// PEARL chatbot layer
+	/** What PEARL says to the user (tutoiement) */
+	pearlMessage: string;
+	/** PEARL's mood for visual animation */
+	pearlMood: PearlMood;
+	/** Element or area to highlight/emphasize */
+	highlight?: string;
 }
 
 /** Configuration for an onboarding script */

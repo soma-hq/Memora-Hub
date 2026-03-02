@@ -1,3 +1,4 @@
+// External libraries
 import fs from "fs/promises";
 import path from "path";
 
@@ -6,11 +7,11 @@ const UPLOAD_DIR = path.join(process.cwd(), "public/uploads");
 // File storage manager
 export class StorageManager {
 	/**
-	 * Upload a file to storage
-	 * @param file Raw file buffer
-	 * @param filename Target filename with extension
-	 * @param folder Optional subfolder path
-	 * @returns Public URL of uploaded file
+	 * Upload a file buffer to persistent storage
+	 * @param file Raw file contents as a Buffer
+	 * @param filename Target filename including extension
+	 * @param folder Optional subfolder within the uploads directory
+	 * @returns Public URL path to the uploaded file
 	 */
 
 	static async upload(file: Buffer, filename: string, folder = ""): Promise<string> {
@@ -21,8 +22,8 @@ export class StorageManager {
 	}
 
 	/**
-	 * Delete a file by public path
-	 * @param filePath Public URL path
+	 * Delete a file from storage by its public path
+	 * @param filePath Public URL path of the file to delete
 	 */
 
 	static async delete(filePath: string): Promise<void> {
@@ -31,8 +32,8 @@ export class StorageManager {
 	}
 
 	/**
-	 * Get full URL for a file
-	 * @param filePath Public file path
+	 * Resolve the full public URL for a stored file
+	 * @param filePath Public path of the file
 	 * @returns Fully qualified URL
 	 */
 

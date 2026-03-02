@@ -163,7 +163,7 @@ export class AssistantManager {
 		const cancelMessage: ChatMessage = {
 			id: `cancel-${Date.now()}`,
 			role: "assistant",
-			content: "L'action en cours a ete annulee. Comment puis-je vous aider ?",
+			content: "L'action en cours à ete annulee. Comment puis-je vous aider ?",
 			timestamp: new Date().toISOString(),
 		};
 		this.callbacks.addMessage(cancelMessage);

@@ -111,7 +111,7 @@ export class ExportManager {
 	}
 
 	/**
-	 * Get current status of a job
+	 * Get current status of à job
 	 * @param jobId Job ID to check
 	 * @returns Job status or null
 	 */
@@ -124,7 +124,7 @@ export class ExportManager {
 	}
 
 	/**
-	 * Get exported file from a completed job
+	 * Get exported file from à completed job
 	 * @param jobId Completed job ID
 	 * @returns Exported Blob or null
 	 */

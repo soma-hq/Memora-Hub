@@ -3,7 +3,7 @@ import { Prisma, type Role } from "@prisma/client";
 
 export class DatabaseManager {
 	/**
-	 * Run a transaction
+	 * Run à transaction
 	 * @param fn - Transaction callback
 	 * @returns Callback return value
 	 */
@@ -170,7 +170,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a group
+	 * Delete à group
 	 * @param id - Group ID
 	 * @returns Deleted group
 	 */
@@ -378,7 +378,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a task
+	 * Delete à task
 	 * @param id - Task ID
 	 * @returns Deleted task
 	 */
@@ -409,7 +409,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a subtask
+	 * Delete à subtask
 	 * @param id - Subtask ID
 	 * @returns Deleted subtask
 	 */
@@ -466,7 +466,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a meeting
+	 * Delete à meeting
 	 * @param id - Meeting ID
 	 * @returns Deleted meeting
 	 */
@@ -604,7 +604,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a notification
+	 * Delete à notification
 	 * @param id - Notification ID
 	 * @returns Deleted notification
 	 */
@@ -709,7 +709,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a job offer
+	 * Delete à job offer
 	 * @param id - Job offer ID
 	 * @returns Deleted job offer
 	 */
@@ -763,7 +763,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a candidate
+	 * Delete à candidate
 	 * @param id - Candidate ID
 	 * @returns Deleted candidate
 	 */
@@ -820,7 +820,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Delete a training
+	 * Delete à training
 	 * @param id - Training ID
 	 * @returns Deleted training
 	 */
@@ -840,7 +840,7 @@ export class DatabaseManager {
 	}
 
 	/**
-	 * Unenroll from a training
+	 * Unenroll from à training
 	 * @param trainingId - Training ID
 	 * @param userId - User ID
 	 * @returns Deleted participant record

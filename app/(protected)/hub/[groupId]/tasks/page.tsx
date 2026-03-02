@@ -1,13 +1,22 @@
 "use client";
 
 // React
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge } from "@/components/ui";
+import { Card, Icon, Badge, Tabs, StyledEmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
+import { definePageConfig } from "@/structures";
 
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/tasks",
+	section: "protected",
+	module: "tasks",
+	description: "Tableau kanban des tâches du groupe.",
+	requiredPermissions: [{ module: "tasks", action: "view" }],
+	entityScoped: true,
+});
 
 type TaskState = "todo" | "in_progress" | "in_review" | "done" | "archived";
 type TaskPriority = "haute" | "moyenne" | "basse";
@@ -215,9 +224,7 @@ function KanbanColumn({
 
 				{/* Empty state */}
 				{tasks.length === 0 && !adding && (
-					<div className="flex flex-1 items-center justify-center py-8">
-						<p className="text-xs text-gray-400 dark:text-gray-500">Aucune tâche</p>
-					</div>
+					<StyledEmptyState icon="tasks" title="Aucune tâche" description="Glissez une tâche ici." />
 				)}
 
 				{/* Inline add form */}
@@ -259,7 +266,24 @@ export default function TasksPage() {
 	const [activeTab, setActiveTab] = useState<TabId>("all");
 	const [logsOpen, setLogsOpen] = useState(false);
 
-	// Counter for new task IDs
+	// Tab definitions with dynamic counts
+	const tabDefs = useMemo(
+		() =>
+			TABS.map((tab) => {
+				let count = 0;
+				if (tab.id === "mine") {
+					count = tasks.filter((t) => t.assignee === "Jeremy Alpha" && t.state !== "archived").length;
+				} else if (tab.id === "overdue") {
+					count = tasks.filter((t) => t.overdue && t.state !== "archived").length;
+				} else if (tab.id === "archived") {
+					count = tasks.filter((t) => t.state === "archived").length;
+				} else {
+					count = tasks.filter((t) => t.state !== "archived").length;
+				}
+				return { id: tab.id, label: tab.label, icon: tab.icon, count };
+			}),
+		[tasks],
+	);
 	const nextIdRef = useRef(100);
 
 	// Add task handler
@@ -307,49 +331,13 @@ export default function TasksPage() {
 	return (
 		<PageContainer title="Tâches" description="Gérez et suivez les tâches de votre équipe">
 			{/* Tab navigation */}
-			<div className="mb-6 flex items-center gap-1 overflow-x-auto rounded-xl border border-gray-200 bg-gray-100/80 p-1 dark:border-gray-700 dark:bg-gray-800/80">
-				{TABS.map((tab) => {
-					const isActive = activeTab === tab.id;
-					// Count for badge
-					let count = 0;
-					if (tab.id === "mine") {
-						count = tasks.filter((t) => t.assignee === "Jeremy Alpha" && t.state !== "archived").length;
-					} else if (tab.id === "overdue") {
-						count = tasks.filter((t) => t.overdue && t.state !== "archived").length;
-					} else if (tab.id === "archived") {
-						count = tasks.filter((t) => t.state === "archived").length;
-					} else {
-						count = tasks.filter((t) => t.state !== "archived").length;
-					}
-
-					return (
-						<button
-							key={tab.id}
-							onClick={() => setActiveTab(tab.id)}
-							className={cn(
-								"flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium whitespace-nowrap",
-								"transition-all duration-200",
-								isActive
-									? "bg-white text-gray-900 shadow-sm dark:bg-gray-700 dark:text-white"
-									: "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200",
-							)}
-						>
-							<Icon name={tab.icon} size="sm" />
-							{tab.label}
-							<span
-								className={cn(
-									"ml-1 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-									isActive
-										? "bg-gray-100 text-gray-700 dark:bg-gray-600 dark:text-gray-200"
-										: "bg-gray-200/60 text-gray-500 dark:bg-gray-700 dark:text-gray-400",
-								)}
-							>
-								{count}
-							</span>
-						</button>
-					);
-				})}
-			</div>
+			<Tabs
+				tabs={tabDefs}
+				activeTab={activeTab}
+				onTabChange={(id) => setActiveTab(id as TabId)}
+				variant="pills"
+				className="mb-6"
+			/>
 
 			{/* Kanban board */}
 			<div className="flex gap-4 overflow-x-auto pb-4">
@@ -394,9 +382,11 @@ export default function TasksPage() {
 					{logsOpen && (
 						<div className="border-t border-gray-200 dark:border-gray-700">
 							{logs.length === 0 ? (
-								<div className="flex items-center justify-center py-8">
-									<p className="text-sm text-gray-400 dark:text-gray-500">Aucune activité récente.</p>
-								</div>
+								<StyledEmptyState
+									icon="logs"
+									title="Aucune activité récente"
+									description="L'activité apparaîtra ici."
+								/>
 							) : (
 								<ul className="divide-y divide-gray-100 dark:divide-gray-700/50">
 									{logs.map((log) => (

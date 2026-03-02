@@ -1,73 +1,86 @@
-import type { Capability } from "@/core/config/capabilities";
-import { CAPABILITIES } from "@/core/config/capabilities";
-import { canDo, hasMinRole, isOwnerOfAny } from "@/core/permissions/guards";
-import type { UserWithAccess } from "@/core/permissions/roleMap";
-import { UserRoles } from "@/constants";
-import type { Role } from "@/core/config/roles";
-
-const C = CAPABILITIES;
+import type { RoleId } from "@/core/config/roles";
+import type { Permission, Module } from "@/core/config/capabilities";
+import type { GuardUser } from "@/core/permissions/guards";
+import { canPerformAction, canAccessEntity, canManageUser, isOwner, isAdmin } from "@/core/permissions/guards";
 
 /**
- * Check if user can view the users list
- * @param user - Authenticated user with access data
- * @param groupId - Target group ID
- * @returns True if user has users:view capability
+ * Check if user can view the users list.
+ * @param user - Authenticated user
+ * @returns True if user has personnel:view permission
  */
-export function canViewUsers(user: UserWithAccess, groupId: string): boolean {
-	return canDo(user, groupId, C.USERS_VIEW);
+export function canViewUsers(user: GuardUser): boolean {
+	return canPerformAction(user, "personnel", "view");
 }
 
 /**
- * Check if user can create a new user
- * @param user - Authenticated user with access data
- * @param groupId - Target group ID
- * @returns True if user has users:create capability
+ * Check if user can create new users.
+ * @param user - Authenticated user
+ * @returns True if user has personnel:create permission
  */
-export function canCreateUser(user: UserWithAccess, groupId: string): boolean {
-	return canDo(user, groupId, C.USERS_CREATE);
+export function canCreateUser(user: GuardUser): boolean {
+	return canPerformAction(user, "personnel", "create");
 }
 
 /**
- * Check if user can edit another user
- * @param user - Authenticated user with access data
- * @param groupId - Target group ID
+ * Check if user can edit another user.
+ * Users can always edit their own profile.
+ * @param user - Authenticated user
  * @param targetUserId - ID of the user to edit
- * @returns True if user has users:edit or is editing self
+ * @returns True if user can edit the target
  */
-export function canEditUser(user: UserWithAccess, groupId: string, targetUserId: string): boolean {
-	// Users can always edit their own profile
+export function canEditUser(user: GuardUser, targetUserId: string): boolean {
 	if (user.id === targetUserId) return true;
-	return canDo(user, groupId, C.USERS_EDIT);
+	return canPerformAction(user, "personnel", "edit");
 }
 
 /**
- * Check if user can delete another user
- * @param user - Authenticated user with access data
- * @param groupId - Target group ID
+ * Check if user can delete another user.
+ * Cannot delete self. Requires personnel:delete permission.
+ * @param user - Authenticated user
  * @param targetUserId - ID of the user to delete
- * @returns True if user has users:delete and is not deleting self
+ * @returns True if user can delete the target
  */
-export function canDeleteUser(user: UserWithAccess, groupId: string, targetUserId: string): boolean {
-	// Cannot delete self
+export function canDeleteUser(user: GuardUser, targetUserId: string): boolean {
 	if (user.id === targetUserId) return false;
-	return canDo(user, groupId, C.USERS_DELETE);
+	return canPerformAction(user, "personnel", "delete");
 }
 
 /**
- * Check if user can manage roles (assign/change roles)
- * @param user - Authenticated user with access data
- * @param groupId - Target group ID
- * @returns True if user is at least Admin in the group
+ * Check if user can manage roles (assign/change roles).
+ * Only admin-level users (owner, marsha_teams) can manage roles.
+ * @param user - Authenticated user
+ * @returns True if user can manage roles
  */
-export function canManageRoles(user: UserWithAccess, groupId: string): boolean {
-	return hasMinRole(user, groupId, UserRoles.Admin as Role);
+export function canManageRoles(user: GuardUser): boolean {
+	return isAdmin(user);
 }
 
 /**
- * Check if user can access the owner-only users panel
- * @param user - Authenticated user with access data
- * @returns True if user is Owner in at least one group
+ * Check if user can access the owner-only admin panel.
+ * @param user - Authenticated user
+ * @returns True if user is Owner
  */
-export function canAccessUsersPanel(user: UserWithAccess): boolean {
-	return isOwnerOfAny(user);
+export function canAccessUsersPanel(user: GuardUser): boolean {
+	return isOwner(user);
+}
+
+/**
+ * Check if user can manage a target user (role, access, entities).
+ * Actor must have strictly higher role than target.
+ * @param actor - User performing the action
+ * @param target - User being managed
+ * @returns True if actor can manage target
+ */
+export function canManageTargetUser(actor: GuardUser, target: GuardUser): boolean {
+	return canManageUser(actor, target);
+}
+
+/**
+ * Check if user can modify entity access for another user.
+ * Requires owner or marsha_teams role.
+ * @param user - Authenticated user
+ * @returns True if user can modify entity access
+ */
+export function canModifyEntityAccess(user: GuardUser): boolean {
+	return isAdmin(user);
 }

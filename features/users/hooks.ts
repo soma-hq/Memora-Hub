@@ -3,7 +3,6 @@
 import { useState, useMemo, useCallback } from "react";
 import type { User } from "@/features/users/types";
 
-
 /** Mock users dataset for development */
 const mockUsers: User[] = [
 	{
@@ -11,9 +10,12 @@ const mockUsers: User[] = [
 		name: "Jeremy Music",
 		email: "jeremy@bazalthe.com",
 		role: "Owner",
+		roleId: "owner",
 		avatar: "",
 		group: "Bazalthe",
 		status: "active",
+		entityAccess: ["*"],
+		twoFactorEnabled: true,
 		groupAccess: [
 			{ groupId: "bazalthe", groupName: "Bazalthe", role: "Owner" },
 			{ groupId: "memora-hub", groupName: "Memora Hub", role: "Admin" },
@@ -24,9 +26,12 @@ const mockUsers: User[] = [
 		name: "Sophie Martin",
 		email: "sophie.martin@bazalthe.com",
 		role: "Admin",
+		roleId: "marsha_teams",
 		avatar: "",
 		group: "Bazalthe",
 		status: "active",
+		entityAccess: ["*"],
+		twoFactorEnabled: true,
 		groupAccess: [{ groupId: "bazalthe", groupName: "Bazalthe", role: "Admin" }],
 	},
 	{
@@ -34,9 +39,12 @@ const mockUsers: User[] = [
 		name: "Lucas Dupont",
 		email: "lucas.dupont@inoxtag.com",
 		role: "Manager",
+		roleId: "legacy_resp_live",
 		avatar: "",
 		group: "Inoxtag",
 		status: "active",
+		entityAccess: ["inoxtag", "bazalthe"],
+		twoFactorEnabled: false,
 		groupAccess: [
 			{ groupId: "inoxtag", groupName: "Inoxtag", role: "Manager" },
 			{ groupId: "bazalthe", groupName: "Bazalthe", role: "Collaborator" },
@@ -47,9 +55,12 @@ const mockUsers: User[] = [
 		name: "Emma Leroy",
 		email: "emma.leroy@bazalthe.com",
 		role: "Collaborator",
+		roleId: "momentum_talent",
 		avatar: "",
 		group: "Bazalthe",
 		status: "active",
+		entityAccess: ["bazalthe"],
+		twoFactorEnabled: false,
 		groupAccess: [{ groupId: "bazalthe", groupName: "Bazalthe", role: "Collaborator" }],
 	},
 	{
@@ -57,9 +68,12 @@ const mockUsers: User[] = [
 		name: "Thomas Bernard",
 		email: "thomas.bernard@inoxtag.com",
 		role: "Collaborator",
+		roleId: "momentum_talent",
 		avatar: "",
 		group: "Inoxtag",
 		status: "inactive",
+		entityAccess: ["inoxtag"],
+		twoFactorEnabled: false,
 		groupAccess: [{ groupId: "inoxtag", groupName: "Inoxtag", role: "Collaborator" }],
 	},
 	{
@@ -67,9 +81,12 @@ const mockUsers: User[] = [
 		name: "Camille Roux",
 		email: "camille.roux@memora-hub.com",
 		role: "Admin",
+		roleId: "marsha_teams",
 		avatar: "",
 		group: "Memora Hub",
 		status: "active",
+		entityAccess: ["*"],
+		twoFactorEnabled: true,
 		groupAccess: [
 			{ groupId: "memora-hub", groupName: "Memora Hub", role: "Admin" },
 			{ groupId: "bazalthe", groupName: "Bazalthe", role: "Manager" },
@@ -80,9 +97,12 @@ const mockUsers: User[] = [
 		name: "Antoine Moreau",
 		email: "antoine.moreau@bazalthe.com",
 		role: "Guest",
+		roleId: "momentum_talent",
 		avatar: "",
 		group: "Bazalthe",
 		status: "active",
+		entityAccess: ["bazalthe"],
+		twoFactorEnabled: false,
 		groupAccess: [{ groupId: "bazalthe", groupName: "Bazalthe", role: "Guest" }],
 	},
 	{
@@ -90,9 +110,12 @@ const mockUsers: User[] = [
 		name: "Marie Lambert",
 		email: "marie.lambert@studio-creatif.com",
 		role: "Manager",
+		roleId: "legacy_resp_discord",
 		avatar: "",
 		group: "Studio Creatif",
 		status: "active",
+		entityAccess: ["studio-creatif", "inoxtag"],
+		twoFactorEnabled: false,
 		groupAccess: [
 			{ groupId: "studio-creatif", groupName: "Studio Creatif", role: "Manager" },
 			{ groupId: "inoxtag", groupName: "Inoxtag", role: "Collaborator" },
@@ -103,19 +126,25 @@ const mockUsers: User[] = [
 		name: "Hugo Petit",
 		email: "hugo.petit@inoxtag.com",
 		role: "Collaborator",
+		roleId: "momentum_talent",
 		avatar: "",
 		group: "Inoxtag",
 		status: "inactive",
-		groupAccess: [{ groupPtr: "inoxtag", groupName: "Inoxtag", role: "Collaborator" }] as any,
+		entityAccess: ["inoxtag"],
+		twoFactorEnabled: false,
+		groupAccess: [{ groupId: "inoxtag", groupName: "Inoxtag", role: "Collaborator" }],
 	},
 	{
 		id: "usr-010",
 		name: "Julie Fontaine",
 		email: "julie.fontaine@memora-hub.com",
 		role: "Owner",
+		roleId: "owner",
 		avatar: "",
 		group: "Memora Hub",
 		status: "active",
+		entityAccess: ["*"],
+		twoFactorEnabled: true,
 		groupAccess: [
 			{ groupId: "memora-hub", groupName: "Memora Hub", role: "Owner" },
 			{ groupId: "studio-creatif", groupName: "Studio Creatif", role: "Admin" },

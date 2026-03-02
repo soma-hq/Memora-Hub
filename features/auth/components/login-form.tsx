@@ -51,8 +51,8 @@ export function LoginForm({ onSubmit, isLoading = false }: LoginFormProps) {
 	return (
 		<div className="w-full max-w-md">
 			<div className="mb-8 text-center">
-				<h1 className="text-2xl font-bold text-white">Connexion a Memora Hub</h1>
-				<p className="mt-2 text-sm text-gray-400">Entrez vos identifiants pour acceder a votre espace.</p>
+				<h1 className="text-2xl font-bold text-white">Connexion à Memora Hub</h1>
+				<p className="mt-2 text-sm text-gray-400">Entrez vos identifiants pour acceder à votre espace.</p>
 			</div>
 
 			<form onSubmit={handleSubmit(onSubmit)} className="space-y-5">

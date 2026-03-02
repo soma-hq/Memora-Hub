@@ -11,7 +11,6 @@ import type { UserRole } from "@/constants";
 import type { User, GroupAccess } from "@/features/users/types";
 import { roleVariant, roleOptions, availableGroups } from "@/features/users/types";
 
-
 /** Props for the UserForm component */
 interface UserFormProps {
 	user?: User;
@@ -74,7 +73,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 
 	// Handlers
 	/**
-	 * Adds next available group access entry
+	 * Adds next available group accèss entry
 	 */
 	const addGroupAccess = () => {
 		const usedIds = groupAccess.map((g) => g.groupId);
@@ -88,7 +87,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 	};
 
 	/**
-	 * Removes access entry by index
+	 * Removes accèss entry by index
 	 * @param index - Entry index to remove
 	 */
 	const removeGroupAccess = (index: number) => {
@@ -98,7 +97,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 	};
 
 	/**
-	 * Updates role for an access entry
+	 * Updates role for an accèss entry
 	 * @param index - Entry index to update
 	 * @param role - New role value
 	 */
@@ -109,7 +108,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 	};
 
 	/**
-	 * Updates group ID for an access entry
+	 * Updates group ID for an accèss entry
 	 * @param index - Entry index to update
 	 * @param groupId - New group ID
 	 */
@@ -123,7 +122,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 	};
 
 	/**
-	 * Submits form with group access injected
+	 * Submits form with group accèss injected
 	 */
 	const onFormSubmit = handleSubmit((data) => {
 		const formData: CreateUserFormData = {
@@ -184,9 +183,9 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 			<Divider label="Accès par entité" className="pt-2" />
 
 			<div className="space-y-3">
-				{groupAccess.map((access, idx) => (
+				{groupAccess.map((accèss, idx) => (
 					<div
-						key={`${access.groupId}-${idx}`}
+						key={`${accèss.groupId}-${idx}`}
 						className="flex items-center gap-3 rounded-xl border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800"
 					>
 						<div className="bg-primary-100 dark:bg-primary-900/20 shrink-0 rounded-lg p-2">
@@ -196,7 +195,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 						<div className="min-w-0 flex-1">
 							<Select
 								options={groupSelectOptions}
-								value={access.groupId}
+								value={accèss.groupId}
 								onChange={(e) => updateGroupId(idx, e.target.value)}
 							/>
 						</div>
@@ -204,17 +203,17 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 						<div className="w-40 shrink-0">
 							<Select
 								options={roleSelectOptions}
-								value={access.role}
+								value={accèss.role}
 								onChange={(e) => updateGroupRole(idx, e.target.value)}
 							/>
 						</div>
 
 						<Badge
-							variant={roleVariant[access.role as UserRole] || "neutral"}
+							variant={roleVariant[accèss.role as UserRole] || "neutral"}
 							showDot={false}
 							className="hidden shrink-0 sm:flex"
 						>
-							{access.role}
+							{accèss.role}
 						</Badge>
 
 						{groupAccess.length > 1 && (
@@ -247,7 +246,7 @@ export function UserForm({ user, onSubmit, onCancel, isLoading = false }: UserFo
 				<div className="flex gap-2">
 					<Icon name="info" size="sm" className="text-info-500 mt-0.5 shrink-0" />
 					<p className="text-info-700 dark:text-info-400 text-xs">
-						Chaque entité a ses propres accès. Un utilisateur peut avoir un rôle différent dans chaque
+						Chaque entité à ses propres accès. Un utilisateur peut avoir un rôle différent dans chaque
 						entité à laquelle il appartient.
 					</p>
 				</div>

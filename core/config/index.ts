@@ -1,10 +1,17 @@
 export { ROLES, ROLE_HIERARCHY, ROLE_LABELS, ROLE_DESCRIPTIONS, isRoleAtLeast, getRolesBelow } from "./roles";
-export type { Role } from "./roles";
-export { CAPABILITIES } from "./capabilities";
-export type { Capability } from "./capabilities";
+export type { RoleId } from "./roles";
+export {
+	ALL_PERMISSIONS,
+	CRUD_PERMISSIONS,
+	READ_WRITE_PERMISSIONS,
+	ALL_MODULES,
+	MODULE_LABELS,
+	MODULE_ICONS,
+	PERMISSION_LABELS,
+} from "./capabilities";
+export type { Permission, Module } from "./capabilities";
 export { ROUTES } from "./routes";
 export {
-
 	APP_NAME,
 	APP_VERSION,
 	APP_DESCRIPTION,

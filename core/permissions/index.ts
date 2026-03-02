@@ -1,5 +1,33 @@
-export { canDo, hasMinRole, isOwnerOfAny, isAdminOrAbove } from "./guards";
-export { CAPABILITY_MAP, roleHasCapability, getCapabilitiesForRole } from "./capabilityMap";
-export { getRoleForGroup, getGroupsWithRole, isMemberOfGroup } from "./roleMap";
+export {
+	canAccessEntity,
+	canAccessModule,
+	canPerformAction,
+	isHigherRole,
+	isOwner,
+	isAdmin,
+	canManageUser,
+	canAccessAdmin,
+	isAuthorized,
+	canDo,
+	hasMinRole,
+	isOwnerOfAny,
+} from "./guards";
+export type { GuardUser } from "./guards";
 
-export type { GroupMembership, UserWithAccess } from "./roleMap";
+export {
+	CAPABILITY_MAP,
+	hasPermission,
+	hasModuleAccess,
+	getPermissionsForModule,
+	getAccessibleModules,
+} from "./capabilityMap";
+
+export {
+	getUserRole,
+	getAccessibleEntities,
+	hasWildcardAccess,
+	hasMinimumRole,
+	compareRoles,
+	isMemberOfGroup,
+} from "./roleMap";
+export type { UserWithAccess } from "./roleMap";

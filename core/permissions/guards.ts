@@ -1,53 +1,152 @@
+import type { RoleId } from "@/core/config/roles";
+import { ROLE_HIERARCHY, isHigherRole as roleIsHigher, GENERIC_ROLE_LEVELS } from "@/core/config/roles";
 import type { Role } from "@/core/config/roles";
-import { ROLE_HIERARCHY } from "@/core/config/roles";
-import type { Capability } from "@/core/config/capabilities";
-import { UserRoles } from "@/constants";
-import { roleHasCapability } from "./capabilityMap";
-import { getRoleForGroup } from "./roleMap";
-import type { UserWithAccess } from "./roleMap";
+import type { Permission, Module, Capability } from "@/core/config/capabilities";
+import { hasPermission, hasModuleAccess } from "./capabilityMap";
 
-
-/**
- * Checks if a user can perform a capability in a specific group
- * @param user - User with group access data
- * @param groupId - Target group ID
- * @param capability - Capability to check
- * @returns True if the user has the required capability
- */
-export function canDo(user: UserWithAccess, groupId: string, capability: Capability): boolean {
-	const role = getRoleForGroup(user, groupId);
-	if (!role) return false;
-	return roleHasCapability(role, capability);
+/** Minimal user shape required for permission guards */
+export interface GuardUser {
+	id: string;
+	name: string;
+	email: string;
+	roleId: RoleId;
+	entityAccess: string[];
 }
 
 /**
- * Checks if user has at least the minimum role in a group
- * @param user - User with group access data
- * @param groupId - Target group ID
- * @param minRole - Minimum required role
- * @returns True if user meets or exceeds the minimum role
+ * Check if a user can access a specific entity.
+ * Users with ["*"] in entityAccess can access all entities.
+ * @param user - User to check
+ * @param entityId - Target entity ID
+ * @returns True if the user can access the entity
  */
-export function hasMinRole(user: UserWithAccess, groupId: string, minRole: Role): boolean {
-	const role = getRoleForGroup(user, groupId);
-	if (!role) return false;
-	return ROLE_HIERARCHY[role] >= ROLE_HIERARCHY[minRole];
+export function canAccessEntity(user: GuardUser, entityId: string): boolean {
+	if (user.entityAccess.includes("*")) return true;
+	return user.entityAccess.includes(entityId);
 }
 
 /**
- * Checks if user is owner of any group
- * @param user - User with group access data
- * @returns True if user has Owner role in at least one group
+ * Check if a user can access a specific module based on their role.
+ * @param user - User to check
+ * @param module - Target module
+ * @returns True if the user's role grants module access
  */
-export function isOwnerOfAny(user: UserWithAccess): boolean {
-	return user.groupMemberships.some((m) => m.role === UserRoles.Owner);
+export function canAccessModule(user: GuardUser, module: Module): boolean {
+	return hasModuleAccess(user.roleId, module);
 }
 
 /**
- * Checks if user is admin or above in the specified group
- * @param user - User with group access data
- * @param groupId - Target group ID
- * @returns True if user is Admin or higher
+ * Check if a user can perform a specific action on a module.
+ * @param user - User to check
+ * @param module - Target module
+ * @param action - Permission action (view, create, edit, delete, manage)
+ * @returns True if the user can perform the action
  */
-export function isAdminOrAbove(user: UserWithAccess, groupId: string): boolean {
-	return hasMinRole(user, groupId, UserRoles.Admin as Role);
+export function canPerformAction(user: GuardUser, module: Module, action: Permission): boolean {
+	return hasPermission(user.roleId, module, action);
+}
+
+/**
+ * Check if roleA is strictly higher than roleB in the hierarchy.
+ * @param roleA - First role ID
+ * @param roleB - Second role ID
+ * @returns True if roleA outranks roleB
+ */
+export function isHigherRole(roleA: RoleId, roleB: RoleId): boolean {
+	return roleIsHigher(roleA, roleB);
+}
+
+/**
+ * Check if user is owner (highest level in hierarchy).
+ * @param user - User to check
+ * @returns True if user has the owner role
+ */
+export function isOwner(user: GuardUser): boolean {
+	return user.roleId === "owner";
+}
+
+/**
+ * Check if user is at least Marsha Teams level (manages all entities).
+ * @param user - User to check
+ * @returns True if user is owner or marsha_teams
+ */
+export function isAdmin(user: GuardUser): boolean {
+	return ROLE_HIERARCHY[user.roleId] >= ROLE_HIERARCHY["marsha_teams"];
+}
+
+/**
+ * Check if a user can manage another user (must have higher role).
+ * @param actor - User performing the action
+ * @param target - User being managed
+ * @returns True if actor can manage target
+ */
+export function canManageUser(actor: GuardUser, target: GuardUser): boolean {
+	// Owner can manage everyone
+	if (actor.roleId === "owner") return true;
+	// Cannot manage self through this check
+	if (actor.id === target.id) return false;
+	// Must have strictly higher role
+	return roleIsHigher(actor.roleId, target.roleId);
+}
+
+/**
+ * Check if a user can access the admin panel.
+ * Only owner role has admin access.
+ * @param user - User to check
+ * @returns True if user can access admin
+ */
+export function canAccessAdmin(user: GuardUser): boolean {
+	return hasModuleAccess(user.roleId, "admin");
+}
+
+/**
+ * Check full authorization: entity access + module access + action permission.
+ * @param user - User to check
+ * @param entityId - Target entity ID
+ * @param module - Target module
+ * @param action - Permission action
+ * @returns True if all three checks pass
+ */
+export function isAuthorized(user: GuardUser, entityId: string, module: Module, action: Permission): boolean {
+	return canAccessEntity(user, entityId) && canPerformAction(user, module, action);
+}
+
+// ---------------------------------------------------------------------------
+// Feature-level permission helpers — used by features/*/permissions.ts
+// ---------------------------------------------------------------------------
+
+/**
+ * Check if a user can perform a capability within a specific group.
+ * Combines entity access check with module+action permission check.
+ * @param user - User to check
+ * @param groupId - Target group/entity ID
+ * @param capability - Capability descriptor { module, action }
+ * @returns True if the user has both entity access and the required permission
+ */
+export function canDo(user: GuardUser, groupId: string, capability: Capability): boolean {
+	return canAccessEntity(user, groupId) && canPerformAction(user, capability.module, capability.action);
+}
+
+/**
+ * Check if a user has at least the required generic role level within a group.
+ * Uses the GENERIC_ROLE_LEVELS mapping to convert generic role names to
+ * numeric thresholds, then compares against the user's actual role level.
+ * @param user - User to check
+ * @param groupId - Target group/entity ID (used for entity access verification)
+ * @param role - Generic role name ("Owner", "Admin", "Manager", etc.)
+ * @returns True if the user's role level meets or exceeds the threshold
+ */
+export function hasMinRole(user: GuardUser, groupId: string, role: Role): boolean {
+	if (!canAccessEntity(user, groupId)) return false;
+	const requiredLevel = GENERIC_ROLE_LEVELS[role];
+	return ROLE_HIERARCHY[user.roleId] >= requiredLevel;
+}
+
+/**
+ * Check if a user is an owner of any entity (global owner check).
+ * @param user - User to check
+ * @returns True if the user holds the owner role
+ */
+export function isOwnerOfAny(user: GuardUser): boolean {
+	return user.roleId === "owner";
 }

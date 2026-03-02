@@ -1,7 +1,7 @@
 // Application metadata
 export const APP_NAME = "Memora Hub";
 export const APP_VERSION = "0.1.0";
-export const APP_DESCRIPTION = "Plateforme de gestion multi-entité";
+export const APP_DESCRIPTION = "Plateforme de gestion multi-entité appartenant à Marsha";
 
 // Pagination
 export const PAGINATION = {
@@ -56,9 +56,7 @@ export const UserRoles = {
 	Guest: "Guest",
 } as const;
 
-/**
- * Union type of user role values
- */
+// Union type of user role values
 export type UserRole = (typeof UserRoles)[keyof typeof UserRoles];
 
 // User account statuses
@@ -208,7 +206,7 @@ export const AbsenceAcknowledgmentStatusLabel: Record<AbsenceAcknowledgmentStatu
 
 // Meeting types
 export const MeetingType = {
-	Reunion: "reunion",
+	Réunion: "réunion",
 	Standup: "standup",
 	Revue: "revue",
 	Retrospective: "retrospective",
@@ -222,7 +220,7 @@ export type MeetingTypeValue = (typeof MeetingType)[keyof typeof MeetingType];
 
 // Meeting type display labels
 export const MeetingTypeLabel: Record<MeetingTypeValue, string> = {
-	reunion: "Réunion",
+	réunion: "Réunion",
 	standup: "Standup",
 	revue: "Revue",
 	retrospective: "Rétrospective",
@@ -320,9 +318,7 @@ export const TrainingStatus = {
 	Done: "done",
 } as const;
 
-/**
- * Union type of training status values
- */
+// Union type of training status values
 export type TrainingStatusValue = (typeof TrainingStatus)[keyof typeof TrainingStatus];
 
 // Export formats
@@ -332,12 +328,10 @@ export const ExportFormat = {
 	CSV: "csv",
 } as const;
 
-/**
- * Union type of export format values
- */
+// Union type of export format values
 export type ExportFormatValue = (typeof ExportFormat)[keyof typeof ExportFormat];
 
-// Application limits and thresholds
+// Application limits
 export const AppLimits = {
 	MaxLoginAttempts: 5,
 	SessionDurationDays: 7,
@@ -356,9 +350,7 @@ export const ProjectPriority = {
 	P4: "P4",
 } as const;
 
-/**
- * Union type of project priority values
- */
+// Union type of project priority values
 export type ProjectPriorityValue = (typeof ProjectPriority)[keyof typeof ProjectPriority];
 
 // Project priority display labels
@@ -378,9 +370,7 @@ export const RelationStatus = {
 	Cancelled: "cancelled",
 } as const;
 
-/**
- * Union type of relation status values
- */
+// Union type of relation status values
 export type RelationStatusValue = (typeof RelationStatus)[keyof typeof RelationStatus];
 
 // Relation status display labels
@@ -391,28 +381,24 @@ export const RelationStatusLabel: Record<RelationStatusValue, string> = {
 	cancelled: "Annulée",
 } as const;
 
-// Absence modes
+// Absence mods
 export const AbsenceModeValues = {
 	None: "none",
 	Partial: "partial",
 	Complete: "complete",
 } as const;
 
-/**
- * Union type of absence mode values
- */
+// Union type
 export type AbsenceMode = (typeof AbsenceModeValues)[keyof typeof AbsenceModeValues];
 
-// Page access modes
+// Page access mods
 export const PageAccessMode = {
 	ReadOnly: "read_only",
 	Editable: "editable",
 	FullAccess: "full_access",
 } as const;
 
-/**
- * Union type of page access mode values
- */
+// Union type
 export type PageAccessModeValue = (typeof PageAccessMode)[keyof typeof PageAccessMode];
 
 // Page access mode display labels

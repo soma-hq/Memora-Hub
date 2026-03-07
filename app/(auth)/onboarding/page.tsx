@@ -1,12 +1,12 @@
 "use client";
 
-// React
 import { useState, useEffect, useCallback, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button, Icon, Input, Checkbox, Toggle } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { definePageConfig } from "@/structures";
+import { submitOnboardingAction } from "@/features/auth/actions";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "onboarding",
@@ -14,13 +14,15 @@ const PAGE_CONFIG = definePageConfig({
 	description: "Processus d'accueil des nouveaux utilisateurs.",
 });
 
-// Types
+// ─── Types ───────────────────────────────────────────────────────────────────
 
 interface FormData {
 	pseudo: string;
 	prenom: string;
 	nom: string;
 	email: string;
+	password: string;
+	confirmPassword: string;
 	telephone: string;
 	dateNaissance: string;
 	langues: string[];
@@ -37,10 +39,13 @@ interface FormErrors {
 	prenom?: string;
 	nom?: string;
 	email?: string;
+	password?: string;
+	confirmPassword?: string;
 	discordId?: string;
+	global?: string;
 }
 
-// Constants
+// ─── Constants ────────────────────────────────────────────────────────────────
 
 const TOTAL_STEPS = 9;
 
@@ -75,25 +80,11 @@ const PIM_PHASE1_ITEMS = [
 
 const PIM_PHASE2_ITEMS = [
 	{ icon: "profile" as const, label: "La posture", desc: "Savoir se positionner face aux situations" },
-	{ icon: "chat" as const, label: "La communication", desc: "Etre clair, precis et bienveillant" },
-	{ icon: "sparkles" as const, label: "La prise de decision", desc: "Reagir avec discernement" },
-	{ icon: "shield" as const, label: "La rigueur", desc: "Etre fiable et constant" },
+	{ icon: "chat" as const, label: "La communication", desc: "Être clair, précis et bienveillant" },
+	{ icon: "sparkles" as const, label: "La prise de décision", desc: "Réagir avec discernement" },
+	{ icon: "shield" as const, label: "La rigueur", desc: "Être fiable et constant" },
 ];
 
-/** Step labels for the progress indicator */
-const STEP_LABELS = [
-	"Bienvenue",
-	"Marsha",
-	"Position",
-	"PIM 1",
-	"PIM 2",
-	"Données",
-	"Formulaire",
-	"Suite",
-	"Celebration",
-];
-
-/** Hierarchy levels for the position pyramid visual */
 const HIERARCHY_LEVELS = [
 	{ label: "Owner", color: "from-amber-400 to-yellow-600" },
 	{ label: "Manager", color: "from-purple-400 to-purple-600" },
@@ -102,32 +93,46 @@ const HIERARCHY_LEVELS = [
 	{ label: "Junior", color: "from-rose-400 to-rose-600", highlight: true },
 ];
 
-/** Team stats displayed on the Marsha step */
 const TEAM_STATS = [
 	{ value: "50+", label: "Membres actifs", icon: "users" as const },
 	{ value: "4", label: "Plateformes", icon: "globe" as const },
 	{ value: "24/7", label: "Couverture", icon: "clock" as const },
 ];
 
-/** Trust indicator badges on the data explanation step */
 const TRUST_BADGES = [
-	{ icon: "lock" as const, label: "Chiffre" },
+	{ icon: "lock" as const, label: "Chiffré" },
 	{ icon: "shield" as const, label: "Protégé" },
 	{ icon: "check" as const, label: "Conforme" },
 ];
 
-/** Phase milestones for PIM Phase 1 progress visual */
 const PHASE_MILESTONES = ["Onboarding", "Phase 1", "Phase 2", "Agent"];
 
-/** Mini dashboard icons shown in the after-form preview strip */
-const DASHBOARD_PREVIEW_ICONS = ["stats", "users", "calendar", "settings", "bell"] as const;
+// ─── 4-phase breadcrumb config ────────────────────────────────────────────────
+const PHASES = [
+	{ label: "Accueil", steps: [0], icon: "sparkles" as const },
+	{ label: "Découverte", steps: [1, 2, 3, 4, 5], icon: "shield" as const },
+	{ label: "Ton profil", steps: [6], icon: "profile" as const },
+	{ label: "Confirmation", steps: [7, 8], icon: "check" as const },
+];
+
+void PAGE_CONFIG;
 
 /**
- * Animated confetti particle for the final celebration step.
- * Each particle has unique size, color, shape, and animation timing.
- * @param {{ index: number }} props - Particle index for color and randomization
- * @returns {JSX.Element} A positioned div with falling animation
+ * Build deterministic random.
+ * @param seed - Numeric seed value
+ * @returns Stable random value in [0, 1)
  */
+function seededRandom(seed: number): number {
+	const value = Math.sin(seed * 12.9898) * 43758.5453;
+	return value - Math.floor(value);
+}
+
+function getPhaseIndex(step: number): number {
+	return PHASES.findIndex((p) => p.steps.includes(step));
+}
+
+// ─── Particles ────────────────────────────────────────────────────────────────
+
 function ConfettiParticle({ index }: { index: number }) {
 	const style = useMemo(() => {
 		const colors = [
@@ -144,12 +149,11 @@ function ConfettiParticle({ index }: { index: number }) {
 		];
 		const shapes = ["50%", "2px", "0"];
 		const color = colors[index % colors.length];
-		const left = Math.random() * 100;
-		const animDuration = 2.5 + Math.random() * 2;
-		const animDelay = Math.random() * 1.5;
-		const size = 6 + Math.random() * 8;
-		const rotation = Math.random() * 360;
-
+		const left = seededRandom(index + 1) * 100;
+		const animDuration = 2.5 + seededRandom(index + 2) * 2;
+		const animDelay = seededRandom(index + 3) * 1.5;
+		const size = 6 + seededRandom(index + 4) * 8;
+		const rotation = seededRandom(index + 5) * 360;
 		return {
 			position: "absolute" as const,
 			left: `${left}%`,
@@ -163,23 +167,15 @@ function ConfettiParticle({ index }: { index: number }) {
 			opacity: 0,
 		};
 	}, [index]);
-
 	return <div style={style} />;
 }
 
-/**
- * Floating particle component for ambient decorative effects.
- * Creates à dot that floats upward with à gentle sway.
- * @param {{ index: number; color?: string }} props - Particle index and optional color
- * @returns {JSX.Element} A floating decorative dot
- */
 function FloatingParticle({ index, color = "rgba(236, 72, 153, 0.4)" }: { index: number; color?: string }) {
 	const style = useMemo(() => {
-		const left = 10 + Math.random() * 80;
-		const duration = 4 + Math.random() * 6;
-		const delay = Math.random() * 5;
-		const size = 2 + Math.random() * 4;
-
+		const left = 10 + seededRandom(index + 10) * 80;
+		const duration = 4 + seededRandom(index + 11) * 6;
+		const delay = seededRandom(index + 12) * 5;
+		const size = 2 + seededRandom(index + 13) * 4;
 		return {
 			position: "absolute" as const,
 			left: `${left}%`,
@@ -192,96 +188,119 @@ function FloatingParticle({ index, color = "rgba(236, 72, 153, 0.4)" }: { index:
 			opacity: 0,
 		};
 	}, [index, color]);
-
 	return <div style={style} />;
 }
 
-/**
- * Step overview drawer showing all 9 step names with completion indicators.
- * Collapsible via à toggle button positioned at the right edge of the screen.
- * @param {{ currentStep: number; isOpen: boolean; onToggle: () => void }} props
- * @returns {JSX.Element} The step overview drawer
- */
-function StepOverviewDrawer({
-	currentStep,
-	isOpen,
-	onToggle,
-}: {
-	currentStep: number;
-	isOpen: boolean;
-	onToggle: () => void;
-}) {
-	return (
-		<>
-			{/* Toggle button */}
-			<button
-				onClick={onToggle}
-				className={cn(
-					"fixed top-1/2 z-[60] flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-l-xl border border-r-0 border-gray-700/50 bg-gray-800/90 text-gray-400 backdrop-blur-md transition-all duration-300 hover:text-white",
-					isOpen ? "right-[220px]" : "right-0",
-				)}
-				aria-label="Toggle step overview"
-			>
-				<Icon name={isOpen ? "chevronRight" : "chevronLeft"} size="sm" />
-			</button>
+// ─── Stepper ──────────────────────────────────────────────────────────────────
 
-			{/* Drawer panel */}
-			<div
-				className={cn(
-					"fixed top-0 right-0 z-[55] flex h-full w-[220px] flex-col border-l border-gray-700/50 bg-gray-900/95 pt-20 pb-6 backdrop-blur-md transition-transform duration-300",
-					isOpen ? "translate-x-0" : "translate-x-full",
-				)}
-			>
-				<div className="px-4 pb-3">
-					<p className="text-xs font-bold tracking-wider text-gray-500 uppercase">Étapes</p>
-				</div>
-				<div className="flex flex-1 flex-col gap-1 overflow-y-auto px-3">
-					{STEP_LABELS.map((label, i) => (
+function OnboardingStepper({ currentStep }: { currentStep: number }) {
+	const activePhase = getPhaseIndex(currentStep);
+
+	return (
+		<div className="flex items-center justify-center gap-1 sm:gap-2">
+			{PHASES.map((phase, i) => {
+				const isDone = i < activePhase;
+				const isCurrent = i === activePhase;
+				return (
+					<div key={phase.label} className="flex items-center gap-1 sm:gap-2">
+						{/* Node */}
 						<div
-							key={i}
 							className={cn(
-								"flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors",
-								i === currentStep
-									? "bg-primary-500/15 text-primary-400 font-semibold"
-									: i < currentStep
-										? "text-gray-400"
-										: "text-gray-600",
+								"flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-all duration-500",
+								isCurrent
+									? "bg-primary-500 shadow-primary-500/30 text-white shadow-lg"
+									: isDone
+										? "bg-primary-500/20 text-primary-400"
+										: "bg-gray-800 text-gray-600",
 							)}
 						>
+							{isDone ? (
+								<Icon name="check" size="xs" />
+							) : (
+								<span
+									className={cn(
+										"flex h-3.5 w-3.5 items-center justify-center rounded-full text-[9px] font-bold",
+										isCurrent ? "bg-white/20" : "bg-gray-700",
+									)}
+								>
+									{i + 1}
+								</span>
+							)}
+							<span className="hidden sm:inline">{phase.label}</span>
+						</div>
+
+						{/* Connector */}
+						{i < PHASES.length - 1 && (
 							<div
 								className={cn(
-									"flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold",
-									i < currentStep
-										? "bg-primary-500/20 text-primary-400"
-										: i === currentStep
-											? "bg-primary-500 text-white"
-											: "bg-gray-800 text-gray-600",
+									"h-px w-4 rounded-full transition-all duration-500 sm:w-6",
+									i < activePhase ? "bg-primary-500/50" : "bg-gray-700",
 								)}
-							>
-								{i < currentStep ? <Icon name="check" size="xs" /> : <span>{i + 1}</span>}
-							</div>
-							<span className="truncate">{label}</span>
-						</div>
-					))}
-				</div>
-			</div>
-		</>
+							/>
+						)}
+					</div>
+				);
+			})}
+		</div>
 	);
 }
 
-/**
- * Multi-step onboarding wizard with full Marsha narrative for new squad members.
- * Steps: Introduction > Marsha > Position > PIM Phase 1 > PIM Phase 2 > Data Explanation > Form > After Form > Celebration
- * Includes decorative illustrations, smooth transitions, and à step overview drawer.
- * @returns {JSX.Element} Full-screen onboarding flow
- */
+// ─── Password visibility toggle input ────────────────────────────────────────
+
+function PasswordInput({
+	label,
+	placeholder,
+	value,
+	onChange,
+	error,
+}: {
+	label: string;
+	placeholder?: string;
+	value: string;
+	onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+	error?: string;
+}) {
+	const [visible, setVisible] = useState(false);
+	return (
+		<div>
+			<label className="mb-1.5 block text-sm font-medium text-gray-300">{label}</label>
+			<div className="relative">
+				<div className="pointer-events-none absolute top-1/2 left-3 -translate-y-1/2">
+					<Icon name="lock" size="sm" className="text-gray-500" />
+				</div>
+				<input
+					type={visible ? "text" : "password"}
+					placeholder={placeholder}
+					value={value}
+					onChange={onChange}
+					className={cn(
+						"focus:border-primary-500 focus:ring-primary-500/20 w-full rounded-lg border bg-gray-800/60 py-2.5 pr-10 pl-10 text-sm text-white placeholder-gray-500 transition-all duration-200 focus:ring-2 focus:outline-none",
+						error ? "border-red-500/60" : "border-gray-700/60",
+					)}
+				/>
+				<button
+					type="button"
+					onClick={() => setVisible((v) => !v)}
+					className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 transition-colors hover:text-gray-300"
+				>
+					<Icon name={visible ? "eyeSlash" : "eye"} size="sm" />
+				</button>
+			</div>
+			{error && <p className="mt-1 text-xs text-red-400">{error}</p>}
+		</div>
+	);
+}
+
+// ─── Main component ───────────────────────────────────────────────────────────
+
 export default function OnboardingPage() {
 	const router = useRouter();
 	const [currentStep, setCurrentStep] = useState(0);
 	const [direction, setDirection] = useState<"forward" | "backward">("forward");
 	const [isAnimating, setIsAnimating] = useState(false);
 	const [stepKey, setStepKey] = useState(0);
-	const [drawerOpen, setDrawerOpen] = useState(false);
+	const [isSubmitting, setIsSubmitting] = useState(false);
+	const [submitError, setSubmitError] = useState<string | null>(null);
 
 	// Form state
 	const [formData, setFormData] = useState<FormData>({
@@ -289,6 +308,8 @@ export default function OnboardingPage() {
 		prenom: "",
 		nom: "",
 		email: "",
+		password: "",
+		confirmPassword: "",
 		telephone: "",
 		dateNaissance: "",
 		langues: [],
@@ -301,14 +322,12 @@ export default function OnboardingPage() {
 	});
 	const [formErrors, setFormErrors] = useState<FormErrors>({});
 
-	// Welcome animation state (step 0)
+	// Welcome animation state
 	const [logoVisible, setLogoVisible] = useState(false);
 	const [titleVisible, setTitleVisible] = useState(false);
 	const [subtitleVisible, setSubtitleVisible] = useState(false);
 	const [bodyVisible, setBodyVisible] = useState(false);
 	const [buttonVisible, setButtonVisible] = useState(false);
-
-	// Team stats counter animation (step 1)
 	const [statsVisible, setStatsVisible] = useState(false);
 
 	useEffect(() => {
@@ -333,29 +352,21 @@ export default function OnboardingPage() {
 			const t = setTimeout(() => setStatsVisible(true), 1200);
 			return () => clearTimeout(t);
 		}
-		setStatsVisible(false);
+		const t = setTimeout(() => setStatsVisible(false), 0);
+		return () => clearTimeout(t);
 	}, [currentStep]);
 
-	/**
-	 * Computes form completion percentage based on required fields filled.
-	 * @returns {number} Completion percentage from 0 to 100
-	 */
+	// Form progress
 	const formProgress = useMemo(() => {
-		const requiredFields: (keyof FormData)[] = ["pseudo", "prenom", "nom", "email", "discordId"];
-		const filled = requiredFields.filter((f) => {
+		const required: (keyof FormData)[] = ["pseudo", "prenom", "nom", "email", "password", "discordId"];
+		const filled = required.filter((f) => {
 			const val = formData[f];
 			return typeof val === "string" && val.trim().length > 0;
 		}).length;
-		return Math.round((filled / requiredFields.length) * 100);
+		return Math.round((filled / required.length) * 100);
 	}, [formData]);
 
 	// Navigation
-
-	/**
-	 * Navigates to à specific onboarding step with slide animation.
-	 * @param {number} target - Target step index
-	 * @returns {void}
-	 */
 	const goToStep = useCallback(
 		(target: number) => {
 			if (isAnimating || target < 0 || target >= TOTAL_STEPS) return;
@@ -370,11 +381,8 @@ export default function OnboardingPage() {
 		[isAnimating, currentStep],
 	);
 
-	/**
-	 * Advances to the next step, validating the form on the form step (6).
-	 * @returns {void}
-	 */
-	const nextStep = useCallback(() => {
+	const nextStep = useCallback(async () => {
+		// Form validation on step 6
 		if (currentStep === 6) {
 			const errors: FormErrors = {};
 			if (!formData.pseudo.trim()) errors.pseudo = "Le pseudo est requis";
@@ -382,29 +390,60 @@ export default function OnboardingPage() {
 			if (!formData.nom.trim()) errors.nom = "Le nom est requis";
 			if (!formData.email.trim()) errors.email = "L'email est requis";
 			else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) errors.email = "Email invalide";
-			if (!formData.discordId.trim()) errors.discordId = "Le Discord ID est requis";
+			if (!formData.password.trim()) errors.password = "Le mot de passe est requis";
+			else if (formData.password.length < 8) errors.password = "Minimum 8 caractères";
+			if (!formData.confirmPassword.trim()) errors.confirmPassword = "Confirmez le mot de passe";
+			else if (formData.password !== formData.confirmPassword)
+				errors.confirmPassword = "Les mots de passe ne correspondent pas";
+
 			if (Object.keys(errors).length > 0) {
 				setFormErrors(errors);
 				return;
 			}
 			setFormErrors({});
+
+			// Submit to DB
+			setIsSubmitting(true);
+			setSubmitError(null);
+			try {
+				const result = await submitOnboardingAction({
+					pseudo: formData.pseudo,
+					prenom: formData.prenom,
+					nom: formData.nom,
+					email: formData.email,
+					password: formData.password,
+					telephone: formData.telephone || undefined,
+					dateNaissance: formData.dateNaissance || undefined,
+					langues: formData.langues,
+					anniversaire: formData.anniversaire,
+					discordId: formData.discordId || undefined,
+					discordUsername: formData.pseudo || undefined,
+					twitter: formData.twitter || undefined,
+					instagram: formData.instagram || undefined,
+					twitch: formData.twitch || undefined,
+					youtube: formData.youtube || undefined,
+				});
+
+				if (!result.success) {
+					setSubmitError(result.error || "Une erreur est survenue");
+					setIsSubmitting(false);
+					return;
+				}
+			} catch {
+				setSubmitError("Erreur réseau, veuillez réessayer");
+				setIsSubmitting(false);
+				return;
+			}
+			setIsSubmitting(false);
 		}
+
 		goToStep(currentStep + 1);
 	}, [currentStep, formData, goToStep]);
 
-	/**
-	 * Returns to the previous onboarding step.
-	 * @returns {void}
-	 */
 	const prevStep = useCallback(() => {
 		goToStep(currentStep - 1);
 	}, [goToStep, currentStep]);
 
-	/**
-	 * Handles final completion: sets localStorage flags and navigates to the hub.
-	 * The tutorial flag is removed so the tutorial triggers on first hub visit.
-	 * @returns {void}
-	 */
 	const handleComplete = useCallback(() => {
 		localStorage.setItem("memora-onboarding-completed", "true");
 		localStorage.removeItem("memora-tutorial-completed");
@@ -412,23 +451,12 @@ export default function OnboardingPage() {
 	}, [router]);
 
 	// Form helpers
-
-	/**
-	 * Updates à single form field and clears its validation error.
-	 * @param {keyof FormData} field - The form field to update
-	 * @param {string | boolean | string[]} value - The new value
-	 * @returns {void}
-	 */
 	const updateField = useCallback((field: keyof FormData, value: string | boolean | string[]) => {
 		setFormData((prev) => ({ ...prev, [field]: value }));
-		setFormErrors((prev) => ({ ...prev, [field]: undefined }));
+		setFormErrors((prev) => ({ ...prev, [field]: undefined, global: undefined }));
+		setSubmitError(null);
 	}, []);
 
-	/**
-	 * Toggles à language in the selected languages list.
-	 * @param {string} langue - Language to toggle
-	 * @returns {void}
-	 */
 	const toggleLangue = useCallback((langue: string) => {
 		setFormData((prev) => ({
 			...prev,
@@ -438,51 +466,35 @@ export default function OnboardingPage() {
 		}));
 	}, []);
 
-	// Slide animation class for step transitions
 	const slideClass =
 		direction === "forward"
 			? "animate-[onboardSlideInRight_500ms_cubic-bezier(0.16,1,0.3,1)_forwards]"
 			: "animate-[onboardSlideInLeft_500ms_cubic-bezier(0.16,1,0.3,1)_forwards]";
 
-	// ─── Step 0: Introduction ─────────────────────────────────────────────
+	// ─── Step renderers ────────────────────────────────────────────────────────
 
-	/**
-	 * Renders the introduction welcome page with animated reveal,
-	 * floating particles, pulsing rings, and animated Memora logo text.
-	 * @returns {JSX.Element} Welcome step
-	 */
 	const renderIntroduction = () => (
-		<div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
-			{/* Background layers */}
-			<div className="absolute inset-0 bg-gradient-to-b from-gray-950 via-red-950/40 to-gray-950" />
-			<div className="from-primary-500/20 absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br to-transparent blur-[120px]" />
-			<div
-				className="absolute inset-0 opacity-[0.03]"
-				style={{
-					backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1px, transparent 1px)",
-					backgroundSize: "32px 32px",
-				}}
-			/>
-
+		<div className="relative flex min-h-full flex-col items-center justify-center overflow-hidden px-6 py-20">
 			{/* Floating particles */}
 			<div className="absolute inset-0 overflow-hidden">
 				{Array.from({ length: 20 }).map((_, i) => (
 					<FloatingParticle
 						key={`p-${i}`}
 						index={i}
-						color={i % 2 === 0 ? "rgba(236, 72, 153, 0.3)" : "rgba(139, 92, 246, 0.3)"}
+						color={i % 2 === 0 ? "rgba(236,72,153,0.3)" : "rgba(139,92,246,0.3)"}
 					/>
 				))}
 			</div>
 
-			{/* Pulsing rings behind logo */}
-			<div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+			{/* Pulsing rings */}
+			<div className="pointer-events-none absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
 				<div className="border-primary-500/10 absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulseRing_3s_ease-out_infinite] rounded-full border" />
 				<div className="border-primary-500/10 absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulseRing_3s_ease-out_1s_infinite] rounded-full border" />
 				<div className="border-primary-500/10 absolute h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 animate-[pulseRing_3s_ease-out_2s_infinite] rounded-full border" />
 			</div>
 
 			<div className="relative z-10 flex max-w-xl flex-col items-center gap-6 text-center">
+				{/* Logo */}
 				<div
 					className={cn(
 						"transition-all duration-1000 ease-out",
@@ -502,7 +514,7 @@ export default function OnboardingPage() {
 					</div>
 				</div>
 
-				{/* Animated MEMORA letter text */}
+				{/* MEMORA letters */}
 				<div
 					className={cn(
 						"flex items-center gap-1 transition-all duration-700 ease-out",
@@ -536,7 +548,7 @@ export default function OnboardingPage() {
 					)}
 				>
 					Si tu es ici, c&apos;est que tu as déjà franchi une première étape importante. Tes échanges avec
-					nous ont montré ton potentiel et nous sommes ravis de t&apos;accueillir parmi nous !
+					nous ont montré ton potentiel — nous sommes ravis de t&apos;accueillir parmi nous !
 				</p>
 
 				<div
@@ -546,8 +558,8 @@ export default function OnboardingPage() {
 					)}
 				>
 					<p className="text-base text-gray-400">
-						A partir d&apos;ici, ton intégration commence pour de vrai. Pas de panique, tu ne seras jamais
-						seul(e).
+						À partir d&apos;ici, ton intégration commence pour de vrai. Pas de panique, tu ne seras jamais
+						seul·e.
 					</p>
 				</div>
 
@@ -558,7 +570,7 @@ export default function OnboardingPage() {
 					)}
 				>
 					<Button variant="primary" size="lg" onClick={nextStep} className="group mt-4 gap-2 px-8">
-						Commencer
+						Commencer mon intégration
 						<Icon
 							name="chevronRight"
 							size="sm"
@@ -566,41 +578,39 @@ export default function OnboardingPage() {
 						/>
 					</Button>
 				</div>
-			</div>
 
-			<div className="absolute bottom-6 text-xs text-gray-600">Memora Hub v1.0</div>
+				<p
+					className={cn(
+						"text-xs text-gray-600 transition-all duration-700 ease-out",
+						buttonVisible ? "opacity-100" : "opacity-0",
+					)}
+				>
+					4 étapes · ~5 minutes
+				</p>
+			</div>
 		</div>
 	);
 
-	// ─── Step 1: Marsha, concrètement ─────────────────────────────────────
-
-	/**
-	 * Renders the Marsha platforms and team overview with hover effects
-	 * on platform cards and animated team stats counters.
-	 * @returns {JSX.Element} Marsha concrete explanation step
-	 */
 	const renderMarshaConcrètement = () => (
-		<div className="flex min-h-screen flex-col items-center justify-center px-6 py-20">
+		<div className="flex min-h-full flex-col items-center justify-center px-6 py-24">
 			<div className="flex max-w-3xl flex-col items-center gap-10">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
 					<div className="from-primary-500 to-primary-700 relative rounded-2xl bg-gradient-to-br p-3">
 						<Icon name="shield" size="lg" className="text-white" />
-						{/* Decorative glow */}
 						<div className="from-primary-500/30 to-primary-700/30 absolute -inset-1 -z-10 rounded-2xl bg-gradient-to-br blur-lg" />
 					</div>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Marsha, concrètement</h2>
 					<p className="max-w-lg text-lg leading-relaxed text-gray-300">
-						Marsha intervient sur plusieurs plateformes : là où se retrouvent des communautés actives qui
-						ont besoin d&apos;un cadre sain.
+						Marsha intervient sur plusieurs plateformes — là où se trouvent des communautés actives qui ont
+						besoin d&apos;un cadre sain.
 					</p>
 				</div>
 
-				{/* Platforms grid with hover effects */}
 				<div className="grid w-full max-w-lg animate-[onboardFadeUp_600ms_ease-out_400ms_both] grid-cols-2 gap-3">
 					{PLATFORMS.map((platform, i) => (
 						<div
 							key={platform.name}
-							className="group flex animate-[onboardScaleIn_400ms_ease-out_both] items-center gap-3 rounded-xl border border-gray-700/50 bg-gray-800/60 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-gray-600/60 hover:bg-gray-800/80 hover:shadow-lg hover:shadow-gray-900/50"
+							className="group flex animate-[onboardScaleIn_400ms_ease-out_both] items-center gap-3 rounded-xl border border-gray-700/50 bg-gray-800/60 p-4 backdrop-blur-sm transition-all duration-300 hover:scale-[1.03] hover:border-gray-600/60 hover:bg-gray-800/80"
 							style={{ animationDelay: `${500 + i * 100}ms` }}
 						>
 							<div
@@ -616,7 +626,6 @@ export default function OnboardingPage() {
 					))}
 				</div>
 
-				{/* Team stats counters */}
 				<div className="grid w-full max-w-lg animate-[onboardFadeUp_600ms_ease-out_600ms_both] grid-cols-3 gap-3">
 					{TEAM_STATS.map((stat, i) => (
 						<div
@@ -634,7 +643,6 @@ export default function OnboardingPage() {
 					))}
 				</div>
 
-				{/* Key points */}
 				<div className="flex max-w-lg animate-[onboardFadeUp_600ms_ease-out_700ms_both] flex-col gap-4">
 					<p className="text-center text-base text-gray-400">Derrière ce travail, il y a :</p>
 					{[
@@ -653,24 +661,12 @@ export default function OnboardingPage() {
 						</div>
 					))}
 				</div>
-
-				<p className="animate-[onboardFadeUp_600ms_ease-out_1000ms_both] text-center text-sm text-gray-500">
-					Tu n&apos;as pas besoin de tout comprendre maintenant, tu comprendras plus facilement au fil du
-					temps
-				</p>
 			</div>
 		</div>
 	);
 
-	// ─── Step 2: Ta position actuelle ─────────────────────────────────────
-
-	/**
-	 * Renders the current position / Marsha Academy explanation
-	 * with à visual hierarchy pyramid showing the Junior to Owner path.
-	 * @returns {JSX.Element} Position step
-	 */
 	const renderPosition = () => (
-		<div className="flex min-h-screen flex-col items-center justify-center px-6 py-20 lg:flex-row lg:gap-16 lg:px-20">
+		<div className="flex min-h-full flex-col items-center justify-center px-6 py-24 lg:flex-row lg:gap-16 lg:px-20">
 			<div className="flex max-w-lg flex-1 animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col gap-6">
 				<div className="flex items-center gap-3">
 					<div className="rounded-xl bg-gradient-to-br from-amber-500 to-orange-600 p-2.5">
@@ -678,48 +674,39 @@ export default function OnboardingPage() {
 					</div>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Ta position actuelle</h2>
 				</div>
-
 				<p className="text-lg leading-relaxed text-gray-300">
 					Dès maintenant, tu entres dans la <span className="font-bold text-amber-400">Marsha Academy</span>,
-					notre programme d&apos;intégration
+					notre programme d&apos;intégration.
 				</p>
-
 				<p className="text-lg leading-relaxed text-gray-400">
-					Pendant cette période, tu es considéré(e) comme{" "}
+					Pendant cette période, tu es considéré·e comme{" "}
 					<span className="font-semibold text-white">Junior.</span>
 				</p>
-
 				<div className="rounded-xl border border-gray-700/50 bg-gray-800/60 p-5 backdrop-blur-sm">
 					<p className="text-sm leading-relaxed text-gray-300">
-						Concrètement, ça veut dire que tu es en phase d&apos;apprentissage, tu es encadré(e) et tu peux
-						poser toutes tes questions. A noter que tu n&apos;es{" "}
+						Concrètement, ça veut dire que tu es en phase d&apos;apprentissage, tu es encadré·e et tu peux
+						poser toutes tes questions. Tu n&apos;es{" "}
 						<span className="font-bold text-amber-400">pas encore</span> modérateur officiel.
 					</p>
 				</div>
-
 				<p className="text-base text-gray-400">
 					L&apos;objectif est simple :{" "}
 					<span className="text-white">
 						te former, t&apos;évaluer et t&apos;aider à atteindre le niveau attendu
-					</span>{" "}
-					et à ton rythme.
+					</span>
+					, à ton rythme.
 				</p>
-
-				{/* Hierarchy pyramid */}
 				<div className="mt-4 flex animate-[onboardFadeUp_600ms_ease-out_800ms_both] flex-col items-center gap-1.5">
 					<p className="mb-2 text-xs font-bold tracking-wider text-gray-500 uppercase">Hiérarchie</p>
 					{HIERARCHY_LEVELS.map((level, i) => (
 						<div
 							key={level.label}
 							className={cn(
-								"flex animate-[onboardScaleIn_400ms_ease-out_both] items-center justify-center rounded-lg py-1.5 text-xs font-bold text-white/90",
+								"relative z-10 flex animate-[onboardScaleIn_400ms_ease-out_both] items-center justify-center rounded-lg py-1.5 text-xs font-bold text-white/90",
 								`bg-gradient-to-r ${level.color}`,
-								level.highlight ? "ring-2 ring-white/30 ring-offset-2 ring-offset-gray-900" : "",
+								level.highlight ? "ring-2 ring-white/30 ring-offset-2 ring-offset-transparent" : "",
 							)}
-							style={{
-								width: `${100 + i * 30}px`,
-								animationDelay: `${900 + i * 100}ms`,
-							}}
+							style={{ width: `${100 + i * 30}px`, animationDelay: `${900 + i * 100}ms` }}
 						>
 							{level.label}
 							{level.highlight && (
@@ -730,7 +717,6 @@ export default function OnboardingPage() {
 				</div>
 			</div>
 
-			{/* Division levels */}
 			<div className="mt-10 flex flex-1 flex-col items-center gap-4 lg:mt-0">
 				<div className="mb-4 animate-[onboardScaleIn_600ms_ease-out_400ms_both]">
 					<div className="relative">
@@ -744,7 +730,6 @@ export default function OnboardingPage() {
 						/>
 					</div>
 				</div>
-
 				<div className="relative flex flex-col items-center gap-3">
 					<div className="from-primary-500/40 via-primary-500/20 absolute top-0 bottom-0 left-1/2 w-px -translate-x-1/2 animate-[onboardLineGrow_800ms_ease-out_600ms_both] bg-gradient-to-b to-transparent" />
 					{DIVISION_LEVELS.map((div, i) => (
@@ -773,35 +758,24 @@ export default function OnboardingPage() {
 		</div>
 	);
 
-	// ─── Step 3: PIM Phase 1 ──────────────────────────────────────────────
-
-	/**
-	 * Renders PIM Phase 1: L'apprentissage, with progress milestones
-	 * and animated checklist items that pop in sequentially.
-	 * @returns {JSX.Element} PIM Phase 1 step
-	 */
 	const renderPIMPhase1 = () => (
-		<div className="flex min-h-screen flex-col items-center justify-center px-6 py-20">
+		<div className="flex min-h-full flex-col items-center justify-center px-6 py-24">
 			<div className="flex max-w-2xl flex-col items-center gap-8">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
-					<div className="flex items-center gap-2">
-						<span className="bg-primary-500/20 text-primary-400 rounded-full px-3 py-1 text-xs font-bold">
-							PHASE 1
-						</span>
-					</div>
+					<span className="bg-primary-500/20 text-primary-400 rounded-full px-3 py-1 text-xs font-bold">
+						PHASE 1
+					</span>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">
 						La PIM : l&apos;apprentissage
 					</h2>
 					<p className="max-w-md text-base text-gray-400">
-						Ta période d&apos;intégration de moderation commence ici. Dans cette première phase, tu vas
+						Ta période d&apos;intégration de modération commence ici. Dans cette première phase, tu vas
 						découvrir :
 					</p>
 				</div>
 
-				{/* Phase milestones progress bar */}
 				<div className="w-full max-w-md animate-[onboardFadeUp_600ms_ease-out_400ms_both]">
 					<div className="relative flex items-center justify-between">
-						{/* Connecting line */}
 						<div className="absolute top-4 right-6 left-6 h-0.5 bg-gray-700">
 							<div className="from-primary-500 to-primary-400 h-full w-1/3 animate-[progressGrow_1s_ease-out_800ms_both] bg-gradient-to-r" />
 						</div>
@@ -833,7 +807,6 @@ export default function OnboardingPage() {
 					</div>
 				</div>
 
-				{/* Checklist items with animated check marks */}
 				<div className="flex w-full max-w-md animate-[onboardFadeUp_600ms_ease-out_500ms_both] flex-col gap-3">
 					{PIM_PHASE1_ITEMS.map((item, i) => (
 						<div
@@ -861,39 +834,29 @@ export default function OnboardingPage() {
 						<span className="text-sm font-bold text-indigo-300">Ton Référent</span>
 					</div>
 					<p className="text-sm leading-relaxed text-gray-400">
-						Tu seras accompagné(e) par un <span className="text-white">Référent</span>. Son role va être de
-						te guider, de répondre à tes questions, de te donner des retours constructifs et de t&apos;aider
-						à progresser tout au long de ton apprentissage
+						Tu seras accompagné·e par un <span className="text-white">Référent</span>. Son rôle : te guider,
+						répondre à tes questions, te donner des retours constructifs et t&apos;aider à progresser tout
+						au long de ton apprentissage.
 					</p>
 				</div>
 			</div>
 		</div>
 	);
 
-	// ─── Step 4: PIM Phase 2 ──────────────────────────────────────────────
-
-	/**
-	 * Renders PIM Phase 2: Le perfectionnement, with skill cards
-	 * that use à flip-in animation on appear and hover effects.
-	 * @returns {JSX.Element} PIM Phase 2 step
-	 */
 	const renderPIMPhase2 = () => (
-		<div className="flex min-h-screen flex-col items-center justify-center px-6 py-20">
+		<div className="flex min-h-full flex-col items-center justify-center px-6 py-24">
 			<div className="flex max-w-2xl flex-col items-center gap-8">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
-					<div className="flex items-center gap-2">
-						<span className="bg-success-500/20 text-success-400 rounded-full px-3 py-1 text-xs font-bold">
-							PHASE 2
-						</span>
-					</div>
+					<span className="bg-success-500/20 text-success-400 rounded-full px-3 py-1 text-xs font-bold">
+						PHASE 2
+					</span>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Le perfectionnement</h2>
 					<p className="max-w-md text-base text-gray-400">
-						Si la première phase est validée, tu passés au perfectionnement ! On va alors travailler sur tes
+						Si la première phase est validée, tu passes au perfectionnement ! On va alors travailler sur tes
 						axes d&apos;amélioration :
 					</p>
 				</div>
 
-				{/* Skill cards with flip-in animation */}
 				<div className="grid w-full max-w-lg animate-[onboardFadeUp_600ms_ease-out_500ms_both] grid-cols-1 gap-3 sm:grid-cols-2">
 					{PIM_PHASE2_ITEMS.map((item, i) => (
 						<div
@@ -902,7 +865,6 @@ export default function OnboardingPage() {
 							style={{ animationDelay: `${600 + i * 120}ms` }}
 						>
 							<div className="group hover:border-success-500/30 relative flex flex-col gap-2 rounded-xl border border-gray-700/50 bg-gray-800/60 p-4 backdrop-blur-sm transition-all duration-300 hover:bg-gray-800/80">
-								{/* Decorative corner accent */}
 								<div className="absolute top-0 right-0 h-12 w-12 overflow-hidden rounded-tr-xl">
 									<div className="from-success-500/10 absolute -top-6 -right-6 h-12 w-12 rotate-45 bg-gradient-to-br to-transparent" />
 								</div>
@@ -920,27 +882,19 @@ export default function OnboardingPage() {
 
 				<div className="max-w-md animate-[onboardFadeUp_600ms_ease-out_1000ms_both] rounded-xl border border-gray-700/30 bg-gray-800/40 p-5 text-center">
 					<p className="text-sm leading-relaxed text-gray-400">
-						Il ne s&apos;agit pas d&apos;etre parfait. Le but est d&apos;etre{" "}
-						<span className="font-semibold text-white">fiable et à l&apos;aise</span> dans ton role. La
-						validation dépendra de ton niveau réel, pas du temps passé
+						Il ne s&apos;agit pas d&apos;être parfait. Le but est d&apos;être{" "}
+						<span className="font-semibold text-white">fiable et à l&apos;aise</span> dans ton rôle. La
+						validation dépendra de ton niveau réel, pas du temps passé.
 					</p>
 				</div>
 			</div>
 		</div>
 	);
 
-	// ─── Step 5: Avant de commencer (Data explanation) ────────────────────
-
-	/**
-	 * Renders the data collection explanation and privacy notice
-	 * with an animated shield visual and trust indicator badges.
-	 * @returns {JSX.Element} Data explanation step
-	 */
 	const renderAvantDeCommencer = () => (
-		<div className="flex min-h-screen flex-col items-center justify-center px-6 py-20">
+		<div className="flex min-h-full flex-col items-center justify-center px-6 py-24">
 			<div className="flex max-w-2xl flex-col items-center gap-8">
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_200ms_both] flex-col items-center gap-4 text-center">
-					{/* Animated shield visual with pulsing rings */}
 					<div className="relative">
 						<div className="rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 p-3">
 							<Icon name="shield" size="lg" className="text-white" />
@@ -950,8 +904,8 @@ export default function OnboardingPage() {
 					</div>
 					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Avant de commencer</h2>
 					<p className="max-w-md text-base text-gray-400">
-						Avant d&apos;entrer officiellement dans ta PIM, une dernière étape est nécessaire. Tu vas
-						remplir un formulaire de données personnelles.
+						Avant d&apos;entrer officiellement dans ta PIM, tu vas créer ton profil Memora Hub. C&apos;est
+						simple et rapide.
 					</p>
 				</div>
 
@@ -962,7 +916,7 @@ export default function OnboardingPage() {
 							{ icon: "profile" as const, text: "Identifier chaque membre correctement" },
 							{ icon: "lock" as const, text: "Attribuer les bons accès" },
 							{ icon: "stats" as const, text: "Assurer un suivi fiable" },
-							{ icon: "shield" as const, text: "Respecter nos obligations legales" },
+							{ icon: "shield" as const, text: "Respecter nos obligations légales" },
 						].map((item, i) => (
 							<div
 								key={i}
@@ -978,7 +932,6 @@ export default function OnboardingPage() {
 					</div>
 				</div>
 
-				{/* Trust indicator badges */}
 				<div className="flex w-full max-w-lg animate-[onboardFadeUp_600ms_ease-out_800ms_both] items-center justify-center gap-6">
 					{TRUST_BADGES.map((trust, i) => (
 						<div key={trust.label} className="flex flex-col items-center gap-1.5">
@@ -993,48 +946,30 @@ export default function OnboardingPage() {
 					))}
 				</div>
 
-				{/* Phone number explanation */}
-				<div className="border-info-500/20 bg-info-900/10 max-w-lg animate-[onboardFadeUp_600ms_ease-out_900ms_both] rounded-xl border p-5">
-					<div className="mb-2 flex items-center gap-2">
-						<Icon name="phone" size="sm" className="text-info-400" />
-						<span className="text-info-300 text-sm font-bold">À propos du téléphone</span>
-					</div>
-					<p className="text-xs leading-relaxed text-gray-400">
-						Nous le stockerons dans le cas ou, meme si on te le souhaitera jamais, tu aurais un souci urgent
-						comme un problème de santé et que tu ne réponds plus. Nous nous permettront de t&apos;appeler
-						pour s&apos;assurer que tout va bien. Ca ne sera qu&apos;un usage professionnel.
-					</p>
-				</div>
-
-				{/* Privacy badge */}
 				<div className="flex animate-[onboardFadeUp_600ms_ease-out_1100ms_both] items-center gap-2 rounded-full border border-gray-700/30 bg-gray-800/30 px-4 py-2">
 					<Icon name="lock" size="xs" className="text-primary-400" />
 					<span className="text-xs text-gray-400">
-						Tes données restent strictement internes, elles ne seront ni revendues ni partagées en dehors.
+						Tes données restent strictement internes, elles ne seront ni revendues ni partagées.
 					</span>
 				</div>
 			</div>
 		</div>
 	);
 
-	// ─── Step 6: Formulaire ───────────────────────────────────────────────
-
-	/**
-	 * Renders the personal data form with identity, languages, and social fields.
-	 * Includes à subtle progress bar indicating form completion percentage.
-	 * @returns {JSX.Element} Form step
-	 */
 	const renderForm = () => (
-		<div className="flex min-h-screen flex-col items-center justify-start px-4 py-16 sm:px-6 lg:justify-center">
+		<div className="flex min-h-full flex-col items-center justify-start px-4 py-20 sm:px-6 lg:justify-center">
 			<div className="w-full max-w-2xl animate-[onboardFadeUp_500ms_ease-out_both]">
+				{/* Header */}
 				<div className="mb-8 flex flex-col items-center gap-2 text-center">
 					<div className="mb-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 p-2.5">
 						<Icon name="profile" size="lg" className="text-white" />
 					</div>
-					<h2 className="font-serif text-3xl font-bold text-white">Tes informations</h2>
-					<p className="text-gray-400">Prends bien le temps de vérifier tes informations</p>
-
-					{/* Form progress indicator */}
+					<h2 className="font-serif text-3xl font-bold text-white">Crée ton profil</h2>
+					<p className="text-gray-400">
+						Prends le temps de bien renseigner tes informations — elles seront utilisées par toute
+						l&apos;équipe.
+					</p>
+					{/* Progress bar */}
 					<div className="mt-3 flex w-full max-w-xs items-center gap-3">
 						<div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-800">
 							<div
@@ -1046,8 +981,16 @@ export default function OnboardingPage() {
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-8 rounded-2xl border border-gray-700/50 bg-gray-800/50 p-6 shadow-xl backdrop-blur-sm sm:p-8">
-					{/* Identity */}
+				{/* Global error */}
+				{submitError && (
+					<div className="mb-6 flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-900/15 px-4 py-3">
+						<Icon name="warning" size="sm" className="mt-0.5 shrink-0 text-red-400" />
+						<p className="text-sm text-red-300">{submitError}</p>
+					</div>
+				)}
+
+				<div className="flex flex-col gap-6 rounded-2xl border border-gray-700/50 bg-gray-800/50 p-6 shadow-xl backdrop-blur-sm sm:p-8">
+					{/* ── Section 1 : Identité ── */}
 					<div className="flex flex-col gap-5">
 						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
 							<Icon name="profile" size="xs" />
@@ -1055,8 +998,8 @@ export default function OnboardingPage() {
 						</h3>
 						<div className="grid gap-4 sm:grid-cols-2">
 							<Input
-								label="Pseudo (Discord) *"
-								placeholder="TonPseudo#0000"
+								label="Pseudo *"
+								placeholder="TonPseudo"
 								value={formData.pseudo}
 								onChange={(e) => updateField("pseudo", e.target.value)}
 								error={formErrors.pseudo}
@@ -1087,6 +1030,21 @@ export default function OnboardingPage() {
 								error={formErrors.nom}
 							/>
 						</div>
+					</div>
+
+					<div className="h-px bg-gray-700/50" />
+
+					{/* ── Section 2 : Connexion ── */}
+					<div className="flex flex-col gap-5">
+						<div>
+							<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+								<Icon name="lock" size="xs" />
+								Connexion au Hub
+							</h3>
+							<p className="mt-1 text-xs text-gray-500">
+								Ces identifiants te permettront de te connecter à Memora Hub.
+							</p>
+						</div>
 						<Input
 							label="Email *"
 							type="email"
@@ -1097,8 +1055,34 @@ export default function OnboardingPage() {
 							icon="globe"
 						/>
 						<div className="grid gap-4 sm:grid-cols-2">
+							<PasswordInput
+								label="Mot de passe * (8 car. min)"
+								placeholder="••••••••"
+								value={formData.password}
+								onChange={(e) => updateField("password", e.target.value)}
+								error={formErrors.password}
+							/>
+							<PasswordInput
+								label="Confirmer le mot de passe *"
+								placeholder="••••••••"
+								value={formData.confirmPassword}
+								onChange={(e) => updateField("confirmPassword", e.target.value)}
+								error={formErrors.confirmPassword}
+							/>
+						</div>
+					</div>
+
+					<div className="h-px bg-gray-700/50" />
+
+					{/* ── Section 3 : Contact ── */}
+					<div className="flex flex-col gap-4">
+						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
+							<Icon name="phone" size="xs" />
+							Contact <span className="text-xs font-normal text-gray-500 normal-case">(optionnel)</span>
+						</h3>
+						<div className="grid gap-4 sm:grid-cols-2">
 							<Input
-								label="Telephone"
+								label="Téléphone"
 								type="tel"
 								placeholder="+33 6 12 34 56 78"
 								value={formData.telephone}
@@ -1112,8 +1096,10 @@ export default function OnboardingPage() {
 							/>
 						</div>
 					</div>
+
 					<div className="h-px bg-gray-700/50" />
-					{/* Languages */}
+
+					{/* ── Section 4 : Langues ── */}
 					<div className="flex flex-col gap-4">
 						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
 							<Icon name="globe" size="xs" />
@@ -1130,8 +1116,10 @@ export default function OnboardingPage() {
 							))}
 						</div>
 					</div>
+
 					<div className="h-px bg-gray-700/50" />
-					{/* Préférences */}
+
+					{/* ── Section 5 : Préférences ── */}
 					<div className="flex flex-col gap-4">
 						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
 							<Icon name="bell" size="xs" />
@@ -1144,8 +1132,10 @@ export default function OnboardingPage() {
 							description="Recevoir un message de l'équipe le jour de ton anniversaire"
 						/>
 					</div>
+
 					<div className="h-px bg-gray-700/50" />
-					{/* Social */}
+
+					{/* ── Section 6 : Réseaux sociaux ── */}
 					<div className="flex flex-col gap-4">
 						<h3 className="flex items-center gap-2 text-sm font-semibold tracking-wider text-gray-400 uppercase">
 							<Icon name="globe" size="xs" />
@@ -1184,38 +1174,19 @@ export default function OnboardingPage() {
 		</div>
 	);
 
-	// ─── Step 7: Apres le formulaire ──────────────────────────────────────
-
-	/**
-	 * Renders the post-form step explaining what comes next,
-	 * with animated feature preview cards for Hub modules and à preview strip.
-	 * @returns {JSX.Element} After form step
-	 */
 	const renderApresFormulaire = () => (
-		<div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6 py-20">
-			<div className="absolute inset-0 z-0">
-				<Image
-					src="/banners/inoxtag-banner.png"
-					alt=""
-					fill
-					className="object-cover opacity-[0.07] blur-xl"
-					priority={false}
-				/>
-				<div className="absolute inset-0 bg-gradient-to-b from-gray-900/80 via-gray-900/95 to-gray-900" />
-			</div>
-
+		<div className="flex min-h-full flex-col items-center justify-center overflow-hidden px-6 py-24">
 			<div className="relative z-10 flex max-w-2xl flex-col items-center gap-8 text-center">
 				<div className="flex animate-[onboardScaleIn_600ms_ease-out_200ms_both] flex-col items-center gap-4">
 					<div className="animate-[celebrateBounce_1s_ease-out_both] text-4xl">🎉</div>
-					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Formulaire validé !</h2>
+					<h2 className="font-serif text-3xl font-bold text-white sm:text-4xl">Profil créé !</h2>
 					<p className="text-lg leading-relaxed text-gray-300">
-						Tu entres officiellement dans ta PIM. Tu auras ensuite accès à{" "}
+						Tu entres officiellement dans ta PIM. Tu as maintenant accès à{" "}
 						<span className="text-primary-400 font-bold">Memora Hub</span>, qui regroupe tout ce dont tu
 						auras besoin :
 					</p>
 				</div>
 
-				{/* Feature preview cards with hover interactions */}
 				<div className="flex w-full max-w-md flex-col gap-3">
 					{HUB_FEATURES.map((feature, i) => (
 						<div
@@ -1247,19 +1218,6 @@ export default function OnboardingPage() {
 					))}
 				</div>
 
-				{/* Mini dashboard preview strip */}
-				<div className="flex animate-[onboardFadeUp_600ms_ease-out_950ms_both] items-center gap-4 rounded-xl border border-gray-700/20 bg-gray-800/30 px-5 py-3">
-					{DASHBOARD_PREVIEW_ICONS.map((icon, i) => (
-						<div
-							key={icon}
-							className="flex h-8 w-8 animate-[onboardScaleIn_300ms_ease-out_both] items-center justify-center rounded-lg bg-gray-700/30 text-gray-500"
-							style={{ animationDelay: `${1000 + i * 80}ms` }}
-						>
-							<Icon name={icon} size="sm" />
-						</div>
-					))}
-				</div>
-
 				<div className="max-w-md animate-[onboardFadeUp_600ms_ease-out_1000ms_both] rounded-xl border border-gray-700/30 bg-gray-800/40 p-5">
 					<p className="text-sm text-gray-400">
 						Mais pour l&apos;instant, ton objectif est simple :{" "}
@@ -1267,54 +1225,40 @@ export default function OnboardingPage() {
 							apprendre, progresser et trouver ta place dans l&apos;équipe.
 						</span>
 					</p>
-					<p className="mt-3 text-sm text-gray-500">On est heureux de t&apos;avoir avec nous</p>
+					<p className="mt-3 text-sm text-gray-500">On est heureux de t&apos;avoir avec nous 🙌</p>
 				</div>
 			</div>
 		</div>
 	);
 
-	// ─── Step 8: Celebration ──────────────────────────────────────────────
-
-	/**
-	 * Renders the final celebration with enhanced confetti, holographic squad card,
-	 * animated letter-by-letter welcome text, and completion handler with localStorage flags.
-	 * @returns {JSX.Element} Celebration step
-	 */
 	const renderCelebration = () => (
-		<div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden px-6">
-			{/* Background */}
-			<div className="absolute inset-0 bg-gradient-to-b from-gray-950 via-gray-900 to-gray-950" />
-			<div className="from-primary-500/15 absolute top-1/3 left-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-gradient-to-br to-transparent blur-[150px]" />
-
-			{/* Additional drifting glow effects */}
-			<div className="absolute top-1/4 left-1/4 h-[200px] w-[200px] animate-[driftSlow_8s_ease-in-out_infinite] rounded-full bg-purple-500/10 blur-[100px]" />
-			<div className="absolute right-1/4 bottom-1/4 h-[200px] w-[200px] animate-[driftSlow_8s_ease-in-out_2s_infinite] rounded-full bg-pink-500/10 blur-[100px]" />
-
-			{/* Confetti layer with more variety */}
-			<div className="absolute inset-0 overflow-hidden">
+		<div className="relative flex min-h-full flex-col items-center justify-center overflow-hidden px-6 py-24">
+			{/* Confetti */}
+			<div className="pointer-events-none absolute inset-0 overflow-hidden">
 				{Array.from({ length: 80 }).map((_, i) => (
 					<ConfettiParticle key={i} index={i} />
 				))}
 			</div>
 
-			{/* Floating sparkle particles */}
-			<div className="absolute inset-0 overflow-hidden">
+			{/* Floating sparkles */}
+			<div className="pointer-events-none absolute inset-0 overflow-hidden">
 				{Array.from({ length: 12 }).map((_, i) => (
 					<FloatingParticle
 						key={`sp-${i}`}
 						index={i}
 						color={
 							i % 3 === 0
-								? "rgba(236, 72, 153, 0.4)"
+								? "rgba(236,72,153,0.4)"
 								: i % 3 === 1
-									? "rgba(139, 92, 246, 0.4)"
-									: "rgba(59, 130, 246, 0.4)"
+									? "rgba(139,92,246,0.4)"
+									: "rgba(59,130,246,0.4)"
 						}
 					/>
 				))}
 			</div>
 
 			<div className="relative z-10 flex flex-col items-center gap-6 text-center">
+				{/* Logo avec rings */}
 				<div className="animate-[onboardScaleIn_600ms_ease-out_300ms_both]">
 					<div className="relative">
 						<div className="from-primary-500/30 absolute inset-0 rounded-full bg-gradient-to-br to-transparent blur-2xl" />
@@ -1325,13 +1269,12 @@ export default function OnboardingPage() {
 							height={100}
 							className="relative drop-shadow-xl"
 						/>
-						{/* Celebration pulsing rings */}
 						<div className="border-primary-500/20 absolute -inset-4 animate-[pulseRing_2s_ease-out_infinite] rounded-full border" />
 						<div className="border-primary-500/10 absolute -inset-8 animate-[pulseRing_2s_ease-out_0.6s_infinite] rounded-full border" />
 					</div>
 				</div>
 
-				{/* Animated welcome text with letter-by-letter reveal */}
+				{/* Titre lettre par lettre */}
 				<div className="animate-[onboardFadeUp_600ms_ease-out_500ms_both]">
 					<h1 className="font-serif text-4xl font-bold text-white sm:text-5xl">
 						{"Bienvenue, ".split("").map((char, i) => (
@@ -1361,13 +1304,11 @@ export default function OnboardingPage() {
 					<p className="mt-4 text-lg font-medium text-gray-400">Ton aventure commence maintenant.</p>
 				</div>
 
-				{/* Holographic squad card */}
+				{/* Carte squad */}
 				<div className="holoCard mt-2 w-full max-w-sm animate-[onboardFadeUp_600ms_ease-out_900ms_both] rounded-2xl border border-gray-700/50 p-5 backdrop-blur-sm">
 					<div className="mb-3 flex items-center gap-2">
 						<Icon name="users" size="sm" className="text-primary-400" />
-						<span className="text-primary-400 text-xs font-bold tracking-wider uppercase">
-							Carte Squad créée
-						</span>
+						<span className="text-primary-400 text-xs font-bold tracking-wider uppercase">Carte Squad</span>
 					</div>
 					<div className="flex items-center gap-3">
 						<div className="from-primary-500 to-primary-700 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br text-lg font-bold text-white">
@@ -1378,7 +1319,7 @@ export default function OnboardingPage() {
 							<p className="text-xs text-gray-400">
 								{formData.prenom || "Nouveau"} {formData.nom || "Membre"}
 							</p>
-							<p className="text-[10px] text-gray-500">Junior — Marsha Academy</p>
+							<p className="text-[10px] text-gray-500">Junior — Marsha Academy · Squad Bazalthe</p>
 						</div>
 					</div>
 				</div>
@@ -1401,14 +1342,13 @@ export default function OnboardingPage() {
 
 				<div className="mt-3 flex animate-[onboardFadeUp_600ms_ease-out_1300ms_both] items-center gap-2 text-gray-500">
 					<Icon name="sparkles" size="xs" />
-					<span className="text-xs">Bonne chance, Agent.</span>
+					<span className="text-xs">Bonne chance !</span>
 					<Icon name="sparkles" size="xs" />
 				</div>
 			</div>
 		</div>
 	);
 
-	// Step map
 	const steps = [
 		renderIntroduction,
 		renderMarshaConcrètement,
@@ -1421,233 +1361,128 @@ export default function OnboardingPage() {
 		renderCelebration,
 	];
 
-	// Render
+	const isFormStep = currentStep === 6;
+	const showNav = currentStep > 0 && currentStep < 8;
+
 	return (
 		<>
 			<style
 				dangerouslySetInnerHTML={{
 					__html: `
-				/* Slide transitions */
-				@keyframes onboardSlideInRight {
-					from { transform: translateX(60px); opacity: 0; }
-					to { transform: translateX(0); opacity: 1; }
-				}
-				@keyframes onboardSlideInLeft {
-					from { transform: translateX(-60px); opacity: 0; }
-					to { transform: translateX(0); opacity: 1; }
-				}
-
-				/* Basic élément animations */
-				@keyframes onboardFadeUp {
-					from { transform: translateY(24px); opacity: 0; }
-					to { transform: translateY(0); opacity: 1; }
-				}
-				@keyframes onboardScaleIn {
-					from { transform: scale(0.6); opacity: 0; }
-					to { transform: scale(1); opacity: 1; }
-				}
-				@keyframes onboardPulse {
-					0%, 100% { transform: scale(1); }
-					50% { transform: scale(1.05); }
-				}
-				@keyframes onboardLineGrow {
-					from { transform: translateX(-50%) scaleY(0); transform-origin: top; }
-					to { transform: translateX(-50%) scaleY(1); transform-origin: top; }
-				}
-				@keyframes onboardSlideCardIn {
-					from { transform: translateX(40px) translateY(10px); opacity: 0; }
-					to { transform: translateX(0) translateY(0); opacity: 1; }
-				}
-
-				/* Confetti */
-				@keyframes confettiFall {
-					0% { transform: translateY(0) rotate(0deg); opacity: 1; }
-					100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
-				}
-
-				/* Progress indicator pulse */
-				@keyframes progressPulse {
-					0%, 100% { box-shadow: 0 0 0 0 rgba(236, 72, 153, 0.4); }
-					50% { box-shadow: 0 0 0 6px rgba(236, 72, 153, 0); }
-				}
-
-				/* Floating particles */
-				@keyframes floatUp {
-					0% { transform: translateY(0) translateX(0); opacity: 0; }
-					10% { opacity: 0.6; }
-					90% { opacity: 0.6; }
-					100% { transform: translateY(-100vh) translateX(30px); opacity: 0; }
-				}
-
-				/* Pulsing rings */
-				@keyframes pulseRing {
-					0% { transform: scale(1); opacity: 0.5; }
-					100% { transform: scale(2.5); opacity: 0; }
-				}
-
-				/* Letter glow for MEMORA text */
-				@keyframes letterGlow {
-					0%, 100% { opacity: 0.4; text-shadow: 0 0 4px transparent; }
-					50% { opacity: 1; text-shadow: 0 0 8px rgba(236, 72, 153, 0.5); }
-				}
-
-				/* Flip-in for skill cards */
-				@keyframes flipIn {
-					from { transform: perspective(800px) rotateY(90deg); opacity: 0; }
-					to { transform: perspective(800px) rotateY(0deg); opacity: 1; }
-				}
-
-				/* Shield pulse */
-				@keyframes shieldPulse {
-					0%, 100% { transform: scale(1); opacity: 0.3; }
-					50% { transform: scale(1.1); opacity: 0.1; }
-				}
-
-				/* Trust indicator fade in */
-				@keyframes trustFadeIn {
-					from { transform: scale(0.5); opacity: 0; }
-					to { transform: scale(1); opacity: 1; }
-				}
-
-				/* Progress bar grow */
-				@keyframes progressGrow {
-					from { width: 0; }
-					to { width: 33.3%; }
-				}
-
-				/* Check pop */
-				@keyframes checkPop {
-					0% { transform: scale(0); opacity: 0; }
-					70% { transform: scale(1.2); }
-					100% { transform: scale(1); opacity: 1; }
-				}
-
-				/* Letter reveal */
-				@keyframes letterReveal {
-					from { transform: translateY(20px) rotateX(90deg); opacity: 0; }
-					to { transform: translateY(0) rotateX(0deg); opacity: 1; }
-				}
-
-				/* Celebrate bounce */
-				@keyframes celebrateBounce {
-					0% { transform: scale(0); }
-					50% { transform: scale(1.3); }
-					70% { transform: scale(0.9); }
-					100% { transform: scale(1); }
-				}
-
-				/* Slow drift for glow blobs */
-				@keyframes driftSlow {
-					0%, 100% { transform: translate(0, 0); }
-					50% { transform: translate(20px, -20px); }
-				}
-
-				/* Holographic card effect */
-				.holoCard {
-					background: linear-gradient(135deg, rgba(31, 41, 55, 0.6) 0%, rgba(31, 41, 55, 0.8) 50%, rgba(31, 41, 55, 0.6) 100%);
-					position: relative;
-					overflow: hidden;
-				}
-				.holoCard::before {
-					content: '';
-					position: absolute;
-					top: -50%;
-					left: -50%;
-					width: 200%;
-					height: 200%;
-					background: linear-gradient(
-						45deg,
-						transparent 30%,
-						rgba(139, 92, 246, 0.05) 40%,
-						rgba(236, 72, 153, 0.08) 50%,
-						rgba(59, 130, 246, 0.05) 60%,
-						transparent 70%
-					);
-					animation: holoSheen 4s ease-in-out infinite;
-				}
-				@keyframes holoSheen {
-					0% { transform: translateX(-30%) translateY(-30%) rotate(0deg); }
-					100% { transform: translateX(30%) translateY(30%) rotate(0deg); }
-				}
+				@keyframes onboardSlideInRight { from { transform: translateX(60px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+				@keyframes onboardSlideInLeft { from { transform: translateX(-60px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+				@keyframes onboardFadeUp { from { transform: translateY(24px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+				@keyframes onboardScaleIn { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+				@keyframes onboardPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+				@keyframes onboardLineGrow { from { transform: translateX(-50%) scaleY(0); transform-origin: top; } to { transform: translateX(-50%) scaleY(1); transform-origin: top; } }
+				@keyframes onboardSlideCardIn { from { transform: translateX(40px) translateY(10px); opacity: 0; } to { transform: translateX(0) translateY(0); opacity: 1; } }
+				@keyframes confettiFall { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+				@keyframes floatUp { 0% { transform: translateY(0) translateX(0); opacity: 0; } 10% { opacity: 0.6; } 90% { opacity: 0.6; } 100% { transform: translateY(-100vh) translateX(30px); opacity: 0; } }
+				@keyframes pulseRing { 0% { transform: scale(1); opacity: 0.5; } 100% { transform: scale(2.5); opacity: 0; } }
+				@keyframes letterGlow { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; text-shadow: 0 0 8px rgba(236,72,153,0.5); } }
+				@keyframes flipIn { from { transform: perspective(800px) rotateY(90deg); opacity: 0; } to { transform: perspective(800px) rotateY(0deg); opacity: 1; } }
+				@keyframes shieldPulse { 0%, 100% { transform: scale(1); opacity: 0.3; } 50% { transform: scale(1.1); opacity: 0.1; } }
+				@keyframes trustFadeIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+				@keyframes progressGrow { from { width: 0; } to { width: 33.3%; } }
+				@keyframes checkPop { 0% { transform: scale(0); opacity: 0; } 70% { transform: scale(1.2); } 100% { transform: scale(1); opacity: 1; } }
+				@keyframes letterReveal { from { transform: translateY(20px) rotateX(90deg); opacity: 0; } to { transform: translateY(0) rotateX(0deg); opacity: 1; } }
+				@keyframes celebrateBounce { 0% { transform: scale(0); } 50% { transform: scale(1.3); } 70% { transform: scale(0.9); } 100% { transform: scale(1); } }
+				@keyframes driftSlow { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(20px, -20px); } }
+				.holoCard { background: linear-gradient(135deg, rgba(31,41,55,.6) 0%, rgba(31,41,55,.8) 50%, rgba(31,41,55,.6) 100%); position: relative; overflow: hidden; }
+				.holoCard::before { content:''; position:absolute; top:-50%; left:-50%; width:200%; height:200%; background:linear-gradient(45deg,transparent 30%,rgba(139,92,246,.05) 40%,rgba(236,72,153,.08) 50%,rgba(59,130,246,.05) 60%,transparent 70%); animation:holoSheen 4s ease-in-out infinite; }
+				@keyframes holoSheen { 0% { transform: translateX(-30%) translateY(-30%); } 100% { transform: translateX(30%) translateY(30%); } }
 			`,
 				}}
 			/>
 
-			<div className="fixed inset-0 z-50 flex flex-col bg-gray-900">
-				{/* Progress bar — visible on steps 1-7 */}
-				{currentStep > 0 && currentStep < 8 && (
-					<div className="absolute top-0 right-0 left-0 z-50 flex animate-[onboardFadeUp_300ms_ease-out_both] items-center gap-4 bg-gray-900/80 px-6 py-4 backdrop-blur-md">
-						<button
-							onClick={prevStep}
-							disabled={isAnimating}
-							className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-gray-700 bg-gray-800 text-gray-400 transition-all hover:border-gray-600 hover:text-white disabled:opacity-40"
-						>
-							<Icon name="chevronLeft" size="sm" />
-						</button>
-
-						<div className="flex flex-1 items-center justify-center gap-1.5">
-							{Array.from({ length: TOTAL_STEPS }).map((_, i) => (
-								<div
-									key={i}
-									className={cn(
-										"h-1.5 rounded-full transition-all duration-500",
-										i === currentStep
-											? "bg-primary-500 w-6"
-											: i < currentStep
-												? "bg-primary-500/50 w-1.5"
-												: "w-1.5 bg-gray-700",
-									)}
-									style={
-										i === currentStep ? { animation: "progressPulse 2s ease-in-out infinite" } : {}
-									}
-								/>
-							))}
-						</div>
-
-						<span className="shrink-0 text-xs font-medium text-gray-500">{STEP_LABELS[currentStep]}</span>
-					</div>
-				)}
-
-				{/* Step overview drawer */}
-				{currentStep > 0 && (
-					<StepOverviewDrawer
-						currentStep={currentStep}
-						isOpen={drawerOpen}
-						onToggle={() => setDrawerOpen((o) => !o)}
+			<div
+				className="fixed inset-0 z-50 flex flex-col"
+				style={{
+					background:
+						"radial-gradient(ellipse 80% 60% at 0% 0%, rgba(236,72,153,0.12), transparent), radial-gradient(ellipse 70% 50% at 100% 100%, rgba(99,102,241,0.10), transparent), radial-gradient(ellipse 50% 50% at 50% 50%, rgba(139,92,246,0.06), transparent), #030712",
+				}}
+			>
+				{/* Fixed background blobs */}
+				<div className="pointer-events-none absolute inset-0 overflow-hidden">
+					<div className="bg-primary-500/8 absolute top-1/4 left-1/4 h-[300px] w-[300px] animate-[driftSlow_8s_ease-in-out_infinite] rounded-full blur-[120px]" />
+					<div className="absolute right-1/4 bottom-1/4 h-[250px] w-[250px] animate-[driftSlow_8s_ease-in-out_2s_infinite] rounded-full bg-indigo-500/8 blur-[100px]" />
+					<div className="absolute top-2/3 left-1/2 h-[200px] w-[200px] animate-[driftSlow_10s_ease-in-out_4s_infinite] rounded-full bg-purple-500/6 blur-[80px]" />
+					{/* Dot grid */}
+					<div
+						className="absolute inset-0 opacity-[0.025]"
+						style={{
+							backgroundImage: "radial-gradient(rgba(255,255,255,.4) 1px, transparent 1px)",
+							backgroundSize: "28px 28px",
+						}}
 					/>
-				)}
+				</div>
 
-				{/* Step content */}
+				{/* ── Top navigation bar ── */}
+				<div className="relative z-10 flex shrink-0 items-center justify-between border-b border-gray-800/60 bg-gray-950/70 px-4 py-3 backdrop-blur-md sm:px-6">
+					{/* Logo */}
+					<div className="flex items-center gap-2">
+						<Image
+							src="/logos/memora-logo.png"
+							alt="Memora"
+							width={28}
+							height={28}
+							className="rounded-lg"
+						/>
+						<span className="hidden font-serif text-sm font-bold text-white sm:inline">Memora Hub</span>
+					</div>
+
+					{/* Stepper */}
+					<OnboardingStepper currentStep={currentStep} />
+
+					{/* Step counter */}
+					<div className="text-right">
+						<p className="text-xs font-medium text-gray-500">
+							<span className="text-white">{currentStep + 1}</span>
+							<span className="text-gray-600"> / {TOTAL_STEPS}</span>
+						</p>
+					</div>
+				</div>
+
+				{/* ── Step content ── */}
 				<div key={stepKey} className={cn("flex-1 overflow-y-auto", currentStep > 0 ? slideClass : "")}>
 					{steps[currentStep]()}
 				</div>
 
-				{/* Bottom navigation — visible on steps 1-7 */}
-				{currentStep > 0 && currentStep < 8 && (
-					<div className="border-t border-gray-800 bg-gray-900/80 px-6 py-4 backdrop-blur-md">
+				{/* ── Bottom navigation ── */}
+				{showNav && (
+					<div className="relative z-10 shrink-0 border-t border-gray-800/60 bg-gray-950/70 px-4 py-3 backdrop-blur-md sm:px-6">
 						<div className="mx-auto flex max-w-2xl items-center justify-between">
 							<button
 								onClick={prevStep}
-								disabled={isAnimating}
-								className="flex items-center gap-1.5 text-sm font-medium text-gray-400 transition-colors hover:text-white disabled:opacity-40"
+								disabled={isAnimating || isSubmitting}
+								className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-400 transition-colors hover:bg-gray-800/60 hover:text-white disabled:opacity-40"
 							>
 								<Icon name="chevronLeft" size="xs" />
 								Retour
 							</button>
-							<Button
-								variant="primary"
-								size="md"
-								onClick={nextStep}
-								disabled={isAnimating}
-								className="group gap-2"
-							>
-								{currentStep === 6 ? "Valider" : currentStep === 7 ? "Terminer" : "Continuer"}
-								<Icon
-									name="chevronRight"
-									size="sm"
-									className="transition-transform group-hover:translate-x-1"
-								/>
-							</Button>
+
+							<div className="flex items-center gap-3">
+								{isFormStep && submitError && (
+									<p className="max-w-[200px] truncate text-xs text-red-400">{submitError}</p>
+								)}
+								<Button
+									variant="primary"
+									size="md"
+									onClick={nextStep}
+									disabled={isAnimating}
+									isLoading={isSubmitting}
+									className="group gap-2"
+								>
+									{isFormStep ? "Créer mon profil" : currentStep === 7 ? "Terminer" : "Continuer"}
+									{!isSubmitting && (
+										<Icon
+											name="chevronRight"
+											size="sm"
+											className="transition-transform group-hover:translate-x-1"
+										/>
+									)}
+								</Button>
+							</div>
 						</div>
 					</div>
 				)}

@@ -1,6 +1,4 @@
-// Next.js
 import Image from "next/image";
-
 
 // Photo collage configuration
 const PHOTOS = [
@@ -20,7 +18,7 @@ const PHOTOS = [
 ];
 
 /**
- * Authentication layout with a photo collage on the left and form area on the right.
+ * Authentication layout with a photo collage on the left and form area on the right
  * @param props - Component props
  * @param props.children - Auth form content
  * @returns A split layout for authentication pages
@@ -77,11 +75,14 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
 				{/* Branding */}
 				<div className="absolute right-0 bottom-8 left-0 z-10 flex flex-col items-center gap-3">
 					<div className="flex items-center gap-3 rounded-2xl bg-white/5 px-6 py-3 ring-1 ring-white/10 backdrop-blur-md">
-						<Image src="/logos/memora.png" alt="Memora" width={32} height={32} className="rounded-lg" />
-						<div>
-							<span className="font-serif text-lg font-bold text-white">Memora Hub</span>
-							<p className="text-xs text-white/50">Gestion centralisée</p>
-						</div>
+						<Image
+							src="/logos/memora-logo.png"
+							alt="Memora"
+							width={32}
+							height={32}
+							className="rounded-lg"
+						/>
+						<span className="font-serif text-lg font-bold text-white">Memora Hub</span>
 					</div>
 				</div>
 			</div>

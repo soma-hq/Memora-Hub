@@ -35,6 +35,8 @@ enum ProjectStatus {
   in_progress
   paused
   done
+  complete
+  archived
 }
 
 enum TaskStatus {
@@ -50,7 +52,7 @@ enum TaskPriority {
 }
 
 enum MeetingType {
-  reunion
+  réunion
   standup
   revue
   retrospective
@@ -136,7 +138,36 @@ model User {
   role      Role       @default(Collaborator)
   status    UserStatus @default(active)
 
-  // A2F
+  // Profile — display & contact
+  pseudo    String?
+  phone     String?
+  birthdate String?
+  birthdayWish Boolean @default(false)
+  languages    String[]
+
+  // Discord
+  discordUsername String?
+  discordId       String?
+
+  // Social links
+  socialTwitter  String?
+  socialTwitch   String?
+  socialYoutube  String?
+  socialInstagram String?
+  socialReddit   String?
+
+  // Organisation
+  entity        String?
+  team          String?
+  division      Int     @default(0)
+  roleSecondary String?
+  arrivalDate   String?
+
+  // Custom permission system
+  roleId       String?
+  entityAccess String[]
+
+  // 2FA
   a2fSecret  String?
   a2fEnabled Boolean @default(false)
 
@@ -144,18 +175,19 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  sessions           Session[]
-  groupMemberships   GroupMember[]
-  assignedTasks      Task[]           @relation("TaskAssignee")
-  createdTasks       Task[]           @relation("TaskCreator")
-  meetingAttendances MeetingAttendee[]
-  absences           Absence[]        @relation("UserAbsences")
-  approvedAbsences   Absence[]        @relation("AbsenceApprover")
-  notifications      Notification[]
-  logs               Log[]
-  candidates         Candidate[]
-  trainingEnrollments TrainingParticipant[]
-  createdProjects    Project[]        @relation("ProjectCreator")
+  sessions             Session[]
+  groupMemberships     GroupMember[]
+  projectMemberships   ProjectMember[]
+  assignedTasks        Task[]                @relation("TaskAssignee")
+  createdTasks         Task[]                @relation("TaskCreator")
+  meetingAttendances   MeetingAttendee[]
+  absences             Absence[]             @relation("UserAbsences")
+  approvedAbsences     Absence[]             @relation("AbsenceApprover")
+  notifications        Notification[]
+  logs                 Log[]
+  candidates           Candidate[]
+  trainingEnrollments  TrainingParticipant[]
+  createdProjects      Project[]             @relation("ProjectCreator")
 
   @@map("users")
 }
@@ -184,11 +216,11 @@ model Group {
   updatedAt   DateTime    @updatedAt
 
   // Relations
-  members      GroupMember[]
-  projects     Project[]
-  meetings     Meeting[]
-  jobOffers    JobOffer[]
-  trainings    Training[]
+  members   GroupMember[]
+  projects  Project[]
+  meetings  Meeting[]
+  jobOffers JobOffer[]
+  trainings Training[]
 
   @@map("groups")
 }
@@ -214,17 +246,20 @@ model Project {
   id          String        @id @default(cuid())
   name        String
   description String?
+  emoji       String?
+  priority    String?
   groupId     String
   createdById String
   status      ProjectStatus @default(todo)
   startDate   DateTime?
   endDate     DateTime?
+  completedAt DateTime?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   // Relations
-  group     Group          @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  createdBy User           @relation("ProjectCreator", fields: [createdById], references: [id])
+  group     Group           @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  createdBy User            @relation("ProjectCreator", fields: [createdById], references: [id])
   tasks     Task[]
   members   ProjectMember[]
 
@@ -239,9 +274,11 @@ model ProjectMember {
   role      String @default("member")
 
   project Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([projectId, userId])
   @@index([projectId])
+  @@index([userId])
   @@map("project_members")
 }
 
@@ -289,7 +326,7 @@ model Meeting {
   startTime String
   endTime   String
   location  String?
-  type      MeetingType @default(reunion)
+  type      MeetingType @default(réunion)
   notes     String?
   isOnline  Boolean     @default(false)
   link      String?
@@ -297,8 +334,8 @@ model Meeting {
   updatedAt DateTime    @updatedAt
 
   // Relations
-  group       Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
-  attendees   MeetingAttendee[]
+  group     Group             @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  attendees MeetingAttendee[]
 
   @@index([groupId])
   @@index([date])

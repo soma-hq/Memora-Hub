@@ -2,7 +2,6 @@
 import { format, formatDistanceToNow, isToday, isYesterday, isTomorrow, parseISO } from "date-fns";
 import { fr } from "date-fns/locale";
 
-
 /**
  * Formats a date to a readable string using the given pattern
  * @param date - ISO string or Date object
@@ -55,4 +54,55 @@ export function formatDateRange(start: string | Date, end: string | Date): strin
 export function getMonthName(date: string | Date): string {
 	const d = typeof date === "string" ? parseISO(date) : date;
 	return format(d, "MMMM yyyy", { locale: fr });
+}
+
+/**
+ * Converts a date to ISO date string (YYYY-MM-DD) without timezone issues.
+ * Replaces the common `.toISOString().split("T")[0]` pattern.
+ * @param date - Date object or ISO string
+ * @returns ISO date string (YYYY-MM-DD)
+ */
+export function toISODate(date: string | Date): string {
+	const d = typeof date === "string" ? parseISO(date) : date;
+	return format(d, "yyyy-MM-dd");
+}
+
+/**
+ * Formats a date as a short day + abbreviated month (e.g. "03 mar")
+ * @param date - ISO string or Date object
+ * @returns Short date string
+ */
+export function formatShortDate(date: string | Date): string {
+	const d = typeof date === "string" ? parseISO(date) : date;
+	return format(d, "dd MMM", { locale: fr });
+}
+
+/**
+ * Formats a date in long form (e.g. "3 mars 2026")
+ * @param date - ISO string or Date object
+ * @returns Long date string
+ */
+export function formatLongDate(date: string | Date): string {
+	const d = typeof date === "string" ? parseISO(date) : date;
+	return format(d, "d MMMM yyyy", { locale: fr });
+}
+
+/**
+ * Formats a date with time (e.g. "03/03/2026 14:30")
+ * @param date - ISO string or Date object
+ * @returns Date with time string
+ */
+export function formatWithTime(date: string | Date): string {
+	const d = typeof date === "string" ? parseISO(date) : date;
+	return format(d, "dd/MM/yyyy HH:mm", { locale: fr });
+}
+
+/**
+ * Formats a date as day + month name (e.g. "3 mars")
+ * @param date - ISO string or Date object
+ * @returns Day and month string
+ */
+export function formatDayMonth(date: string | Date): string {
+	const d = typeof date === "string" ? parseISO(date) : date;
+	return format(d, "d MMMM", { locale: fr });
 }

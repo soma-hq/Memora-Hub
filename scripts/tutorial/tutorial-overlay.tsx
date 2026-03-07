@@ -5,6 +5,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { Icon, Button } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { useModePalette } from "@/hooks/useModePalette";
 import { useHubStore } from "@/store/hub.store";
 import type { TutorialStep, PearlMood } from "@/scripts/types";
 import {
@@ -73,15 +74,15 @@ const PEARL_MOOD_CONFIG: Record<
 	},
 	encouraging: {
 		animation: "pearlNod",
-		bgGradient: "from-purple-500/20 to-violet-500/20",
+		bgGradient: "from-indigo-500/20 to-blue-500/20",
 		emoji: "+",
-		glowColor: "rgba(139, 92, 246, 0.3)",
+		glowColor: "rgba(99, 102, 241, 0.3)",
 	},
 	proud: {
 		animation: "pearlGlow",
-		bgGradient: "from-pink-500/20 to-rose-500/20",
+		bgGradient: "from-slate-500/20 to-gray-500/20",
 		emoji: "*",
-		glowColor: "rgba(236, 72, 153, 0.3)",
+		glowColor: "rgba(100, 116, 139, 0.3)",
 	},
 };
 
@@ -161,6 +162,7 @@ export function TutorialOverlay() {
 	const router = useRouter();
 	const pathname = usePathname();
 	const activeGroupId = useHubStore((s) => s.activeGroupId);
+	const palette = useModePalette();
 
 	// State
 	const [active, setActive] = useState(false);
@@ -249,8 +251,10 @@ export function TutorialOverlay() {
 
 		const targetPath = resolveRoute(step.navigateTo);
 		if (pathname !== targetPath) {
-			setIsNavigating(true);
+			const navigationFlagTimer = setTimeout(() => setIsNavigating(true), 0);
 			router.push(targetPath);
+
+			return () => clearTimeout(navigationFlagTimer);
 		}
 	}, [active, stepIndex, step, pathname, resolveRoute, router]);
 
@@ -275,12 +279,10 @@ export function TutorialOverlay() {
 			if (r) positionTooltip(r, step);
 		};
 
-		// Delay for animation
-		setIsAnimating(true);
+		// Delay for smoother spotlight positioning after layout updates
 		const t = setTimeout(
 			() => {
 				updateRect();
-				setIsAnimating(false);
 			},
 			step.delay ? step.delay : 150,
 		);
@@ -340,6 +342,18 @@ export function TutorialOverlay() {
 	if (!active || !step) return null;
 
 	const moodConfig = PEARL_MOOD_CONFIG[step.pearlMood];
+	const overlayCardClass =
+		palette.mode === "owner"
+			? "border-red-200/70 bg-red-50/95 dark:border-red-900/40 dark:bg-gray-900"
+			: palette.mode === "legacy"
+				? "border-orange-200/70 bg-orange-50/95 dark:border-orange-900/40 dark:bg-gray-900"
+				: "border-slate-200/80 bg-white/95 dark:border-slate-700/50 dark:bg-gray-900";
+	const stepAccentClass =
+		palette.mode === "owner"
+			? "text-red-500"
+			: palette.mode === "legacy"
+				? "text-orange-500"
+				: "text-slate-600 dark:text-slate-300";
 
 	// Render
 	return (
@@ -378,14 +392,19 @@ export function TutorialOverlay() {
 			{/* Navigation loading indicator with PEARL */}
 			{isNavigating && (
 				<div className="fixed inset-0 z-[9999] flex items-center justify-center">
-					<div className="flex flex-col items-center gap-3 rounded-2xl border border-gray-700/50 bg-gray-900 px-8 py-6 shadow-2xl">
+					<div
+						className={cn(
+							"flex flex-col items-center gap-3 rounded-2xl border px-8 py-6 shadow-2xl",
+							overlayCardClass,
+						)}
+					>
 						<div
-							className="from-primary-500/20 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-pink-500/20"
+							className="from-primary-500/20 flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br to-slate-500/20"
 							style={{ animation: "pearlSparkle 1s ease-in-out infinite" }}
 						>
 							<Icon name="sparkles" size="md" className="text-primary-400" />
 						</div>
-						<p className="text-sm font-medium text-gray-300">PEARL te guide...</p>
+						<p className="text-sm font-medium text-gray-700 dark:text-gray-300">Memora AI te guide...</p>
 					</div>
 				</div>
 			)}
@@ -396,7 +415,7 @@ export function TutorialOverlay() {
 					className="fixed z-[9999] w-[400px] animate-[tutorialFadeIn_300ms_ease-out_both]"
 					style={tooltipStyle}
 				>
-					<div className="rounded-2xl border border-gray-700/50 bg-gray-900 p-5 shadow-2xl backdrop-blur-sm">
+					<div className={cn("rounded-2xl border p-5 shadow-2xl backdrop-blur-sm", overlayCardClass)}>
 						{/* Step indicator + skip */}
 						<div className="mb-3 flex items-center justify-between">
 							<div className="flex items-center gap-2">
@@ -408,16 +427,20 @@ export function TutorialOverlay() {
 								>
 									<Icon name="sparkles" size="xs" className="text-white" />
 								</div>
-								<span className="text-primary-400 text-[10px] font-bold tracking-wider uppercase">
+								<span className={cn("text-[10px] font-bold tracking-wider uppercase", stepAccentClass)}>
 									Etape {stepIndex + 1}/{filteredSteps.length}
 								</span>
 							</div>
 							<button
 								onClick={handleSkip}
-								className="rounded-md px-2 py-1 text-[10px] font-medium text-gray-500 transition-colors hover:bg-gray-800 hover:text-gray-300"
+								className="rounded-md px-2 py-1 text-[10px] font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-gray-800 dark:hover:text-gray-300"
 							>
 								Passer le tutoriel
 							</button>
+						</div>
+
+						<div className="mb-2 rounded-lg bg-white/70 px-3 py-1.5 text-[10px] font-semibold tracking-wider text-gray-600 uppercase dark:bg-gray-800/70 dark:text-gray-300">
+							Assistant IA
 						</div>
 
 						{/* PEARL chat bubble section */}
@@ -427,14 +450,16 @@ export function TutorialOverlay() {
 						</div>
 
 						{/* Step title (secondary info below PEARL's message) */}
-						<h3 className="mb-1 text-sm font-bold text-white">{step.title}</h3>
-						<p className="mb-3 text-xs leading-relaxed text-gray-500">{step.description}</p>
+						<h3 className="mb-1 text-sm font-bold text-gray-900 dark:text-white">{step.title}</h3>
+						<p className="mb-3 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
+							{step.description}
+						</p>
 
 						{/* Navigation indicator if step requires page change */}
 						{step.navigateTo && (
-							<div className="bg-primary-500/10 mb-3 flex items-center gap-1.5 rounded-lg px-3 py-1.5">
-								<Icon name="chevronRight" size="xs" className="text-primary-400" />
-								<span className="text-primary-300 text-[10px] font-medium">
+							<div className="mb-3 flex items-center gap-1.5 rounded-lg bg-slate-100 px-3 py-1.5 dark:bg-slate-800/60">
+								<Icon name="chevronRight" size="xs" className="text-slate-500" />
+								<span className="text-[10px] font-medium text-slate-600 dark:text-slate-300">
 									Navigation automatique vers cette page
 								</span>
 							</div>
@@ -448,9 +473,12 @@ export function TutorialOverlay() {
 									className={cn(
 										"h-1.5 rounded-full transition-all duration-300",
 										i === stepIndex
-											? "bg-primary-500 w-5"
+											? cn("w-5", palette.sidebarBadgeClass)
 											: i < stepIndex
-												? "bg-primary-500/50 w-1.5"
+												? cn(
+														"w-1.5",
+														palette.mode === "default" ? "bg-slate-400" : "bg-white/40",
+													)
 												: "w-1.5 bg-gray-700",
 									)}
 								/>

@@ -115,7 +115,7 @@ function formatTimestamp(isoString: string): string {
 }
 
 /**
- * Computes relative time from now for a given ISO timestamp.
+ * Computes relative time from now for a given ISO timestamp
  * @param isoString - ISO 8601 date string
  * @returns Relative time string in French (e.g. "il y a 2h")
  */
@@ -143,8 +143,6 @@ function extractDate(isoString: string): string {
 	return isoString.split("T")[0];
 }
 
-// Component
-
 /**
  * Admin alerts management page
  * @returns The admin alerts page
@@ -170,9 +168,7 @@ export default function AdminAlertsPage() {
 	});
 	const [detailModal, setDetailModal] = useState<Alert | null>(null);
 
-	// Derived counts
-
-	/** Counts alerts per type, excluding dismissed ones. */
+	// Counts alerts per type, excluding dismissed ones
 	const alertCounts = useMemo(() => {
 		const active = demoAlerts.filter((a) => !alertStates[a.id]?.dismissed);
 		return {
@@ -183,9 +179,7 @@ export default function AdminAlertsPage() {
 		};
 	}, [alertStates]);
 
-	// Filtered alerts
-
-	/** Applies search, type, date, and dismissal filters to the alert list. */
+	// Applies search, type, date, and dismissal filters to the alert list
 	const filteredAlerts = useMemo(() => {
 		return demoAlerts.filter((alert) => {
 			// Exclude dismissed alerts
@@ -212,10 +206,8 @@ export default function AdminAlertsPage() {
 		});
 	}, [searchQuery, typeFilter, dateFrom, dateTo, alertStates]);
 
-	// Callbacks
-
 	/**
-	 * Marks an alert as read in local state.
+	 * Marks an alert as read in local state
 	 * @param alertId - ID of the alert to mark as read
 	 */
 	const handleMarkAsRead = useCallback((alertId: string) => {
@@ -226,7 +218,7 @@ export default function AdminAlertsPage() {
 	}, []);
 
 	/**
-	 * Dismisses an alert so it no longer appears in the list.
+	 * Dismisses an alert so it no longer appears in the list
 	 * @param alertId - ID of the alert to dismiss
 	 */
 	const handleDismiss = useCallback((alertId: string) => {
@@ -237,7 +229,7 @@ export default function AdminAlertsPage() {
 	}, []);
 
 	/**
-	 * Toggles the expanded state of an alert card.
+	 * Toggles the expanded state of an alert card
 	 * @param alertId - ID of the alert to expand or collapse
 	 */
 	const handleToggleExpand = useCallback((alertId: string) => {
@@ -250,7 +242,7 @@ export default function AdminAlertsPage() {
 		}));
 	}, []);
 
-	/** Resets all filters to their default values. */
+	// Resets all filters to their default values
 	const handleClearFilters = useCallback(() => {
 		setSearchQuery("");
 		setTypeFilter("all");
@@ -258,7 +250,7 @@ export default function AdminAlertsPage() {
 		setDateTo("");
 	}, []);
 
-	/** Checks whether any filter is currently active. */
+	// Checks whether any filter is currently active
 	const hasActiveFilters = searchQuery.trim() !== "" || typeFilter !== "all" || dateFrom !== "" || dateTo !== "";
 
 	// Summary cards data
@@ -294,10 +286,8 @@ export default function AdminAlertsPage() {
 		},
 	];
 
-	// Render helpers
-
 	/**
-	 * Renders a single alert card in list view mode.
+	 * Renders a single alert card in list view mode
 	 * @param alert - The alert data to render
 	 * @returns Alert card JSX element
 	 */
@@ -482,7 +472,7 @@ export default function AdminAlertsPage() {
 	};
 
 	/**
-	 * Renders the timeline view showing alerts chronologically with a vertical line.
+	 * Renders the timeline view showing alerts chronologically with a vertical line
 	 * @returns Timeline view JSX element
 	 */
 	const renderTimelineView = () => (
@@ -612,7 +602,6 @@ export default function AdminAlertsPage() {
 	);
 
 	// Render
-
 	return (
 		<PageContainer
 			title="Alertes système"

@@ -52,7 +52,7 @@ const roleVariant: Record<string, BadgeVariant> = {
 	Squad: "neutral",
 };
 
-// Entity → banner image mapping (portrait photos used as atmospheric blurred bg)
+// Entity banner mapped
 const ENTITY_BANNERS: Record<string, string> = {
 	Bazalthe: "/banners/anthony-banner.png",
 	Inoxtag: "/banners/inoxtag-banner.png",
@@ -76,15 +76,11 @@ function canEditField(field: string): boolean {
 }
 
 function canEdit(): boolean {
-	return (
-		CURRENT_USER_TEAM === "Owner" ||
-		CURRENT_USER_TEAM === "Marsha Teams" ||
-		CURRENT_USER_TEAM === "Legacy"
-	);
+	return CURRENT_USER_TEAM === "Owner" || CURRENT_USER_TEAM === "Marsha Teams" || CURRENT_USER_TEAM === "Legacy";
 }
 
 /**
- * User detail page displaying profile, access, info and activity tabs.
+ * User detail page displaying profile, access, info and activity tabs
  * @returns The user profile detail page
  */
 export default function UserDetailPage() {
@@ -421,7 +417,7 @@ function EditFieldModal({
 	);
 }
 
-// ── Profile tab ──────────────────────────────────────────────────────────────
+// Profile tab
 function ProfilView({ user }: { user: UserProfile }) {
 	const teamColor = TEAM_TEXT_COLORS[user.team] ?? "text-gray-500";
 	const divisionIcon = DIVISION_ICONS[user.division];
@@ -617,7 +613,7 @@ function SocialRow({ label, handle, url }: { label: string; handle: string; url:
 	);
 }
 
-// ── Accèss tab ───────────────────────────────────────────────────────────────
+// Access tab
 function AccessView({ user }: { user: UserProfile }) {
 	const teamColor = TEAM_TEXT_COLORS[user.team] ?? "text-gray-500";
 
@@ -710,7 +706,7 @@ function AccessView({ user }: { user: UserProfile }) {
 	);
 }
 
-// ── Infos tab ────────────────────────────────────────────────────────────────
+// Infos tab
 function InfosView({ user }: { user: UserProfile }) {
 	const [editingField, setEditingField] = useState<string | null>(null);
 	const [userData, setUserData] = useState<UserProfile>(user);
@@ -797,7 +793,7 @@ function InfosView({ user }: { user: UserProfile }) {
 				<div className="flex items-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 dark:border-amber-800/50 dark:bg-amber-900/20">
 					<Icon name="lock" size="sm" className="text-amber-500" />
 					<p className="text-sm text-amber-700 dark:text-amber-400">
-						Vous n&apos;avez pas les permissions pour modifier ce profil.
+						Tu n'as pas les permissions nécessaires pour modifier ce profil.
 					</p>
 				</div>
 			)}
@@ -977,7 +973,7 @@ function InfosView({ user }: { user: UserProfile }) {
 	);
 }
 
-// ── Activity tab ─────────────────────────────────────────────────────────────
+// Activity tab
 function ActiviteView({ user }: { user: UserProfile }) {
 	const activityItems = [
 		{ id: "1", time: "Il y à 2h", text: "A terminé une tâche sur le projet Refonte" },

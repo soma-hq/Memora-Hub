@@ -51,7 +51,7 @@ const levelColors: Record<string, string> = {
 };
 
 /**
- * Developer tools page with environment info, feature flags and system console.
+ * Developer tools page with environment info, feature flags and system console
  * @returns The dev tools dashboard page
  */
 export default function AdminDevPage() {
@@ -62,10 +62,8 @@ export default function AdminDevPage() {
 	const [rebuilding, setRebuilding] = useState(false);
 	const [exporting, setExporting] = useState(false);
 
-	// Handlers
-
 	/**
-	 * Toggles a feature flag by its identifier.
+	 * Toggles a feature flag by its identifier
 	 * @param flagId - The feature flag ID to toggle
 	 * @returns void
 	 */
@@ -75,7 +73,7 @@ export default function AdminDevPage() {
 	}, []);
 
 	/**
-	 * Clears the application cache with simulated delay.
+	 * Clears the application cache with simulated delay
 	 * @returns void
 	 */
 	const handleClearCache = useCallback(() => {
@@ -87,7 +85,7 @@ export default function AdminDevPage() {
 	}, []);
 
 	/**
-	 * Triggers search index rebuild with simulated delay.
+	 * Triggers search index rebuild with simulated delay
 	 * @returns void
 	 */
 	const handleRebuildIndices = useCallback(() => {
@@ -99,7 +97,7 @@ export default function AdminDevPage() {
 	}, []);
 
 	/**
-	 * Exports all data as a downloadable JSON file.
+	 * Exports all data as a downloadable JSON file
 	 * @returns void
 	 */
 	const handleExportData = useCallback(() => {
@@ -111,7 +109,7 @@ export default function AdminDevPage() {
 	}, []);
 
 	/**
-	 * Toggles debug mode and shows a status notification.
+	 * Toggles debug mode and shows a status notification
 	 * @param value - Whether debug mode should be enabled
 	 * @returns void
 	 */

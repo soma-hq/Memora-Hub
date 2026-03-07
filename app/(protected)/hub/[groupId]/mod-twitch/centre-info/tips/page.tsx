@@ -104,7 +104,7 @@ const TIPS: Tip[] = [
 
 // Page
 /**
- * Twitch moderation tips page with best practices and special case procedures.
+ * Twitch moderation tips page with best practices
  * @returns The Twitch tips and guidelines reference page
  */
 export default function TwitchTipsPage() {
@@ -114,8 +114,8 @@ export default function TwitchTipsPage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-8 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="sparkles" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
-					Ces conseils couvrent les situations les plus frequentes sur Twitch. En cas de doute, n&apos;hesitez
-					pas à contacter un referent ou un responsable.
+					Ces conseils couvrent les situations les plus frequentes sur Twitch. En cas de doute, n'hesite pas à
+					contacter un referent ou un responsable.
 				</p>
 			</div>
 

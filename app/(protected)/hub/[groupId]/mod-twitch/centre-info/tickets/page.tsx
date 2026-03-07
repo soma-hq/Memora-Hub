@@ -17,7 +17,7 @@ const PAGE_CONFIG = definePageConfig({
 });
 
 /**
- * Twitch ticket system page explaining moderation ticket procedures.
+ * Twitch ticket system page explaining moderation ticket procedures
  * @returns The Twitch ticket system documentation page
  */
 export default function TwitchTicketsPage() {
@@ -32,7 +32,7 @@ export default function TwitchTicketsPage() {
 				<div>
 					<p className="text-warning-700 dark:text-warning-400 text-sm font-medium">Rappel important</p>
 					<p className="text-warning-600 dark:text-warning-500 mt-1 text-xs">
-						Les discussions en messages prives concernant les cas de moderation sont strictement interdites.
+						Les discussions en messages privés concernant les cas de moderation sont strictement interdites.
 						Toute communication doit passer par le systeme de tickets.
 					</p>
 				</div>
@@ -49,8 +49,8 @@ export default function TwitchTicketsPage() {
 					</div>
 					<p className={cn(textClasses.body, "leading-relaxed")}>
 						Les tickets constituent le canal officiel pour toute communication avec les viewers et membres.
-						Qu&apos;il s&apos;agisse d&apos;une demande de debannissement, d&apos;une contestation ou
-						d&apos;une question, les viewers doivent etre rediriges vers le systeme de tickets.
+						Qu'il s'agisse d'une demande de debannissement, d'une contestation ou d'une question, les
+						viewers doivent etre redirigés vers le systeme de tickets.
 					</p>
 				</Card>
 
@@ -78,7 +78,7 @@ export default function TwitchTicketsPage() {
 						<h3 className={headingClasses.h5}>Rediriger les viewers</h3>
 					</div>
 					<p className={cn(textClasses.body, "mb-3 leading-relaxed")}>
-						Lorsqu&apos;un viewer vous contacte en prive pour un sujet lie à la moderation, redirigez-le
+						Lorsqu'un viewer vous contacte en prive pour un sujet lie à la moderation, redirige-le
 						systematiquement vers le systeme de tickets.
 					</p>
 					<ul className="ml-4 list-disc space-y-1.5">
@@ -100,8 +100,8 @@ export default function TwitchTicketsPage() {
 					</div>
 					<div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700/40">
 						<p className="text-sm leading-relaxed text-gray-700 italic dark:text-gray-300">
-							&ldquo;Bonjour, je ne peux pas traiter votre demande en message prive. Merci d&apos;ouvrir
-							un ticket via [procedure] pour que nous puissions vous repondre officiellement.&rdquo;
+							Bonjour, je ne peux pas traiter votre demande en message prive. Merci d'ouvrir un ticket via
+							[procedure] pour que nous puissions vous repondre officiellement.
 						</p>
 					</div>
 					<p className={cn(textClasses.caption, "mt-3")}>

@@ -66,7 +66,7 @@ function getDaysUntilPurge(): number {
 }
 
 /**
- * Trash management page for archived, restricted and deleted members.
+ * Trash management page for archived, restricted and deleted members
  * @returns The admin trash page with restore and delete actions
  */
 export default function AdminTrashPage() {
@@ -193,8 +193,8 @@ export default function AdminTrashPage() {
 							<p className="font-medium text-gray-700 dark:text-gray-300">Politique de rétention</p>
 							<p className="mt-1">
 								Les membres supprimés sont conservés pendant 30 jours. Passé ce délai, la suppression
-								est irréversible. Le vidage automatique s&apos;effectue le 1er de chaque mois. Vous
-								pouvez restaurer un membre à tout moment avant l&apos;expiration.
+								est irréversible. Le vidage automatique s'effectue le 1er de chaque mois. Vous pouvez
+								restaurer un membre à tout moment avant l'expiration.
 							</p>
 						</div>
 					</div>

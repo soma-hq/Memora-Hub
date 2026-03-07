@@ -26,7 +26,7 @@ interface InfoSection {
 }
 
 /**
- * Twitch information center hub with links to priority scale, tickets and tips.
+ * Twitch information center hub with links to priority scale
  * @returns The Twitch centre-info navigation page
  */
 export default function TwitchCentreInfoPage() {

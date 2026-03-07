@@ -19,7 +19,7 @@ const PAGE_CONFIG = definePageConfig({
 	ownerOnly: true,
 });
 
-/** Quick stat card data */
+// Quick stat card data
 const quickStats = [
 	{
 		label: "Total utilisateurs",
@@ -48,7 +48,7 @@ const quickStats = [
 	},
 ];
 
-/** Activity log entry */
+// Activity log entry
 interface ActivityEntry {
 	id: number;
 	text: string;
@@ -58,7 +58,7 @@ interface ActivityEntry {
 	href: string;
 }
 
-/** Recent activity mock data */
+// Recent activity mock data
 const recentActivity: ActivityEntry[] = [
 	{
 		id: 1,
@@ -78,7 +78,7 @@ const recentActivity: ActivityEntry[] = [
 	},
 	{
 		id: 3,
-		text: "Nouveau lien d\u2019invitation généré pour Inoxtag (expire dans 48h)",
+		text: "Nouveau lien d'invitation généré pour Inoxtag (expire dans 48h)",
 		time: "il y a 1h",
 		level: "info",
 		icon: "globe",
@@ -110,7 +110,7 @@ const recentActivity: ActivityEntry[] = [
 	},
 	{
 		id: 7,
-		text: "Événement \u2018Tournage Inoxtag\u2019 créé par Michou pour le 22 mars",
+		text: "Événement Tournage Inoxtag créé par Michou pour le 22 mars",
 		time: "Hier à 14:30",
 		level: "info",
 		icon: "calendar",
@@ -126,7 +126,7 @@ const recentActivity: ActivityEntry[] = [
 	},
 	{
 		id: 9,
-		text: "Anthony retiré de l\u2019entité Bazalthe",
+		text: "Anthony retiré de l'entité Bazalthe",
 		time: "Hier à 09:00",
 		level: "error",
 		icon: "users",
@@ -134,7 +134,7 @@ const recentActivity: ActivityEntry[] = [
 	},
 	{
 		id: 10,
-		text: "Lien d\u2019accès temporaire expiré pour Marsha Team",
+		text: "Lien d'accès temporaire expiré pour Marsha Team",
 		time: "il y a 2 jours",
 		level: "warning",
 		icon: "clock",
@@ -143,8 +143,7 @@ const recentActivity: ActivityEntry[] = [
 ];
 
 /**
- * Owner admin dashboard with quick stats and activity feed.
- * Uses outline-only stat cards and banner overlay in the header section.
+ * Owner admin dashboard with quick stats and activity feed
  * @returns {JSX.Element} Admin home page
  */
 

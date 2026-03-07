@@ -2,9 +2,9 @@
 
 // React
 import { useEffect } from "react";
-import { useParams } from "next/navigation";
+import { useParams, usePathname, useRouter } from "next/navigation";
 import { useHubStore } from "@/store/hub.store";
-
+import { useDataStore } from "@/store/data.store";
 
 /**
  * Hub group layout that sets the active group context from URL params.
@@ -14,14 +14,31 @@ import { useHubStore } from "@/store/hub.store";
  */
 export default function HubLayout({ children }: { children: React.ReactNode }) {
 	const params = useParams();
-	const groupId = params.groupId as string;
+	const pathname = usePathname();
+	const router = useRouter();
+	const routeGroupId = params.groupId as string;
 	const { setActiveGroup } = useHubStore();
+	const currentUser = useDataStore((s) => s.currentUser);
+	const entities = useDataStore((s) => s.entities);
 
 	useEffect(() => {
-		if (groupId) {
-			setActiveGroup(groupId, groupId);
+		if (!routeGroupId) return;
+
+		const hasFullAccess = currentUser?.entityAccess?.includes("*") ?? false;
+		const hasEntityAccess = hasFullAccess || (currentUser?.entityAccess ?? []).includes(routeGroupId);
+
+		if (!hasEntityAccess) {
+			const fallbackEntityId = currentUser?.entityAccess?.[0] ?? entities[0]?.id;
+			if (!fallbackEntityId) return;
+
+			const nextPath = pathname.replace(`/hub/${routeGroupId}`, `/hub/${fallbackEntityId}`);
+			router.replace(nextPath);
+			return;
 		}
-	}, [groupId, setActiveGroup]);
+
+		const activeEntity = entities.find((entity) => entity.id === routeGroupId);
+		setActiveGroup(routeGroupId, activeEntity?.name ?? routeGroupId);
+	}, [currentUser?.entityAccess, entities, pathname, routeGroupId, router, setActiveGroup]);
 
 	return <>{children}</>;
 }

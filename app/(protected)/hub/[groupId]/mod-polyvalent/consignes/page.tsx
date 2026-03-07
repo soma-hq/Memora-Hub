@@ -79,7 +79,7 @@ export default function ConsignesPolyvalentPage() {
 	return (
 		<PageContainer
 			title="Consignes Polyvalentes"
-			description="Consignes actives couvrant Discord & Twitch — modifiable par la Legacy uniquement"
+			description="Consignes actives couvrant Discord & Twitch — modifiables par la Legacy uniquement"
 		>
 			{/* Platform indicator */}
 			<div className="mb-6 flex items-center gap-2">
@@ -100,8 +100,8 @@ export default function ConsignesPolyvalentPage() {
 				<div>
 					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone à accès restreint</p>
 					<p className="text-info-600 dark:text-info-500 mt-1 text-xs">
-						Seuls les membres de la Legacy peuvent creer ou modifier les consignes. Les autres equipes ont
-						un accès en lecture seule. Les consignes s&apos;appliquent aux deux plateformes sauf indication
+						Seuls les membres de la Legacy peuvent créer ou modifier les consignes. Les autres équipes ont
+						un accès en lecture seule. Les consignes s'appliquent aux deux plateformes sauf indication
 						contraire.
 					</p>
 				</div>
@@ -126,7 +126,7 @@ export default function ConsignesPolyvalentPage() {
 				<div className="border-error-200 bg-error-50 dark:border-error-800 dark:bg-error-900/10 mb-4 flex items-center gap-2 rounded-lg border px-4 py-3">
 					<Icon name="lock" size="sm" className="text-error-500 shrink-0" />
 					<p className="text-error-700 dark:text-error-400 text-sm">
-						Permission refusée — Seule la Legacy peut modifier les consignes. Vous êtes connecté en tant que{" "}
+						Permission refusée ! Seule la Legacy peut modifier les consignes. Tu es connecté en tant que{" "}
 						<strong>{CURRENT_USER.team}</strong>.
 					</p>
 				</div>
@@ -224,7 +224,7 @@ export default function ConsignesPolyvalentPage() {
 										</div>
 										<div className="flex items-center gap-1.5">
 											<Icon name="shield" size="xs" />
-											<span>Emise par la Legacy</span>
+											<span>Émise par la Legacy</span>
 										</div>
 										<div className="flex items-center gap-1.5">
 											<Icon name="globe" size="xs" />
@@ -247,7 +247,7 @@ export default function ConsignesPolyvalentPage() {
 											)}
 										>
 											<Icon name="edit" size="xs" />
-											Editer
+											Éditer
 											{!CURRENT_USER.isLegacy && (
 												<Icon name="lock" size="xs" className="ml-0.5" />
 											)}
@@ -264,7 +264,7 @@ export default function ConsignesPolyvalentPage() {
 			<div className="mt-8 text-center text-xs text-gray-400 dark:text-gray-500">
 				{consignes.length} consigne{consignes.length > 1 ? "s" : ""} active
 				{consignes.length > 1 ? "s" : ""}
-				{" — "}Derniere mise à jour par la Legacy — Applicable sur Discord & Twitch
+				{" — "}Dernière mise à jour par la Legacy — Applicable sur Discord & Twitch
 			</div>
 		</PageContainer>
 	);

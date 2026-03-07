@@ -45,15 +45,13 @@ interface PastMeeting {
 }
 
 // Status config
-
 const statusConfig: Record<MeetingStatus, { label: string; variant: "info" | "warning" | "success" }> = {
 	planifiee: { label: "Planifiee", variant: "info" },
 	en_cours: { label: "En cours", variant: "warning" },
 	terminee: { label: "Terminee", variant: "success" },
 };
 
-// Mock data — upcoming meetings
-
+// Mock data
 const UPCOMING_MEETINGS: UpcomingMeeting[] = [
 	{
 		id: "m1",
@@ -138,8 +136,7 @@ const UPCOMING_MEETINGS: UpcomingMeeting[] = [
 	},
 ];
 
-// Mock data — past meetings
-
+// Mock data
 const PAST_MEETINGS: PastMeeting[] = [
 	{
 		id: "p1",
@@ -172,7 +169,6 @@ const PAST_MEETINGS: PastMeeting[] = [
 ];
 
 // Tab definition
-
 type TabKey = "upcoming" | "history";
 
 interface TabItem {
@@ -187,11 +183,10 @@ const TABS: TabItem[] = [
 ];
 
 // Helpers
-
 const MONTHS_SHORT = ["Jan", "Fev", "Mar", "Avr", "Mai", "Jui", "Jul", "Aou", "Sep", "Oct", "Nov", "Dec"];
 
 /**
- * Formats a Date to a short time string (HH:MM).
+ * Formats a Date to a short time string (HH:MM)
  * @param {Date} d - Date to format
  * @returns {string} Formatted time string
  */
@@ -201,7 +196,7 @@ function formatTime(d: Date): string {
 }
 
 /**
- * Formats a Date to a full French date string.
+ * Formats a Date to a full French date string
  * @param {Date} d - Date to format
  * @returns {string} Full French date string
  */
@@ -215,7 +210,7 @@ function formatFullDate(d: Date): string {
 	});
 }
 
-// Circle colors for calendar day badges — cycle based on month
+// Circle colors for calendar day badges
 const dateCircleColors: Record<number, string> = {
 	0: "bg-error-500",
 	1: "bg-primary-500",
@@ -231,10 +226,8 @@ const dateCircleColors: Record<number, string> = {
 	11: "bg-error-600",
 };
 
-// Sub-components
-
 /**
- * Displays a stack of participant avatar circles with overflow count.
+ * Displays a stack of participant avatar circles with overflow count
  * @param {{ participants: Participant[] }} props - Component props
  * @returns {JSX.Element} Avatar stack
  */
@@ -268,7 +261,7 @@ function ParticipantAvatars({ participants }: { participants: Participant[] }) {
 }
 
 /**
- * Card component for an upcoming meeting with date badge, details, and join action.
+ * Card component for an upcoming meeting with date badge, details, and join action
  * @param {{ meeting: UpcomingMeeting }} props - Component props
  * @returns {JSX.Element} Meeting card
  */
@@ -359,7 +352,7 @@ function UpcomingMeetingCard({ meeting }: { meeting: UpcomingMeeting }) {
 }
 
 /**
- * Compact row for a past meeting entry.
+ * Compact row for a past meeting entry
  * @param {{ meeting: PastMeeting }} props - Component props
  * @returns {JSX.Element} Past meeting row
  */
@@ -400,10 +393,8 @@ function PastMeetingRow({ meeting }: { meeting: PastMeeting }) {
 	);
 }
 
-// Main page
-
 /**
- * Meetings page with tabbed upcoming and past meetings, join actions and history.
+ * Meetings page with tabbed upcoming and past meetings, join actions and history
  * @returns {JSX.Element} The meetings management page
  */
 
@@ -422,12 +413,9 @@ export default function MeetingsPage() {
 	return (
 		<PageContainer
 			title="Réunions"
-			description="Planifiez et gerez les réunions de votre groupe"
+			description="Planifie et gère les réunions de ton groupe"
 			actions={
-				<Button
-					variant="primary"
-					onClick={() => showInfo("Fonctionnalite à venir : planification de réunion.")}
-				>
+				<Button variant="primary" onClick={() => showInfo("Fonctionnalité en cours de développement.")}>
 					<Icon name="plus" size="sm" />
 					Planifier une réunion
 				</Button>
@@ -474,7 +462,7 @@ export default function MeetingsPage() {
 						<StyledEmptyState
 							icon="clock"
 							title="Aucune réunion passée"
-							description="L'historique de vos réunions apparaîtra ici."
+							description="L'historique de tes réunions apparaîtra ici."
 						/>
 					) : (
 						sortedPast.map((meeting) => <PastMeetingRow key={meeting.id} meeting={meeting} />)

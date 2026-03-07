@@ -1,7 +1,7 @@
 "use client";
 
 /**
- * Loading spinner displayed while admin page content is being fetched.
+ * Loading spinner displayed while admin page content is being fetched
  * @returns A centered loading bar with shimmer animation
  */
 export default function AdminLoading() {
@@ -11,7 +11,7 @@ export default function AdminLoading() {
 			<div className="relative h-1 w-64 overflow-hidden rounded-full bg-red-100 dark:bg-red-900/20">
 				<div className="absolute inset-y-0 left-0 w-1/3 animate-[shimmer_1.2s_ease-in-out_infinite] rounded-full bg-gradient-to-r from-red-400 via-red-500 to-red-400" />
 			</div>
-			<p className="text-sm text-red-500 dark:text-red-400">Chargement de l&apos;interface Admin...</p>
+			<p className="text-sm text-red-500 dark:text-red-400">Chargement de l'interface Admin...</p>
 
 			{/* Shimmer keyframes */}
 			<style jsx>{`

@@ -84,10 +84,8 @@ const HIERARCHY: HierarchyLevel[] = [
 	},
 ];
 
-// Page
-
 /**
- * Twitch priority scale page displaying the moderation chain of command.
+ * Twitch priority scale page
  * @returns The Twitch hierarchy and priority levels view
  */
 export default function TwitchEchellePage() {
@@ -100,8 +98,8 @@ export default function TwitchEchellePage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-8 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
-					En cas de doute sur une action de moderation, remontez toujours au niveau superieur. Respectez la
-					chaine de commandement.
+					En cas de doute sur une action de moderation, remonte toujours au niveau superieur. Fais en sorte de
+					régler la chaine de commandement.
 				</p>
 			</div>
 

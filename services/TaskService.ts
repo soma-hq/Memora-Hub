@@ -66,7 +66,7 @@ export class TaskService {
 		return prisma.task.findMany({
 			where: {
 				assigneeId,
-				...(status && { status: status as never }),
+				...(status && { status: status as any }),
 			},
 			include: {
 				project: { select: { id: true, name: true, groupId: true } },
@@ -92,8 +92,8 @@ export class TaskService {
 				projectId: input.projectId,
 				assigneeId: input.assigneeId || null,
 				createdById,
-				status: (input.status as never) || TaskStatus.Todo,
-				priority: (input.priority as never) || TaskPriority.Medium,
+				status: (input.status as any) || TaskStatus.Todo,
+				priority: (input.priority as any) || TaskPriority.Medium,
 				dueDate: input.dueDate ? new Date(input.dueDate) : null,
 			},
 		});
@@ -120,8 +120,8 @@ export class TaskService {
 				...(input.title !== undefined && { title: input.title }),
 				...(input.description !== undefined && { description: input.description }),
 				...(input.assigneeId !== undefined && { assigneeId: input.assigneeId || null }),
-				...(input.status !== undefined && { status: input.status as never }),
-				...(input.priority !== undefined && { priority: input.priority as never }),
+				...(input.status !== undefined && { status: input.status as any }),
+				...(input.priority !== undefined && { priority: input.priority as any }),
 				...(input.dueDate !== undefined && { dueDate: input.dueDate ? new Date(input.dueDate) : null }),
 			},
 		});
@@ -158,7 +158,7 @@ export class TaskService {
 		// Update the task status
 		const task = await prisma.task.update({
 			where: { id },
-			data: { status: status as never },
+			data: { status: status as any },
 		});
 
 		// Log the status change with details
@@ -308,7 +308,7 @@ export class TaskService {
 	static async bulkUpdateStatus(taskIds: string[], status: string, performedBy?: string) {
 		const result = await prisma.task.updateMany({
 			where: { id: { in: taskIds } },
-			data: { status: status as never },
+			data: { status: status as any },
 		});
 
 		await LogService.log(LogAction.Update, "task", taskIds.join(","), performedBy, `bulk-status:${status}`);

@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
 
-
 /** Input data for creating a new group */
 interface CreateGroupInput {
 	name: string;
@@ -143,7 +142,7 @@ export class GroupService {
 			data: {
 				groupId,
 				userId,
-				role: role as never,
+				role: role as any,
 			},
 		});
 
@@ -180,7 +179,7 @@ export class GroupService {
 		// Update the role on matching membership records
 		await prisma.groupMember.updateMany({
 			where: { groupId, userId },
-			data: { role: role as never },
+			data: { role: role as any },
 		});
 
 		// Log the role change

@@ -1,15 +1,10 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { AuthService } from "@/services/AuthService";
+import { ensureAuth, AUTH_ERROR } from "@/lib/server/ensure-auth";
 import { ProgramService } from "@/services/ProgramService";
 import type { ProgramPhase, ProgramStatus } from "@/features/programs/types";
-
-interface ActionResult {
-	success: boolean;
-	error?: string;
-	data?: Record<string, unknown>;
-}
+import type { ActionResult } from "@/lib/types/action-result";
 
 // ---------------------------------------------------------------------------
 // Program definitions
@@ -19,8 +14,8 @@ interface ActionResult {
  * Get all available programs
  */
 export async function getProgramsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const programs = await ProgramService.getPrograms();
 	return { success: true, data: { programs } as unknown as Record<string, unknown> };
 }
@@ -29,8 +24,8 @@ export async function getProgramsAction(): Promise<ActionResult> {
  * Get a specific program by ID
  */
 export async function getProgramByIdAction(programId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const program = await ProgramService.getProgramById(programId);
 	if (!program) return { success: false, error: "Programme introuvable" };
 	return { success: true, data: { program } as unknown as Record<string, unknown> };
@@ -40,8 +35,8 @@ export async function getProgramByIdAction(programId: string): Promise<ActionRes
  * Get open programs (available for enrollment)
  */
 export async function getOpenProgramsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const programs = await ProgramService.getOpenPrograms();
 	return { success: true, data: { programs } as unknown as Record<string, unknown> };
 }
@@ -54,8 +49,8 @@ export async function getOpenProgramsAction(): Promise<ActionResult> {
  * Get all enrollments
  */
 export async function getEnrollmentsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const enrollments = await ProgramService.getEnrollments();
 	return { success: true, data: { enrollments } as unknown as Record<string, unknown> };
 }
@@ -64,8 +59,8 @@ export async function getEnrollmentsAction(): Promise<ActionResult> {
  * Get enrollment by ID
  */
 export async function getEnrollmentByIdAction(enrollmentId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const enrollment = await ProgramService.getEnrollmentById(enrollmentId);
 	if (!enrollment) return { success: false, error: "Inscription introuvable" };
 	return { success: true, data: { enrollment } as unknown as Record<string, unknown> };
@@ -75,8 +70,8 @@ export async function getEnrollmentByIdAction(enrollmentId: string): Promise<Act
  * Get enrollments for the current user
  */
 export async function getMyEnrollmentsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const enrollments = await ProgramService.getEnrollmentsByUser(currentUser.id);
 	return { success: true, data: { enrollments } as unknown as Record<string, unknown> };
 }
@@ -85,8 +80,8 @@ export async function getMyEnrollmentsAction(): Promise<ActionResult> {
  * Get enrollments by entity
  */
 export async function getEnrollmentsByEntityAction(entityId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const enrollments = await ProgramService.getEnrollmentsByEntity(entityId);
 	return { success: true, data: { enrollments } as unknown as Record<string, unknown> };
 }
@@ -95,8 +90,8 @@ export async function getEnrollmentsByEntityAction(entityId: string): Promise<Ac
  * Get active enrollments
  */
 export async function getActiveEnrollmentsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const enrollments = await ProgramService.getActiveEnrollments();
 	return { success: true, data: { enrollments } as unknown as Record<string, unknown> };
 }
@@ -105,8 +100,8 @@ export async function getActiveEnrollmentsAction(): Promise<ActionResult> {
  * Get enrollments assigned to the current user as mentor
  */
 export async function getMyMenteeEnrollmentsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const enrollments = await ProgramService.getEnrollmentsByMentor(currentUser.id);
 	return { success: true, data: { enrollments } as unknown as Record<string, unknown> };
 }
@@ -115,8 +110,8 @@ export async function getMyMenteeEnrollmentsAction(): Promise<ActionResult> {
  * Get enrollment statistics for the dashboard
  */
 export async function getEnrollmentStatsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const stats = await ProgramService.getEnrollmentStats();
 	return { success: true, data: stats };
 }
@@ -135,8 +130,8 @@ export async function createEnrollmentAction(data: {
 	startDate: string;
 	expectedEndDate: string;
 }): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const enrollment = await ProgramService.createEnrollment(data);
 	revalidatePath("/programs");
@@ -151,8 +146,8 @@ export async function advancePhaseAction(
 	nextPhase: ProgramPhase,
 	notes: string,
 ): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const enrollment = await ProgramService.advancePhase(enrollmentId, nextPhase, currentUser.id, notes);
 	if (!enrollment) return { success: false, error: "Inscription introuvable" };
@@ -164,8 +159,8 @@ export async function advancePhaseAction(
  * Update enrollment status (pause, cancel, complete)
  */
 export async function updateEnrollmentStatusAction(enrollmentId: string, status: ProgramStatus): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const enrollment = await ProgramService.updateEnrollmentStatus(enrollmentId, status);
 	if (!enrollment) return { success: false, error: "Inscription introuvable" };
@@ -181,8 +176,8 @@ export async function updateEnrollmentStatusAction(enrollmentId: string, status:
  * Get all invitations
  */
 export async function getInvitationsAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const invitations = await ProgramService.getInvitations();
 	return { success: true, data: { invitations } as unknown as Record<string, unknown> };
 }
@@ -191,8 +186,8 @@ export async function getInvitationsAction(): Promise<ActionResult> {
  * Get pending invitations for a program
  */
 export async function getPendingInvitationsAction(programId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const invitations = await ProgramService.getPendingInvitations(programId);
 	return { success: true, data: { invitations } as unknown as Record<string, unknown> };
 }
@@ -211,8 +206,8 @@ export async function createInvitationAction(data: {
 	welcomeMessage?: string;
 	expiresAt: string;
 }): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const invitation = await ProgramService.createInvitation({
 		...data,
@@ -226,8 +221,8 @@ export async function createInvitationAction(data: {
  * Accept a program invitation
  */
 export async function acceptInvitationAction(invitationId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const invitation = await ProgramService.acceptInvitation(invitationId);
 	if (!invitation) return { success: false, error: "Invitation introuvable" };
@@ -243,8 +238,8 @@ export async function acceptInvitationAction(invitationId: string): Promise<Acti
  * Get training spaces for a track
  */
 export async function getTrainingSpacesByTrackAction(trackId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const spaces = await ProgramService.getTrainingSpacesByTrack(trackId);
 	return { success: true, data: { spaces } as unknown as Record<string, unknown> };
 }
@@ -253,8 +248,8 @@ export async function getTrainingSpacesByTrackAction(trackId: string): Promise<A
  * Get a training space by ID with access check
  */
 export async function getTrainingSpaceAction(spaceId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const space = await ProgramService.getTrainingSpaceById(spaceId);
 	if (!space) return { success: false, error: "Espace de formation introuvable" };

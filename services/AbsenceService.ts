@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
+import { AbsenceStatus as PrismaAbsenceStatus, AbsenceType as PrismaAbsenceType } from "@prisma/client";
 import { LogService } from "@/services/LogService";
 import { LogAction, AbsenceStatus } from "@/constants";
 import type { CreateAbsenceFormData } from "@/lib/validators/schemas";
-
 
 /** Absence request and approval service */
 export class AbsenceService {
@@ -17,7 +17,16 @@ export class AbsenceService {
 		return prisma.absence.findUnique({
 			where: { id },
 			include: {
-				user: { select: { id: true, firstName: true, lastName: true, email: true, avatar: true } },
+				user: {
+					select: {
+						id: true,
+						firstName: true,
+						lastName: true,
+						email: true,
+						avatar: true,
+						entity: true,
+					},
+				},
 				approver: { select: { id: true, firstName: true, lastName: true } },
 			},
 		});
@@ -27,15 +36,27 @@ export class AbsenceService {
 	 * Get absences by user
 	 * @param userId User ID
 	 * @param status Optional status filter
+	 * @param entityIds Optional scoped entity IDs
 	 * @returns Absences with approver info
 	 */
+	static async getByUser(userId: string, status?: string, entityIds?: string[]) {
+		const userWhere =
+			entityIds && entityIds.length > 0
+				? {
+						user: {
+							entity: {
+								in: entityIds,
+							},
+						},
+					}
+				: {};
 
-	static async getByUser(userId: string, status?: string) {
 		// Filter by user/status
 		return prisma.absence.findMany({
 			where: {
 				userId,
-				...(status && { status: status as never }),
+				...(status && { status: status as PrismaAbsenceStatus }),
+				...userWhere,
 			},
 			include: {
 				approver: { select: { id: true, firstName: true, lastName: true } },
@@ -49,17 +70,30 @@ export class AbsenceService {
 	 * @param page Page number
 	 * @param pageSize Absences per page
 	 * @param status Optional status filter
+	 * @param entityIds Optional scoped entity IDs
 	 * @returns Paginated absences and count
 	 */
-
-	static async getAll(page = 1, pageSize = 20, status?: string) {
+	static async getAll(page = 1, pageSize = 20, status?: string, entityIds?: string[]) {
 		// Calculate offset for pagination
 		const skip = (page - 1) * pageSize;
+
+		const where = {
+			...(status ? { status: status as PrismaAbsenceStatus } : {}),
+			...(entityIds && entityIds.length > 0
+				? {
+						user: {
+							entity: {
+								in: entityIds,
+							},
+						},
+					}
+				: {}),
+		};
 
 		// Parallel query + count
 		const [absences, total] = await Promise.all([
 			prisma.absence.findMany({
-				where: status ? { status: status as never } : undefined,
+				where,
 				skip,
 				take: pageSize,
 				include: {
@@ -68,7 +102,7 @@ export class AbsenceService {
 				},
 				orderBy: { createdAt: "desc" },
 			}),
-			prisma.absence.count({ where: status ? { status: status as never } : undefined }),
+			prisma.absence.count({ where }),
 		]);
 
 		return { absences, total, page, pageSize };
@@ -86,11 +120,11 @@ export class AbsenceService {
 		const absence = await prisma.absence.create({
 			data: {
 				userId,
-				type: input.type as never,
+				type: input.type as PrismaAbsenceType,
 				startDate: new Date(input.startDate),
 				endDate: new Date(input.endDate),
 				reason: input.reason,
-				status: AbsenceStatus.Pending as never,
+				status: AbsenceStatus.Pending as PrismaAbsenceStatus,
 			},
 		});
 
@@ -112,7 +146,7 @@ export class AbsenceService {
 		const absence = await prisma.absence.update({
 			where: { id },
 			data: {
-				status: AbsenceStatus.Approved as never,
+				status: AbsenceStatus.Approved as PrismaAbsenceStatus,
 				approvedBy,
 				approvedAt: new Date(),
 			},
@@ -136,7 +170,7 @@ export class AbsenceService {
 		const absence = await prisma.absence.update({
 			where: { id },
 			data: {
-				status: AbsenceStatus.Rejected as never,
+				status: AbsenceStatus.Rejected as PrismaAbsenceStatus,
 				approvedBy: rejectedBy,
 				approvedAt: new Date(),
 			},
@@ -170,7 +204,7 @@ export class AbsenceService {
 	static async countPending(): Promise<number> {
 		// Count absences with pending status
 		return prisma.absence.count({
-			where: { status: AbsenceStatus.Pending as never },
+			where: { status: AbsenceStatus.Pending as PrismaAbsenceStatus },
 		});
 	}
 
@@ -185,7 +219,7 @@ export class AbsenceService {
 		// Query overlapping approved absences
 		return prisma.absence.findMany({
 			where: {
-				status: AbsenceStatus.Approved as never,
+				status: AbsenceStatus.Approved as PrismaAbsenceStatus,
 				startDate: { lte: endDate },
 				endDate: { gte: startDate },
 			},

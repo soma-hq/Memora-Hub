@@ -3,16 +3,10 @@
 import { revalidatePath } from "next/cache";
 import { ProjectService } from "@/services/ProjectService";
 import { TaskService } from "@/services/TaskService";
-import { AuthService } from "@/services/AuthService";
+import { ensureAuth, AUTH_ERROR } from "@/lib/server/ensure-auth";
 import { createProjectSchema } from "@/lib/validators/schemas";
 import type { CreateProjectFormData } from "@/lib/validators/schemas";
-
-/** Standard action result */
-export interface ActionResult {
-	success: boolean;
-	error?: string;
-	data?: Record<string, unknown>;
-}
+import type { ActionResult } from "@/lib/types/action-result";
 
 /**
  * Creates a new project in a group
@@ -21,10 +15,8 @@ export interface ActionResult {
  * @returns Action result with created project data
  */
 export async function createProjectAction(groupId: string, formData: CreateProjectFormData): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const parsed = createProjectSchema.safeParse(formData);
 	if (!parsed.success) {
@@ -48,10 +40,8 @@ export async function updateProjectAction(
 	projectId: string,
 	formData: Partial<CreateProjectFormData>,
 ): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const targetProject = await ProjectService.getById(projectId);
 	if (!targetProject) {
@@ -71,10 +61,8 @@ export async function updateProjectAction(
  * @returns Action result
  */
 export async function deleteProjectAction(projectId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const targetProject = await ProjectService.getById(projectId);
 	if (!targetProject) {
@@ -100,10 +88,8 @@ export async function addProjectMemberAction(
 	userId: string,
 	role = "member",
 ): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	await ProjectService.addMember(projectId, userId, role);
 
@@ -117,10 +103,8 @@ export async function addProjectMemberAction(
  * @returns Action result
  */
 export async function removeProjectMemberAction(projectId: string, userId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	await ProjectService.removeMember(projectId, userId);
 
@@ -131,10 +115,8 @@ export async function removeProjectMemberAction(projectId: string, userId: strin
  * Get a single project by ID
  */
 export async function getProjectAction(projectId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const project = await ProjectService.getById(projectId);
 	if (!project) {
@@ -148,10 +130,8 @@ export async function getProjectAction(projectId: string): Promise<ActionResult>
  * Get projects by group paginated
  */
 export async function getProjectsAction(groupId: string, page = 1, pageSize = 20): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const result = await ProjectService.getByGroup(groupId, page, pageSize);
 
@@ -165,11 +145,11 @@ export async function getProjectsAction(groupId: string, page = 1, pageSize = 20
  * @returns Action result
  */
 export async function updateProjectStatusAction(projectId: string, status: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const project = await ProjectService.getById(projectId);
 	if (!project) return { success: false, error: "Projet introuvable" };
-	await ProjectService.update(projectId, { status: status as never }, currentUser.id);
+	await ProjectService.update(projectId, { status: status as any }, currentUser.id);
 	revalidatePath(`/hub/${project.groupId}/projects`);
 	return { success: true };
 }
@@ -180,11 +160,11 @@ export async function updateProjectStatusAction(projectId: string, status: strin
  * @returns Action result
  */
 export async function archiveProjectAction(projectId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const project = await ProjectService.getById(projectId);
 	if (!project) return { success: false, error: "Projet introuvable" };
-	await ProjectService.update(projectId, { status: "archived" as never }, currentUser.id);
+	await ProjectService.update(projectId, { status: "archived" as any }, currentUser.id);
 	revalidatePath(`/hub/${project.groupId}/projects`);
 	return { success: true };
 }
@@ -195,8 +175,8 @@ export async function archiveProjectAction(projectId: string): Promise<ActionRes
  * @returns Action result with status counts
  */
 export async function getProjectStatsAction(projectId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const counts = await TaskService.getStatusCounts(projectId);
 	return { success: true, data: counts as unknown as Record<string, unknown> };
 }
@@ -207,8 +187,8 @@ export async function getProjectStatsAction(projectId: string): Promise<ActionRe
  * @returns Action result with members
  */
 export async function getProjectMembersAction(projectId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const project = await ProjectService.getById(projectId);
 	if (!project) return { success: false, error: "Projet introuvable" };
 	return { success: true, data: { members: project.members } as unknown as Record<string, unknown> };
@@ -219,8 +199,8 @@ export async function getProjectMembersAction(projectId: string): Promise<Action
  * @returns Action result with user projects
  */
 export async function getProjectsByUserAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const projects = await ProjectService.getByUser(currentUser.id);
 	return { success: true, data: { projects } as unknown as Record<string, unknown> };
 }
@@ -232,8 +212,8 @@ export async function getProjectsByUserAction(): Promise<ActionResult> {
  * @returns Action result with matching projects
  */
 export async function searchProjectsAction(groupId: string, query: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const projects = await ProjectService.search(groupId, query);
 	return { success: true, data: { projects } as unknown as Record<string, unknown> };
 }

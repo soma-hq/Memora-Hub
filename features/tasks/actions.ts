@@ -2,16 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { TaskService } from "@/services/TaskService";
-import { AuthService } from "@/services/AuthService";
+import { ensureAuth, AUTH_ERROR } from "@/lib/server/ensure-auth";
 import { createTaskSchema } from "@/lib/validators/schemas";
 import type { CreateTaskFormData } from "@/lib/validators/schemas";
-
-/** Standard action result */
-export interface ActionResult {
-	success: boolean;
-	error?: string;
-	data?: Record<string, unknown>;
-}
+import type { ActionResult } from "@/lib/types/action-result";
 
 /**
  * Creates a new task
@@ -19,10 +13,8 @@ export interface ActionResult {
  * @returns Action result with created task data
  */
 export async function createTaskAction(formData: CreateTaskFormData): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const parsed = createTaskSchema.safeParse(formData);
 	if (!parsed.success) {
@@ -43,10 +35,8 @@ export async function createTaskAction(formData: CreateTaskFormData): Promise<Ac
  * @returns Action result
  */
 export async function updateTaskAction(taskId: string, formData: Partial<CreateTaskFormData>): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const targetTask = await TaskService.getById(taskId);
 	if (!targetTask) {
@@ -66,10 +56,8 @@ export async function updateTaskAction(taskId: string, formData: Partial<CreateT
  * @returns Action result
  */
 export async function deleteTaskAction(taskId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const targetTask = await TaskService.getById(taskId);
 	if (!targetTask) {
@@ -90,10 +78,8 @@ export async function deleteTaskAction(taskId: string): Promise<ActionResult> {
  * @returns Action result
  */
 export async function updateTaskStatusAction(taskId: string, status: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	await TaskService.updateStatus(taskId, status, currentUser.id);
 
@@ -108,10 +94,8 @@ export async function updateTaskStatusAction(taskId: string, status: string): Pr
  * @returns Action result
  */
 export async function toggleSubtaskAction(subtaskId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const result = await TaskService.toggleSubtask(subtaskId);
 	if (!result) {
@@ -128,10 +112,8 @@ export async function toggleSubtaskAction(subtaskId: string): Promise<ActionResu
  * @returns Action result
  */
 export async function addSubtaskAction(taskId: string, title: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const subtask = await TaskService.addSubtask(taskId, title);
 
@@ -144,10 +126,8 @@ export async function addSubtaskAction(taskId: string, title: string): Promise<A
  * @returns Action result
  */
 export async function deleteSubtaskAction(subtaskId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	await TaskService.deleteSubtask(subtaskId);
 
@@ -158,10 +138,8 @@ export async function deleteSubtaskAction(subtaskId: string): Promise<ActionResu
  * Get a single task by ID
  */
 export async function getTaskAction(taskId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const task = await TaskService.getById(taskId);
 	if (!task) {
@@ -175,10 +153,8 @@ export async function getTaskAction(taskId: string): Promise<ActionResult> {
  * Get tasks by project paginated
  */
 export async function getTasksByProjectAction(projectId: string, page = 1, pageSize = 20): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const result = await TaskService.getByProject(projectId, page, pageSize);
 
@@ -192,8 +168,8 @@ export async function getTasksByProjectAction(projectId: string, page = 1, pageS
  * @returns Action result
  */
 export async function assignTaskAction(taskId: string, assigneeId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	await TaskService.update(taskId, { assigneeId }, currentUser.id);
 	revalidatePath("/tasks");
 	return { success: true };
@@ -206,9 +182,9 @@ export async function assignTaskAction(taskId: string, assigneeId: string): Prom
  * @returns Action result
  */
 export async function updateTaskPriorityAction(taskId: string, priority: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
-	await TaskService.update(taskId, { priority: priority as never }, currentUser.id);
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
+	await TaskService.update(taskId, { priority: priority as any }, currentUser.id);
 	revalidatePath("/tasks");
 	return { success: true };
 }
@@ -220,8 +196,8 @@ export async function updateTaskPriorityAction(taskId: string, priority: string)
  * @returns Action result with tasks
  */
 export async function getTasksByAssigneeAction(assigneeId?: string, status?: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const tasks = await TaskService.getByAssignee(assigneeId ?? currentUser.id, status);
 	return { success: true, data: { tasks } as unknown as Record<string, unknown> };
 }
@@ -232,8 +208,8 @@ export async function getTasksByAssigneeAction(assigneeId?: string, status?: str
  * @returns Action result with status counts
  */
 export async function getTaskStatsAction(projectId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const counts = await TaskService.getStatusCounts(projectId);
 	return { success: true, data: counts as unknown as Record<string, unknown> };
 }
@@ -245,8 +221,8 @@ export async function getTaskStatsAction(projectId: string): Promise<ActionResul
  * @returns Action result
  */
 export async function updateSubtaskTitleAction(subtaskId: string, title: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	await TaskService.updateSubtaskTitle(subtaskId, title);
 	return { success: true };
 }
@@ -259,8 +235,8 @@ export async function updateSubtaskTitleAction(subtaskId: string, title: string)
  * @returns Action result with paginated tasks
  */
 export async function getTasksByGroupAction(groupId: string, page = 1, pageSize = 20): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const result = await TaskService.getByGroup(groupId, page, pageSize);
 	return { success: true, data: result as unknown as Record<string, unknown> };
 }
@@ -271,8 +247,8 @@ export async function getTasksByGroupAction(groupId: string, page = 1, pageSize 
  * @returns Action result with overdue tasks
  */
 export async function getOverdueTasksAction(groupId?: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const tasks = await TaskService.getOverdue(groupId);
 	return { success: true, data: { tasks } as unknown as Record<string, unknown> };
 }
@@ -284,8 +260,8 @@ export async function getOverdueTasksAction(groupId?: string): Promise<ActionRes
  * @returns Action result with count of updated tasks
  */
 export async function bulkUpdateTaskStatusAction(taskIds: string[], status: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const count = await TaskService.bulkUpdateStatus(taskIds, status, currentUser.id);
 	revalidatePath("/tasks");
 	return { success: true, data: { count } };

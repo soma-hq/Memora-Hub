@@ -2,16 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { GroupService } from "@/services/GroupService";
-import { AuthService } from "@/services/AuthService";
+import { ensureAuth, AUTH_ERROR } from "@/lib/server/ensure-auth";
 import { createGroupSchema, updateGroupSchema } from "@/lib/validators/schemas";
 import type { CreateGroupFormData, UpdateGroupFormData } from "@/lib/validators/schemas";
-
-/** Standard action result */
-export interface ActionResult {
-	success: boolean;
-	error?: string;
-	data?: Record<string, unknown>;
-}
+import type { ActionResult } from "@/lib/types/action-result";
 
 /**
  * Creates a new group
@@ -20,10 +14,8 @@ export interface ActionResult {
  */
 export async function createGroupAction(formData: CreateGroupFormData): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Validate input
 	const parsed = createGroupSchema.safeParse(formData);
@@ -48,10 +40,8 @@ export async function createGroupAction(formData: CreateGroupFormData): Promise<
  */
 export async function updateGroupAction(groupId: string, formData: UpdateGroupFormData): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Validate input
 	const parsed = updateGroupSchema.safeParse(formData);
@@ -81,10 +71,8 @@ export async function updateGroupAction(groupId: string, formData: UpdateGroupFo
  */
 export async function deleteGroupAction(groupId: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Check target group exists
 	const targetGroup = await GroupService.getById(groupId);
@@ -110,10 +98,8 @@ export async function deleteGroupAction(groupId: string): Promise<ActionResult> 
  */
 export async function addGroupMemberAction(groupId: string, userId: string, role: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Add member via service
 	await GroupService.addMember(groupId, userId, role, currentUser.id);
@@ -132,10 +118,8 @@ export async function addGroupMemberAction(groupId: string, userId: string, role
  */
 export async function removeGroupMemberAction(groupId: string, userId: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Remove member via service
 	await GroupService.removeMember(groupId, userId, currentUser.id);
@@ -155,10 +139,8 @@ export async function removeGroupMemberAction(groupId: string, userId: string): 
  */
 export async function updateMemberRoleAction(groupId: string, userId: string, role: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Update role via service
 	await GroupService.updateMemberRole(groupId, userId, role, currentUser.id);
@@ -176,10 +158,8 @@ export async function updateMemberRoleAction(groupId: string, userId: string, ro
  */
 export async function getGroupAction(groupId: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Fetch group via service
 	const group = await GroupService.getById(groupId);
@@ -198,10 +178,8 @@ export async function getGroupAction(groupId: string): Promise<ActionResult> {
  */
 export async function getGroupsAction(page = 1, pageSize = 20): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Fetch paginated groups via service
 	const result = await GroupService.getAll(page, pageSize);

@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils/cn";
 import { getIcon, type IconName, type IconStyle } from "@/core/design/icons";
 
-
 interface IconProps {
 	name: IconName;
 	style?: IconStyle;
@@ -18,7 +17,7 @@ const sizeMap = {
 } as const;
 
 /**
- * Design system icon.
+ * Design system icon
  * @param {IconProps} props - Component props
  * @param {IconName} props.name - Icon registry name
  * @param {IconStyle} [props.style="outline"] - Outline or solid variant

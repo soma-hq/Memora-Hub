@@ -2,17 +2,11 @@
 
 import { revalidatePath } from "next/cache";
 import { UserService } from "@/services/UserService";
-import { AuthService } from "@/services/AuthService";
+import { ensureAuth, AUTH_ERROR } from "@/lib/server/ensure-auth";
 import { createUserSchema, updateUserSchema } from "@/lib/validators/schemas";
 import type { CreateUserFormData, UpdateUserFormData } from "@/lib/validators/schemas";
 import type { UserStatusValue } from "@/constants";
-
-/** Standard action result */
-export interface ActionResult {
-	success: boolean;
-	error?: string;
-	data?: Record<string, unknown>;
-}
+import type { ActionResult } from "@/lib/types/action-result";
 
 /**
  * Creates a new user
@@ -21,10 +15,8 @@ export interface ActionResult {
  */
 export async function createUserAction(formData: CreateUserFormData): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Validate input
 	const parsed = createUserSchema.safeParse(formData);
@@ -55,10 +47,8 @@ export async function createUserAction(formData: CreateUserFormData): Promise<Ac
  */
 export async function updateUserAction(userId: string, formData: UpdateUserFormData): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Validate input
 	const parsed = updateUserSchema.safeParse(formData);
@@ -97,10 +87,8 @@ export async function updateUserAction(userId: string, formData: UpdateUserFormD
  */
 export async function deleteUserAction(userId: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Prevent self-deletion
 	if (currentUser.id === userId) {
@@ -130,10 +118,8 @@ export async function deleteUserAction(userId: string): Promise<ActionResult> {
  */
 export async function updateUserStatusAction(userId: string, status: UserStatusValue): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Check target user exists
 	const targetUser = await UserService.getById(userId);
@@ -157,10 +143,8 @@ export async function updateUserStatusAction(userId: string, status: UserStatusV
  */
 export async function getUserAction(userId: string): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Fetch user via service
 	const user = await UserService.getById(userId);
@@ -179,10 +163,8 @@ export async function getUserAction(userId: string): Promise<ActionResult> {
  */
 export async function getUsersAction(page = 1, pageSize = 20): Promise<ActionResult> {
 	// Verify session
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	// Fetch paginated users via service
 	const result = await UserService.getAll(page, pageSize);

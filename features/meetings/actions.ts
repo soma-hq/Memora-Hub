@@ -2,16 +2,10 @@
 
 import { revalidatePath } from "next/cache";
 import { MeetingService } from "@/services/MeetingService";
-import { AuthService } from "@/services/AuthService";
+import { ensureAuth, AUTH_ERROR } from "@/lib/server/ensure-auth";
 import { createMeetingSchema } from "@/lib/validators/schemas";
 import type { CreateMeetingFormData } from "@/lib/validators/schemas";
-
-/** Standard action result */
-export interface ActionResult {
-	success: boolean;
-	error?: string;
-	data?: Record<string, unknown>;
-}
+import type { ActionResult } from "@/lib/types/action-result";
 
 /**
  * Creates a new meeting in a group
@@ -20,10 +14,8 @@ export interface ActionResult {
  * @returns Action result with created meeting data
  */
 export async function createMeetingAction(groupId: string, formData: CreateMeetingFormData): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const parsed = createMeetingSchema.safeParse(formData);
 	if (!parsed.success) {
@@ -47,10 +39,8 @@ export async function updateMeetingAction(
 	meetingId: string,
 	formData: Partial<CreateMeetingFormData>,
 ): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const targetMeeting = await MeetingService.getById(meetingId);
 	if (!targetMeeting) {
@@ -70,10 +60,8 @@ export async function updateMeetingAction(
  * @returns Action result
  */
 export async function deleteMeetingAction(meetingId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const targetMeeting = await MeetingService.getById(meetingId);
 	if (!targetMeeting) {
@@ -94,10 +82,8 @@ export async function deleteMeetingAction(meetingId: string): Promise<ActionResu
  * @returns Action result
  */
 export async function addMeetingAttendeeAction(meetingId: string, userId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	await MeetingService.addAttendee(meetingId, userId);
 
@@ -111,10 +97,8 @@ export async function addMeetingAttendeeAction(meetingId: string, userId: string
  * @returns Action result
  */
 export async function removeMeetingAttendeeAction(meetingId: string, userId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	await MeetingService.removeAttendee(meetingId, userId);
 
@@ -125,10 +109,8 @@ export async function removeMeetingAttendeeAction(meetingId: string, userId: str
  * Get a single meeting by ID
  */
 export async function getMeetingAction(meetingId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const meeting = await MeetingService.getById(meetingId);
 	if (!meeting) {
@@ -142,10 +124,8 @@ export async function getMeetingAction(meetingId: string): Promise<ActionResult>
  * Get meetings by group paginated
  */
 export async function getMeetingsAction(groupId: string, page = 1, pageSize = 20): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) {
-		return { success: false, error: "Non authentifie" };
-	}
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 
 	const result = await MeetingService.getByGroup(groupId, page, pageSize);
 
@@ -159,8 +139,8 @@ export async function getMeetingsAction(groupId: string, page = 1, pageSize = 20
  * @returns Action result with upcoming meetings
  */
 export async function getUpcomingMeetingsAction(groupId: string, limit = 5): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const meetings = await MeetingService.getUpcoming(groupId, limit);
 	return { success: true, data: { meetings } as unknown as Record<string, unknown> };
 }
@@ -170,8 +150,8 @@ export async function getUpcomingMeetingsAction(groupId: string, limit = 5): Pro
  * @returns Action result with user meetings
  */
 export async function getMeetingsByUserAction(): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const meetings = await MeetingService.getByUser(currentUser.id);
 	return { success: true, data: { meetings } as unknown as Record<string, unknown> };
 }
@@ -183,8 +163,8 @@ export async function getMeetingsByUserAction(): Promise<ActionResult> {
  * @returns Action result
  */
 export async function updateMeetingNotesAction(meetingId: string, notes: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const meeting = await MeetingService.getById(meetingId);
 	if (!meeting) return { success: false, error: "Réunion introuvable" };
 	await MeetingService.update(meetingId, { description: notes }, currentUser.id);
@@ -198,8 +178,8 @@ export async function updateMeetingNotesAction(meetingId: string, notes: string)
  * @returns Action result with attendees
  */
 export async function getMeetingAttendeesAction(meetingId: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const meeting = await MeetingService.getById(meetingId);
 	if (!meeting) return { success: false, error: "Réunion introuvable" };
 	return { success: true, data: { attendees: meeting.attendees } as unknown as Record<string, unknown> };
@@ -212,8 +192,8 @@ export async function getMeetingAttendeesAction(meetingId: string): Promise<Acti
  * @returns Action result with matching meetings
  */
 export async function searchMeetingsAction(groupId: string, query: string): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const meetings = await MeetingService.search(groupId, query);
 	return { success: true, data: { meetings } as unknown as Record<string, unknown> };
 }
@@ -230,8 +210,8 @@ export async function getMeetingsByDateRangeAction(
 	startDate: string,
 	endDate: string,
 ): Promise<ActionResult> {
-	const currentUser = await AuthService.getCurrentUser();
-	if (!currentUser) return { success: false, error: "Non authentifie" };
+	const currentUser = await ensureAuth();
+	if (!currentUser) return AUTH_ERROR;
 	const meetings = await MeetingService.getByDateRange(groupId, new Date(startDate), new Date(endDate));
 	return { success: true, data: { meetings } as unknown as Record<string, unknown> };
 }

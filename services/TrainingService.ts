@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
 
-
 /** Input data for creating à training session */
 interface CreateTrainingInput {
 	groupId: string;
@@ -83,7 +82,7 @@ export class TrainingService {
 				groupId: input.groupId,
 				title: input.title,
 				description: input.description,
-				category: input.category as never,
+				category: input.category as any,
 				instructorName: input.instructorName,
 				startDate: new Date(input.startDate),
 				endDate: new Date(input.endDate),
@@ -113,7 +112,7 @@ export class TrainingService {
 			data: {
 				...(input.title !== undefined && { title: input.title }),
 				...(input.description !== undefined && { description: input.description }),
-				...(input.category !== undefined && { category: input.category as never }),
+				...(input.category !== undefined && { category: input.category as any }),
 				...(input.instructorName !== undefined && { instructorName: input.instructorName }),
 				...(input.startDate !== undefined && { startDate: new Date(input.startDate) }),
 				...(input.endDate !== undefined && { endDate: new Date(input.endDate) }),
@@ -214,7 +213,7 @@ export class TrainingService {
 		// Update the training status field
 		await prisma.training.update({
 			where: { id },
-			data: { status: status as never },
+			data: { status: status as any },
 		});
 
 		// Log the status change with details

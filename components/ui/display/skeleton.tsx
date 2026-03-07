@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils/cn";
 
-
 interface SkeletonProps {
 	className?: string;
 	variant?: "text" | "circular" | "rectangular";
@@ -9,7 +8,7 @@ interface SkeletonProps {
 }
 
 /**
- * Loading skeleton shape.
+ * Loading skeleton shape
  * @param {SkeletonProps} props - Component props
  * @param {string} [props.className] - Extra CSS classes
  * @param {"text" | "circular" | "rectangular"} [props.variant="text"] - Shape variant
@@ -34,7 +33,7 @@ export function Skeleton({ className, variant = "text", width, height }: Skeleto
 }
 
 /**
- * Card skeleton.
+ * Card skeleton
  * @returns {JSX.Element} Card skeleton layout
  */
 
@@ -55,7 +54,7 @@ export function SkeletonCard() {
 }
 
 /**
- * Table row skeleton.
+ * Table row skeleton
  * @param {{ rows?: number }} props - Component props
  * @param {number} [props.rows=5] - Number of skeleton rows
  * @returns {JSX.Element} Table skeleton layout

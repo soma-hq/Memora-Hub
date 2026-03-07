@@ -15,8 +15,7 @@ interface EntityModalProps {
 }
 
 /**
- * Modal for switching between available entities.
- * Filters entities based on the current user's entityAccess permissions.
+ * Modal for switching between available entities
  * @param {EntityModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
@@ -30,7 +29,7 @@ export function EntityModal({ isOpen, onClose, activeEntityId, onSelect }: Entit
 
 	if (!isOpen) return null;
 
-	// Get entities the current user can access (respects entityAccess + wildcard)
+	// Get entities the current user can access
 	const accessibleEntities = getEntitiesForCurrentUser();
 
 	// Render
@@ -49,9 +48,11 @@ export function EntityModal({ isOpen, onClose, activeEntityId, onSelect }: Entit
 					<div className="flex items-center gap-2.5">
 						<Icon name="group" size="md" className="text-primary-500" />
 						<div>
-							<h2 className="text-base font-semibold text-gray-900 dark:text-white">Entites</h2>
+							<h2 className="text-base font-semibold text-gray-900 dark:text-white">Entités</h2>
 							<p className="text-xs text-gray-500 dark:text-gray-400">
-								{isAdmin ? "Toutes les entites" : `${accessibleEntities.length} entite(s) accessible(s)`}
+								{isAdmin
+									? "Toutes les entites"
+									: `${accessibleEntities.length} entite(s) accessible(s)`}
 							</p>
 						</div>
 					</div>
@@ -66,7 +67,9 @@ export function EntityModal({ isOpen, onClose, activeEntityId, onSelect }: Entit
 				{/* Entity list */}
 				<div className="p-3">
 					{accessibleEntities.length === 0 ? (
-						<p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">Aucune entite accessible</p>
+						<p className="py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+							Aucune entité accessible
+						</p>
 					) : (
 						accessibleEntities.map((entity, idx) => (
 							<div key={entity.id}>

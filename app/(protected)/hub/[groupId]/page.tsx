@@ -168,8 +168,8 @@ export default function DashboardPage() {
 				<PatchnoteWidget />
 
 				{/* Shared Events Section */}
-				<div className="space-y-3">
-					<SectionHeaderBanner icon="calendar" title="Événements à venir" accentColor="rose">
+				<div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+					<SectionHeaderBanner icon="calendar" title="Événements à venir" accentColor="gray" className="rounded-none">
 						{unansweredCount > 0 && (
 							<Badge variant="warning" showDot={false}>
 								{unansweredCount}
@@ -177,7 +177,7 @@ export default function DashboardPage() {
 						)}
 					</SectionHeaderBanner>
 					{/* Event cards */}
-					<div className="space-y-3">
+					<div className="space-y-3 p-4">
 						{events.length === 0 && (
 							<StyledEmptyState
 								icon="calendar"

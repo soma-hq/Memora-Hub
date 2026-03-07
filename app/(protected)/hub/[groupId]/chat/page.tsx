@@ -22,10 +22,8 @@ const MAX_MESSAGE_LENGTH = 2000;
 const CURRENT_USER_ID = "user-jeremy";
 const CURRENT_USER_NAME = "Jeremy Alpha";
 
-// Markdown rendering helper
-
 /**
- * Renders basic markdown to HTML-safe JSX string.
+ * Renders basic markdown to HTML-safe JSX string
  * @param text - Raw markdown text
  * @returns Rendered HTML string
  */
@@ -111,7 +109,7 @@ function renderMarkdown(text: string): string {
 }
 
 /**
- * Formats an ISO timestamp to a human-readable time string.
+ * Formats an ISO timestamp to a human-readable time string
  * @param timestamp - ISO date string
  * @returns Formatted time string (e.g., "14:32")
  */
@@ -125,7 +123,6 @@ function formatTime(timestamp: string): string {
 }
 
 // Context Menu Component
-
 interface ContextMenuProps {
 	position: ContextMenuPosition;
 	onClose: () => void;
@@ -133,7 +130,7 @@ interface ContextMenuProps {
 }
 
 /**
- * Custom right-click context menu for chat messages.
+ * Custom right-click context menu for chat messages
  * @param {ContextMenuProps} props - Component props
  * @returns {JSX.Element} Context menu overlay
  */
@@ -224,7 +221,6 @@ function ChatContextMenu({ position, onClose, onAction }: ContextMenuProps) {
 }
 
 // Mention Dropdown Component
-
 interface MentionDropdownProps {
 	options: MentionOption[];
 	query: string;
@@ -233,7 +229,7 @@ interface MentionDropdownProps {
 }
 
 /**
- * Dropdown that shows mentionable users and groups.
+ * Dropdown that shows mentionable users and groups
  * @param {MentionDropdownProps} props - Component props
  * @returns {JSX.Element} Mention autocomplete dropdown
  */
@@ -294,7 +290,7 @@ interface MarkdownToolbarProps {
 }
 
 /**
- * Toolbar buttons for formatting markdown in the message input.
+ * Toolbar buttons for formatting markdown in the message input
  * @param {MarkdownToolbarProps} props - Component props
  * @returns {JSX.Element} Formatting toolbar
  */
@@ -332,7 +328,7 @@ interface MessageBubbleProps {
 }
 
 /**
- * Renders a single chat message bubble with avatar, author, content, and attachments.
+ * Renders a single chat message bubble with avatar, author, content, and attachments
  * @param {MessageBubbleProps} props - Component props
  * @returns {JSX.Element} Message bubble
  */
@@ -454,7 +450,7 @@ function MessageBubble({ message, onContextMenu }: MessageBubbleProps) {
 }
 
 /**
- * Full chat interface with sidebar, messages, and input area.
+ * Full chat interface with sidebar, messages, and input area
  * @returns {JSX.Element} Chat page
  */
 export default function ChatPage() {
@@ -523,7 +519,7 @@ export default function ChatPage() {
 	}, [messageInput]);
 
 	/**
-	 * Sends the current message input to the active channel.
+	 * Sends the current message input to the active channel
 	 * @returns {void}
 	 */
 
@@ -559,7 +555,7 @@ export default function ChatPage() {
 	}, [messageInput, activeChannel, editingMessageId, addMessage, editMessage]);
 
 	/**
-	 * Handles keyboard events in the textarea (Enter to send, @ for mentions).
+	 * Handles keyboard events in the textarea (Enter to send, @ for mentions)
 	 * @param e - Keyboard event
 	 * @returns {void}
 	 */
@@ -575,7 +571,7 @@ export default function ChatPage() {
 	);
 
 	/**
-	 * Handles text input changes and triggers mentions dropdown.
+	 * Handles text input changes and triggers mentions dropdown
 	 * @param e - Input change event
 	 * @returns {void}
 	 */
@@ -598,7 +594,7 @@ export default function ChatPage() {
 	}, []);
 
 	/**
-	 * Inserts à selected mention into the message input.
+	 * Inserts à selected mention into the message input
 	 * @param option - Selected mention option
 	 * @returns {void}
 	 */
@@ -615,7 +611,7 @@ export default function ChatPage() {
 	);
 
 	/**
-	 * Inserts markdown formatting around the selection or at cursor.
+	 * Inserts markdown formatting around the selection or at cursor
 	 * @param before - Prefix to insert
 	 * @param after - Suffix to insert
 	 * @returns {void}
@@ -643,7 +639,7 @@ export default function ChatPage() {
 	);
 
 	/**
-	 * Opens the context menu at the right-click position.
+	 * Opens the context menu at the right-click position
 	 * @param e - Mouse event
 	 * @param messageId - ID of the right-clicked message
 	 * @returns {void}
@@ -663,7 +659,7 @@ export default function ChatPage() {
 	);
 
 	/**
-	 * Processes context menu actions.
+	 * Processes context menu actions
 	 * @param action - Action identifier
 	 * @param messageId - Target message ID
 	 * @returns {void}

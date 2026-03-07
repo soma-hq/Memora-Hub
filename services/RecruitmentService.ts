@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
 
-
 /** Input data for creating à job offer */
 interface CreateJobOfferInput {
 	groupId: string;
@@ -89,7 +88,7 @@ export class RecruitmentService {
 				description: input.description,
 				department: input.department,
 				location: input.location,
-				contractType: input.contractType as never,
+				contractType: input.contractType as any,
 				requirements: input.requirements ?? [],
 			},
 		});
@@ -117,7 +116,7 @@ export class RecruitmentService {
 				...(input.description !== undefined && { description: input.description }),
 				...(input.department !== undefined && { department: input.department }),
 				...(input.location !== undefined && { location: input.location }),
-				...(input.contractType !== undefined && { contractType: input.contractType as never }),
+				...(input.contractType !== undefined && { contractType: input.contractType as any }),
 				...(input.requirements !== undefined && { requirements: input.requirements }),
 			},
 		});
@@ -153,7 +152,7 @@ export class RecruitmentService {
 		// Update the offer status field
 		await prisma.jobOffer.update({
 			where: { id },
-			data: { status: status as never },
+			data: { status: status as any },
 		});
 
 		// Log status change
@@ -197,7 +196,7 @@ export class RecruitmentService {
 		// Update the candidate status field
 		await prisma.candidate.update({
 			where: { id },
-			data: { status: status as never },
+			data: { status: status as any },
 		});
 
 		// Log status change

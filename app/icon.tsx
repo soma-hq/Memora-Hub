@@ -6,7 +6,7 @@ export const size = { width: 32, height: 32 };
 export const contentType = "image/png";
 
 /**
- * Generates the app favicon
+ * Generates the app
  * @returns - ImageResponse
  */
 export default function Icon() {

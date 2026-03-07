@@ -4,7 +4,7 @@
 /* Class-based dark mode strategy (ThemeProvider adds .dark to <html>) */
 @variant dark (&:where(.dark, .dark *));
 
-/* Memora Hub — Design System Tokens */
+/*+ Memora Hub — Design System Tokens */
 @theme inline {
 	/* Font families */
 	--font-sans: "DM Sans", system-ui, sans-serif;

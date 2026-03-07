@@ -16,7 +16,6 @@ const PAGE_CONFIG = definePageConfig({
 });
 
 // Constants & types
-
 interface BotCommand {
 	name: string;
 	description: string;
@@ -25,7 +24,6 @@ interface BotCommand {
 }
 
 // Data
-
 const MODERATION_COMMANDS: BotCommand[] = [
 	{
 		name: "/warn",
@@ -156,7 +154,7 @@ const UTILITY_COMMANDS: BotCommand[] = [
 ];
 
 /**
- * Inline code display component for command syntax.
+ * Inline code display component for command syntax
  * @param props - Component props
  * @param props.children - The code content
  * @param props.className - Additional CSS classes
@@ -177,7 +175,7 @@ function Code({ children, className }: { children: React.ReactNode; className?: 
 }
 
 /**
- * Displays à bot command card with name, description, usage and example.
+ * Displays à bot command card with name, description & usage
  * @param props - Component props
  * @param props.command - The bot command data to display
  * @returns A styled command reference card
@@ -215,7 +213,7 @@ function CommandCard({ command }: { command: BotCommand }) {
 }
 
 /**
- * Marsha Bot documentation page listing moderation and utility commands.
+ * Marsha Bot documentation page
  * @returns The bot commands reference page for polyvalent moderation
  */
 export default function MarshaBotPolyvalentPage() {
@@ -232,9 +230,8 @@ export default function MarshaBotPolyvalentPage() {
 							<h2 className="text-lg font-semibold text-gray-900 dark:text-white">A propos</h2>
 							<p className="mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-400">
 								Documentation des commandes de Marsha pour la moderation polyvalente. Ces commandes
-								s&apos;appliquent principalement cote Discord mais les sanctions peuvent etre
-								synchronisees avec Twitch. Arguments&nbsp;: <Code>&lt; &gt;</Code> = requis,{" "}
-								<Code>[ ]</Code> = optionnel.
+								s'appliquent principalement cote Discord mais les sanctions peuvent être synchronisees
+								avec Twitch. Arguments : <Code>&lt; &gt;</Code> = requis, <Code>[ ]</Code> = optionnel.
 							</p>
 							<div className="mt-3 flex items-center gap-2">
 								<Badge variant="info" showDot={false}>
@@ -264,8 +261,8 @@ export default function MarshaBotPolyvalentPage() {
 					<div className="border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-900/10 mb-4 flex items-start gap-3 rounded-lg border p-4">
 						<span className="text-warning-500 mt-0.5 shrink-0">&#9888;</span>
 						<p className="text-warning-700 dark:text-warning-400 text-sm">
-							Meme si raison et pieces jointes sont optionnelles, on doit systematiquement en fournir.
-							Toute sanction appliquee via le bot doit etre documentee.
+							Même si raison et pièces jointes sont optionnelles, on doit systematiquement en fournir.
+							Toute sanction appliquée via le bot doit être documentée.
 						</p>
 					</div>
 

@@ -19,7 +19,7 @@ const paddingMap = {
 } as const;
 
 /**
- * Card container with optional outline-only mode for form areas.
+ * Card container
  * @param {CardProps} props - Component props
  * @param {React.ReactNode} props.children - Card content
  * @param {string} [props.className] - Extra CSS classes
@@ -51,7 +51,7 @@ export function Card({ children, className, hover = false, outline = false, padd
 }
 
 /**
- * Card header.
+ * Card header
  * @param {{ children: React.ReactNode; className?: string }} props - Component props
  * @param {React.ReactNode} props.children - Header content
  * @param {string} [props.className] - Extra CSS classes
@@ -72,7 +72,7 @@ export function CardHeader({ children, className }: { children: React.ReactNode;
 }
 
 /**
- * Card body.
+ * Card body
  * @param {{ children: React.ReactNode; className?: string }} props - Component props
  * @param {React.ReactNode} props.children - Body content
  * @param {string} [props.className] - Extra CSS classes
@@ -84,7 +84,7 @@ export function CardBody({ children, className }: { children: React.ReactNode; c
 }
 
 /**
- * Card footer.
+ * Card footer
  * @param {{ children: React.ReactNode; className?: string }} props - Component props
  * @param {React.ReactNode} props.children - Footer content
  * @param {string} [props.className] - Extra CSS classes
@@ -105,7 +105,6 @@ export function CardFooter({ children, className }: { children: React.ReactNode;
 }
 
 // StatCard
-
 interface StatCardProps {
 	label: string;
 	value: string | number;
@@ -117,7 +116,7 @@ interface StatCardProps {
 }
 
 /**
- * Stat card with large value, icon badge, and optional trend indicator.
+ * Stat card with large value, icon badge, and optional trend indicator
  * @param {StatCardProps} props - Component props
  * @param {string} props.label - Stat label
  * @param {string | number} props.value - Stat value
@@ -170,7 +169,6 @@ export function StatCard({
 }
 
 // SectionCard
-
 type SectionCardColor = "primary" | "success" | "error" | "warning" | "info" | "neutral" | "orange";
 
 const headerColorMap: Record<SectionCardColor, string> = {
@@ -195,7 +193,7 @@ interface SectionCardProps {
 }
 
 /**
- * Section card with colored header strip, icon, title, and optional badge/action.
+ * Section card with colored header strip, icon, title, and optional badge/action
  * @param {SectionCardProps} props - Component props
  * @param {string} props.title - Section title
  * @param {IconName} [props.icon] - Header icon

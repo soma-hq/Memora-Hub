@@ -5,7 +5,6 @@ import { useState, useRef } from "react";
 import { Icon } from "../display/icon";
 import { cn } from "@/lib/utils/cn";
 
-
 interface FileUploadProps {
 	label?: string;
 	accept?: string;
@@ -34,7 +33,6 @@ export function FileUpload({ label, accept, multiple, maxSize = 5, hint, onChang
 	const [dragActive, setDragActive] = useState(false);
 	const inputRef = useRef<HTMLInputElement>(null);
 
-	// Handlers
 	/**
 	 * Filters files by max size and updates the file list.
 	 * @param {FileList | null} newFiles - Native file list from input or drop

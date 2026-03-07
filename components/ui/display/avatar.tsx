@@ -25,7 +25,7 @@ const imageSizeMap = {
 } as const;
 
 /**
- * Extracts name initials.
+ * Extracts name initials
  * @param {string} name - Display name
  * @returns {string} Uppercase initials
  */
@@ -48,7 +48,7 @@ const bgColors = [
 ];
 
 /**
- * Name-based color picker.
+ * Name-based color picker
  * @param {string} name - Name to hash
  * @returns {string} Color class string
  */
@@ -60,7 +60,7 @@ function hashColor(name: string) {
 }
 
 /**
- * User avatar.
+ * User avatar
  * @param {AvatarProps} props - Component props
  * @param {string | null} [props.src] - Image URL or null
  * @param {string} props.name - User name
@@ -97,8 +97,7 @@ export function Avatar({ src, name, size = "md", className }: AvatarProps) {
 	);
 }
 
-// ─── AvatarGroup ────────────────────────────────────────────────
-
+// AvatarGroup
 interface AvatarGroupProps {
 	users: { name: string; src?: string | null }[];
 	max?: number;

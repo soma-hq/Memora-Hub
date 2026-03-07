@@ -3,11 +3,10 @@ import { cookies } from "next/headers";
 import { nanoid } from "nanoid";
 import { prisma } from "@/lib/prisma";
 import { signToken, verifyToken } from "@/lib/auth/jwt";
+import { SESSION_COOKIE_NAME, SESSION_DURATION_SECONDS, SESSION_COOKIE_OPTIONS } from "@/lib/auth/cookies";
 import type { JwtPayload } from "@/lib/auth/jwt";
 
-
-const SESSION_COOKIE = "memora-session";
-const SESSION_DURATION_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
+const SESSION_DURATION_MS = SESSION_DURATION_SECONDS * 1000;
 
 /**
  * Creates a new session for a user and sets the session cookie
@@ -32,13 +31,7 @@ export async function createSession(userId: string, email: string, role: string)
 
 	// Set secure HTTP-only cookie
 	const cookieStore = await cookies();
-	cookieStore.set(SESSION_COOKIE, token, {
-		httpOnly: true,
-		secure: process.env.NODE_ENV === "production",
-		sameSite: "lax",
-		maxAge: SESSION_DURATION_MS / 1000,
-		path: "/",
-	});
+	cookieStore.set(SESSION_COOKIE_NAME, token, SESSION_COOKIE_OPTIONS);
 
 	return token;
 }
@@ -49,7 +42,7 @@ export async function createSession(userId: string, email: string, role: string)
  */
 export async function getSession(): Promise<JwtPayload | null> {
 	const cookieStore = await cookies();
-	const token = cookieStore.get(SESSION_COOKIE)?.value;
+	const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
 	if (!token) return null;
 
@@ -76,13 +69,13 @@ export async function getSession(): Promise<JwtPayload | null> {
  */
 export async function deleteSession(): Promise<void> {
 	const cookieStore = await cookies();
-	const token = cookieStore.get(SESSION_COOKIE)?.value;
+	const token = cookieStore.get(SESSION_COOKIE_NAME)?.value;
 
 	if (token) {
 		await prisma.session.deleteMany({ where: { token } });
 	}
 
-	cookieStore.delete(SESSION_COOKIE);
+	cookieStore.delete(SESSION_COOKIE_NAME);
 }
 
 /**
@@ -102,7 +95,10 @@ export async function getCurrentUser() {
 			lastName: true,
 			avatar: true,
 			role: true,
+			roleId: true,
 			status: true,
+			entity: true,
+			entityAccess: true,
 			a2fEnabled: true,
 			createdAt: true,
 			groupMemberships: {

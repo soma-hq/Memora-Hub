@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import type { LogActionValue } from "@/constants";
 
-
 /** Activity and error logging service */
 export class LogService {
 	/**
@@ -17,7 +16,7 @@ export class LogService {
 		// Insert log entry into database
 		await prisma.log.create({
 			data: {
-				action: action as never,
+				action: action as any,
 				entityType,
 				entityId,
 				userId: userId ?? null,
@@ -36,7 +35,7 @@ export class LogService {
 		// Serialize error details and persist as a system log entry
 		await prisma.log.create({
 			data: {
-				action: "CREATE" as never,
+				action: "CREATE" as any,
 				entityType: `ERROR:${source}`,
 				entityId: "system",
 				details: JSON.stringify({ message: error.message, stack: error.stack }),

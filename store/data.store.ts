@@ -7,8 +7,7 @@ import type { Absence } from "@/features/absences/types";
 import type { RoleId } from "@/core/config/roles";
 import type { Entity } from "@/core/data/entities";
 import { ENTITIES } from "@/core/data/entities";
-import { SEED_USERS } from "@/core/data/users";
-import { getTeamForRole } from "@/core/config/teams";
+import { MOCK_USERS, MOCK_PROJECTS, MOCK_TASKS, MOCK_MEETINGS, MOCK_ABSENCES } from "@/features/dashboard/mock-data";
 
 /** Project statuses considered archived */
 const ARCHIVED_PROJECT_STATUSES = new Set(["done", "complete", "archived"]);
@@ -40,42 +39,6 @@ interface UserMeetings {
 	upcoming: Meeting[];
 	past: Meeting[];
 }
-
-/**
- * Convert a seed user to a UserProfile for the store.
- */
-function seedToProfile(seed: (typeof SEED_USERS)[number]): UserProfile {
-	const team = getTeamForRole(seed.roleId);
-	return {
-		id: seed.id,
-		pseudo: seed.name,
-		firstName: seed.name,
-		lastName: "",
-		email: seed.email,
-		phone: "",
-		birthdate: "",
-		birthdayWish: false,
-		languages: ["fr"],
-		avatar: seed.avatar ?? `/avatars/${seed.name.toLowerCase()}.png`,
-		discordUsername: "",
-		discordId: "",
-		social: {},
-		entity: seed.entityAccess.includes("*") ? "all" : (seed.entityAccess[0] ?? ""),
-		team,
-		division: 0,
-		roleSecondary: "",
-		arrivalDate: "2024-01-15",
-		roleId: seed.roleId,
-		entityAccess: seed.entityAccess,
-		twoFactorSecret: seed.twoFactorSecret,
-		twoFactorEnabled: seed.twoFactorEnabled,
-		status: "active",
-		entityAccessDetails: [],
-	};
-}
-
-/** Seeded user profiles from SEED_USERS */
-const INITIAL_USERS: UserProfile[] = SEED_USERS.map(seedToProfile);
 
 /** Current user type for the permission system */
 interface CurrentUserState {
@@ -138,18 +101,18 @@ interface DataState {
 
 /**
  * Zustand store for all entity data with query helpers and CRUD operations.
- * Pre-seeded with entities and 9 users from the data layer.
+ * Pre-seeded with entities, users, projects, tasks, meetings and absences from mock data.
  * @returns {DataState} Complete data state with all actions
  */
 export const useDataStore = create<DataState>((set, get) => ({
-	// Initial state -- seeded
+	// Initial state -- seeded from mock data
 	entities: [...ENTITIES],
-	users: INITIAL_USERS,
+	users: [...MOCK_USERS],
 	currentUser: null,
-	projects: [],
-	tasks: [],
-	meetings: [],
-	absences: [],
+	projects: [...MOCK_PROJECTS],
+	tasks: [...MOCK_TASKS],
+	meetings: [...MOCK_MEETINGS],
+	absences: [...MOCK_ABSENCES],
 
 	// ── Auth actions ──────────────────────────────────────────────
 

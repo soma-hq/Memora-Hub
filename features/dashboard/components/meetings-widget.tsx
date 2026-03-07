@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Card, CardHeader, CardBody, Badge, Icon, StyledEmptyState } from "@/components/ui";
+import { useModePalette } from "@/hooks/useModePalette";
 import { cn } from "@/lib/utils/cn";
 import type { BadgeVariant } from "@/core/design/states";
 
@@ -41,16 +42,14 @@ const typeVariantMap: Record<string, BadgeVariant> = {
 export function MeetingsWidget({ className }: MeetingsWidgetProps) {
 	// State
 	const [meetings] = useState<MeetingItem[]>([]);
+	const palette = useModePalette();
 
 	// Render
 	return (
 		<Card padding="sm" className={className}>
 			<CardHeader>
 				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Réunions à venir</h3>
-				<Link
-					href="/meetings"
-					className="text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
-				>
+				<Link href="/meetings" className={`${palette.linkClass} text-sm font-medium transition-colors`}>
 					Voir tout
 				</Link>
 			</CardHeader>

@@ -2,7 +2,6 @@ import { prisma } from "@/lib/prisma";
 import { NotificationType, UserRoles } from "@/constants";
 import type { NotificationTypeValue } from "@/constants";
 
-
 /** Input data for sending à notification */
 interface SendNotificationInput {
 	userId: string;
@@ -27,7 +26,7 @@ export class NotificationService {
 				userId: input.userId,
 				title: input.title,
 				message: input.message,
-				type: (input.type ?? NotificationType.System) as never,
+				type: (input.type ?? NotificationType.System) as any,
 				relatedId: input.relatedId ?? null,
 				isRead: false,
 			},

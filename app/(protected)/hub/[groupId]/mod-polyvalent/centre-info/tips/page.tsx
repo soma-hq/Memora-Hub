@@ -39,27 +39,27 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-error-100 dark:bg-error-900/20",
 		iconColor: "text-error-500",
 		points: [
-			"Reglementation Discord TOS : 13 ans minimum. Twitch TOS : 13 ans minimum egalement.",
-			"Ne JAMAIS demander l'age à un utilisateur pour ensuite le bannir, quelle que soit la plateforme.",
-			"Eviter toute discussion concernant l'age avec les membres sur Discord et Twitch.",
-			'Procedure Discord : copier le lien du message, signaler au Trust & Safety, puis ban avec la raison "Underaged X age" pendant 30 jours en joignant une capture.',
-			"Procedure Twitch : signaler au Trust & Safety Twitch, puis ban temporaire de 30 jours via le panneau de moderation.",
+			"Réglementation Discord TOS : 13 ans minimum. Twitch TOS : 13 ans minimum également.",
+			"Ne JAMAIS demander l'âge à un utilisateur pour ensuite le bannir, quelle que soit la plateforme.",
+			"Éviter toute discussion concernant l'âge avec les membres sur Discord et Twitch.",
+			'Procédure Discord : copier le lien du message, signaler au Trust & Safety, puis bannir avec la raison "Underaged X age" pendant 30 jours en joignant une capture.',
+			"Procédure Twitch : signaler au Trust & Safety Twitch, puis bannissement temporaire de 30 jours via le panneau de modération.",
 		],
 	},
 	{
 		title: "Debannissements",
 		icon: "refresh",
-		badgeLabel: "Procedure",
+		badgeLabel: "Procédure",
 		badgeVariant: "warning",
 		borderColor: "border-l-warning-500",
 		iconBgColor: "bg-warning-100 dark:bg-warning-900/20",
 		iconColor: "text-warning-500",
 		points: [
-			"Les demandes de debannissement passent par un Google Form externe, quelle que soit la plateforme d'origine.",
+			"Les demandes de débannissement passent par un Google Form externe, quelle que soit la plateforme d'origine.",
 			"L'administration traite les demandes une fois par mois, en fin de mois.",
-			"Un debannissement Discord n'implique pas automatiquement un debannissement Twitch (et vice-versa).",
+			"Un débannissement Discord n'implique pas automatiquement un débannissement Twitch (et vice-versa).",
 			"Si un membre demande un traitement plus rapide : refuser poliment.",
-			"S'il insiste : escalader vers un responsable. Ne jamais ceder.",
+			"S'il insiste : escalader vers un responsable. Ne jamais céder.",
 		],
 	},
 	{
@@ -71,10 +71,10 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-info-100 dark:bg-info-900/20",
 		iconColor: "text-info-500",
 		points: [
-			"Inviter le membre à ouvrir un ticket pour contester, en precisant la plateforme concernee.",
-			"Ne jamais intervenir si vous etes à l'origine de la sanction (conflit d'interet).",
-			"Seul un responsable est habilite à gerer ce type d'echange.",
-			"Un membre sanctionne sur Twitch peut contester via le meme systeme de tickets Discord.",
+			"Inviter le membre à ouvrir un ticket pour contester, en précisant la plateforme concernée.",
+			"Ne jamais intervenir si tu es à l'origine de la sanction (conflit d'intérêt).",
+			"Seul un responsable est habilité à gérer ce type d'échange.",
+			"Un membre sanctionné sur Twitch peut contester via le même système de tickets Discord.",
 		],
 	},
 	{
@@ -86,14 +86,14 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-primary-100 dark:bg-primary-900/20",
 		iconColor: "text-primary-500",
 		points: [
-			"Discord : copier l'ID de la personne concernee immediatement en cas de debordement vocal.",
-			"Twitch : utiliser les outils de moderation natifs (timeout, ban) pour les perturbations en live.",
-			"Faire appel à d'autres moderateurs si la situation vous depasse, quelle que soit la plateforme.",
+			"Discord : copier l'ID de la personne concernée immédiatement en cas de débordement vocal.",
+			"Twitch : utiliser les outils de modération natifs (timeout, ban) pour les perturbations en live.",
+			"Faire appel à d'autres modérateurs si la situation te dépasse, quelle que soit la plateforme.",
 			"Documenter les incidents vocaux/live avec des captures ou enregistrements si possible.",
 		],
 	},
 	{
-		title: "Personne signalee / comportement suspect",
+		title: "Personne signalée / comportement suspect",
 		icon: "flag",
 		badgeLabel: "Surveillance",
 		badgeVariant: "success",
@@ -101,9 +101,9 @@ const TIPS: Tip[] = [
 		iconBgColor: "bg-success-100 dark:bg-success-900/20",
 		iconColor: "text-success-500",
 		points: [
-			"Creer une note avec les elements suspects observes (messages Discord, messages chat Twitch, comportements, liens).",
-			"Verifier l'activite du membre sur les deux plateformes pour identifier des patterns cross-plateforme.",
-			"Ne pas confronter directement — documenter d'abord, agir ensuite selon la procedure.",
+			"Créer une note avec les éléments suspects observés (messages Discord, messages chat Twitch, comportements, liens).",
+			"Vérifier l'activité du membre sur les deux plateformes pour identifier des patterns cross-plateforme.",
+			"Ne pas confronter directement — documenter d'abord, agir ensuite selon la procédure.",
 		],
 	},
 ];
@@ -115,8 +115,8 @@ const TIPS: Tip[] = [
 export default function TipsPolyvalentPage() {
 	return (
 		<PageContainer
-			title="Tips"
-			description="Conseils et procedures pour les situations courantes sur Twitch & Discord"
+			title="Astuces"
+			description="Conseils et procédures pour les situations courantes sur Twitch & Discord"
 		>
 			{/* Platform indicator */}
 			<div className="mb-6 flex items-center gap-2">
@@ -132,8 +132,8 @@ export default function TipsPolyvalentPage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-8 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="sparkles" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
-					Ces conseils couvrent les situations les plus frequentes sur Discord et Twitch. En cas de doute,
-					n&apos;hesitez pas à contacter un referent ou un responsable.
+					Ces conseils couvrent les situations les plus fréquentes sur Discord et Twitch. En cas de doute,
+					n'hésite pas à contacter un référent ou un responsable.
 				</p>
 			</div>
 

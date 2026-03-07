@@ -2,7 +2,6 @@
 import { Card, Badge, Icon, Avatar, Tooltip } from "@/components/ui";
 import type { BadgeVariant } from "@/core/design/states";
 
-
 interface UserCardProps {
 	user: {
 		id: string;
@@ -26,7 +25,7 @@ const roleVariant: Record<string, BadgeVariant> = {
 };
 
 /**
- * Displays a user row with avatar, role badge, status, and action buttons.
+ * Displays a user row
  * @param {UserCardProps} props - Component props
  * @param {UserCardProps["user"]} props.user - User data to display
  * @param {() => void} [props.onEdit] - Callback when edit button is clicked

@@ -39,7 +39,7 @@ const PRIORITY_ICON_COLOR: Record<Priority, string> = {
 	Standard: "text-gray-400 dark:text-gray-500",
 };
 
-// Mock current user — belongs to "Marsha Team" (NOT Legacy)
+// Mock current user
 const CURRENT_USER = {
 	name: "Alex M.",
 	team: "Marsha Team",
@@ -47,7 +47,7 @@ const CURRENT_USER = {
 };
 
 /**
- * Twitch active moderation instructions page with expandable consigne cards.
+ * Twitch active moderation instructions page
  * @returns The Twitch consignes management view
  */
 export default function TwitchConsignesPage() {
@@ -56,16 +56,14 @@ export default function TwitchConsignesPage() {
 	const [showPermissionNotice, setShowPermissionNotice] = useState(false);
 
 	/**
-	 * Toggles a consigne card expansion state.
+	 * Toggles a consigne card expansion state
 	 * @param id - The consigne identifier to toggle
 	 */
 	function toggleCard(id: string) {
 		setExpandedId((prev) => (prev === id ? null : id));
 	}
 
-	/**
-	 * Shows the permission notice when a non-Legacy user tries to edit.
-	 */
+	// Shows the permission notice when a non-Legacy user tries to edit
 	function handleEditAttempt() {
 		if (!CURRENT_USER.isLegacy) {
 			setShowPermissionNotice(true);
@@ -81,7 +79,7 @@ export default function TwitchConsignesPage() {
 				<div>
 					<p className="text-info-700 dark:text-info-400 text-sm font-medium">Zone à accès restreint</p>
 					<p className="text-info-600 dark:text-info-500 mt-1 text-xs">
-						Seuls les membres de la Legacy peuvent creer ou modifier les consignes. Les autres equipes ont
+						Seuls les membres de la Legacy peuvent creer ou modifier les consignes. Les autres équipes ont
 						un accès en lecture seule.
 					</p>
 				</div>

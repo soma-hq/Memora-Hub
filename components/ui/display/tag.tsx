@@ -3,7 +3,6 @@
 import { Icon } from "./icon";
 import { cn } from "@/lib/utils/cn";
 
-
 interface TagProps {
 	children: React.ReactNode;
 	color?: "gray" | "primary" | "success" | "error" | "warning" | "info";
@@ -22,7 +21,7 @@ const colorMap = {
 } as const;
 
 /**
- * Colored label tag.
+ * Colored label tag
  * @param {TagProps} props - Component props
  * @param {React.ReactNode} props.children - Tag label content
  * @param {"gray" | "primary" | "success" | "error" | "warning" | "info"} [props.color="gray"] - Color theme

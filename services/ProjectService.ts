@@ -73,7 +73,7 @@ export class ProjectService {
 				description: input.description,
 				groupId,
 				createdById,
-				status: (input.status as never) || ProjectStatus.Todo,
+				status: (input.status as any) || ProjectStatus.Todo,
 				startDate: input.startDate ? new Date(input.startDate) : null,
 				endDate: input.endDate ? new Date(input.endDate) : null,
 			},
@@ -100,7 +100,7 @@ export class ProjectService {
 			data: {
 				...(input.name !== undefined && { name: input.name }),
 				...(input.description !== undefined && { description: input.description }),
-				...(input.status !== undefined && { status: input.status as never }),
+				...(input.status !== undefined && { status: input.status as any }),
 				...(input.startDate !== undefined && { startDate: input.startDate ? new Date(input.startDate) : null }),
 				...(input.endDate !== undefined && { endDate: input.endDate ? new Date(input.endDate) : null }),
 			},

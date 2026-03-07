@@ -19,7 +19,7 @@ export const WELCOME_ONBOARDING: OnboardingScript = {
 			category: "Decouverte",
 			icon: "sparkles",
 			pearlMessage:
-				"Hey ! Bienvenue sur Memora ! Je suis PEARL, ton guide perso. On va faire le tour ensemble, tu vas voir c'est super simple !",
+				"Bienvenue sur Memora. Je suis PEARL, ton assistant IA. Je reste avec toi pendant toute l'integration pour te guider et te montrer l'essentiel.",
 			pearlMood: "excited",
 			highlight: "dashboard",
 		},
@@ -39,7 +39,7 @@ export const WELCOME_ONBOARDING: OnboardingScript = {
 			category: "Decouverte",
 			icon: "shield",
 			pearlMessage:
-				"Ton role dans la team va definir ce que tu peux voir et faire. Pas de panique, je t'explique tout au fur et a mesure !",
+				"Ton role definit tes acces. Je t'indique clairement ce que tu peux faire, et je t'accompagne pour chaque etape importante.",
 			pearlMood: "encouraging",
 			highlight: "role",
 		},
@@ -130,7 +130,7 @@ export const WELCOME_ONBOARDING: OnboardingScript = {
 			icon: "edit",
 			showProgress: false,
 			pearlMessage:
-				"Petit formulaire rapide pour mieux te connaitre. Remplis ca tranquille, je t'attends de l'autre cote !",
+				"On complete ton profil ensemble. Renseigne l'essentiel et je m'occupe de te guider vers la suite sans friction.",
 			pearlMood: "happy",
 			highlight: "formulaire",
 		},

@@ -17,7 +17,6 @@ const PAGE_CONFIG = definePageConfig({
 });
 
 // Constants & types
-
 type LiveconLevel = 1 | 2 | 3;
 
 interface LiveconConfig {
@@ -137,7 +136,7 @@ const LIVECON_LEVELS: LiveconConfig[] = [
 ];
 
 /**
- * Cross-platform moderation panel page with Livecon vigilance level system.
+ * Cross-platform moderation panel page with Livecon vigilance level system
  * @returns The Livecon level management dashboard for polyvalent moderation
  */
 export default function ModPolyvalentPanelPage() {
@@ -157,9 +156,7 @@ export default function ModPolyvalentPanelPage() {
 
 	return (
 		<PageContainer title="Panel Polyvalent" description="Système Livecon — Niveaux de vigilance Twitch & Discord">
-			{/* ------------------------------------------------------------------ */}
-			{/* Platform indicator                                                 */}
-			{/* ------------------------------------------------------------------ */}
+			{/* Platform indicator */}
 			<div className="mb-6 flex items-center gap-2">
 				<Badge variant="info" showDot={false}>
 					Discord

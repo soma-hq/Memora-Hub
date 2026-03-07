@@ -17,14 +17,14 @@ const PAGE_CONFIG = definePageConfig({
 });
 
 /**
- * Cross-platform ticket system page explaining moderation ticket procedures.
+ * Cross-platform ticket system page explaining moderation ticket procedures
  * @returns The polyvalent ticket system documentation page
  */
 export default function TicketsPolyvalentPage() {
 	return (
 		<PageContainer
-			title="Systeme de Tickets"
-			description="Procedure et fonctionnement du systeme de tickets cross-plateforme"
+			title="Système de tickets"
+			description="Procédure et fonctionnement du système de tickets cross-plateforme"
 		>
 			{/* Platform indicator */}
 			<div className="mb-6 flex items-center gap-2">
@@ -42,8 +42,8 @@ export default function TicketsPolyvalentPage() {
 				<div>
 					<p className="text-warning-700 dark:text-warning-400 text-sm font-medium">Rappel important</p>
 					<p className="text-warning-600 dark:text-warning-500 mt-1 text-xs">
-						Les discussions en messages prives concernant les cas de moderation sont strictement interdites,
-						que ce soit sur Discord ou Twitch. Toute communication doit passer par le systeme de tickets.
+						Les discussions en messages privés concernant les cas de modération sont strictement interdites,
+						que ce soit sur Discord ou Twitch. Toute communication doit passer par nos systèmes de tickets.
 					</p>
 				</div>
 			</div>
@@ -58,10 +58,9 @@ export default function TicketsPolyvalentPage() {
 						<h3 className={headingClasses.h5}>Canal officiel de communication</h3>
 					</div>
 					<p className={cn(textClasses.body, "leading-relaxed")}>
-						Les tickets constituent le canal officiel pour toute communication avec les membres, qu&apos;ils
-						soient sur Discord ou Twitch. Qu&apos;il s&apos;agisse d&apos;une demande, d&apos;une
-						contestation ou d&apos;une question, les membres doivent etre rediriges vers le systeme de
-						tickets unifie.
+						Les tickets constituent le canal officiel pour toute communication avec les membres, qu'ils
+						soient sur Discord ou Twitch. Qu'il s'agisse d'une demande, d'une contestation ou d'une
+						question, les membres doivent être redirigés vers le système de tickets unifié.
 					</p>
 				</Card>
 
@@ -71,12 +70,12 @@ export default function TicketsPolyvalentPage() {
 						<div className="bg-error-100 dark:bg-error-900/20 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
 							<Icon name="lock" size="sm" className="text-error-500" />
 						</div>
-						<h3 className={headingClasses.h5}>Interdiction des messages prives</h3>
+						<h3 className={headingClasses.h5}>Interdiction des messages privés</h3>
 					</div>
 					<p className={cn(textClasses.body, "leading-relaxed")}>
-						Il est formellement interdit de traiter des cas de moderation par messages prives, que ce soit
-						via les DM Discord ou les whispers Twitch. Cela protege à la fois le moderateur et le membre, en
-						garantissant une tracabilite et une transparence totale des echanges cross-plateforme.
+						Il est formellement interdit de traiter des cas de modération par messages privés, que ce soit
+						via les DM Discord ou les whispers Twitch. Cela protège à la fois le modérateur et le membre, en
+						garantissant une traçabilité et une transparence totale des échanges cross-plateforme.
 					</p>
 				</Card>
 
@@ -89,17 +88,17 @@ export default function TicketsPolyvalentPage() {
 						<h3 className={headingClasses.h5}>Rediriger les membres</h3>
 					</div>
 					<p className={cn(textClasses.body, "mb-3 leading-relaxed")}>
-						Lorsqu&apos;un membre vous contacte en prive (DM Discord ou whisper Twitch) pour un sujet lie a
-						la moderation, redirigez-le systematiquement vers le systeme de tickets.
+						Lorsqu'un membre te contacte en privé pour un sujet lié à la modération, redirige-le
+						systématiquement vers le système de tickets.
 					</p>
 					<ul className="ml-4 list-disc space-y-1.5">
 						<li className={textClasses.bodySmall}>
 							Ne jamais engager de discussion sur le sujet en MP ou whisper
 						</li>
 						<li className={textClasses.bodySmall}>Rester courtois et ferme dans la redirection</li>
-						<li className={textClasses.bodySmall}>Utiliser la reponse type ci-dessous</li>
+						<li className={textClasses.bodySmall}>Utiliser la réponse type ci-dessous</li>
 						<li className={textClasses.bodySmall}>
-							Preciser au membre la plateforme concernee par le ticket
+							Préciser au membre la plateforme concernée par le ticket
 						</li>
 					</ul>
 				</Card>
@@ -110,18 +109,18 @@ export default function TicketsPolyvalentPage() {
 						<div className="bg-success-100 dark:bg-success-900/20 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
 							<Icon name="document" size="sm" className="text-success-500" />
 						</div>
-						<h3 className={headingClasses.h5}>Reponse type</h3>
+						<h3 className={headingClasses.h5}>Réponse type</h3>
 					</div>
 					<div className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-700/40">
 						<p className="text-sm leading-relaxed text-gray-700 italic dark:text-gray-300">
-							&ldquo;Bonjour, je ne peux pas traiter votre demande en message prive. Merci d&apos;ouvrir
-							un ticket via [procedure] pour que nous puissions vous repondre officiellement. Veuillez
-							preciser si votre demande concerne Discord ou Twitch.&rdquo;
+							&ldquo;Bonjour, je ne peux pas traiter ta demande en message privé. Merci d&apos;ouvrir un
+							ticket via [procédure] pour que nous puissions te répondre officiellement. Précise si ta
+							demande concerne Discord ou Twitch.&rdquo;
 						</p>
 					</div>
 					<p className={cn(textClasses.caption, "mt-3")}>
-						Copiez et adaptez cette reponse selon le contexte. Remplacez [procedure] par le lien ou la
-						commande appropriee.
+						Copie et adapte cette réponse selon le contexte. Remplace [procédure] par le lien ou la commande
+						appropriée.
 					</p>
 				</Card>
 			</div>

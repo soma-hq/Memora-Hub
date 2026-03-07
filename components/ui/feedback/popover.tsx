@@ -1,9 +1,7 @@
 "use client";
 
-// React
 import { useState, useRef, useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils/cn";
-
 
 interface PopoverProps {
 	trigger: React.ReactNode;
@@ -15,7 +13,7 @@ interface PopoverProps {
 }
 
 /**
- * Click-triggered popover with outside-click and Escape key dismissal.
+ * Click-triggered popover
  * @param {PopoverProps} props - Component props
  * @param {React.ReactNode} props.trigger - Element that toggles the popover
  * @param {React.ReactNode} props.children - Popover panel content
@@ -34,7 +32,7 @@ export function Popover({ trigger, children, align = "bottom", className, open, 
 	const isOpen = open !== undefined ? open : internalOpen;
 
 	/**
-	 * Updates the open state via controlled or internal mode.
+	 * Updates the open state via controlled or internal mode
 	 * @param {boolean} value - New open state
 	 * @returns {void}
 	 */
@@ -54,7 +52,7 @@ export function Popover({ trigger, children, align = "bottom", className, open, 
 		if (!isOpen) return;
 
 		/**
-		 * Closes popover when clicking outside the container.
+		 * Closes popover when clicking outside the container
 		 * @param {MouseEvent} e - Mouse event
 		 * @returns {void}
 		 */
@@ -65,10 +63,11 @@ export function Popover({ trigger, children, align = "bottom", className, open, 
 		};
 
 		/**
-		 * Closes popover on Escape key.
+		 * Closes popover on Escape key
 		 * @param {KeyboardEvent} e - Keyboard event
 		 * @returns {void}
 		 */
+
 		const handleEscape = (e: KeyboardEvent) => {
 			if (e.key === "Escape") setOpen(false);
 		};

@@ -15,8 +15,16 @@ import { hasPermission, hasModuleAccess, getAccessibleModules } from "@/core/per
 export function usePermission() {
 	const currentUser = useDataStore((s) => s.currentUser);
 
+	/**
+	 * Check role ID validity.
+	 * @param value - Role candidate from user data
+	 * @returns True if role exists in hierarchy
+	 */
+	const isKnownRole = (value: string): value is RoleId => value in ROLE_HIERARCHY;
+
 	const roleId = useMemo<RoleId>(() => {
-		return currentUser?.roleId ?? "momentum_talent";
+		if (!currentUser?.roleId) return "momentum_talent";
+		return isKnownRole(currentUser.roleId) ? currentUser.roleId : "momentum_talent";
 	}, [currentUser]);
 
 	const entityAccess = useMemo<string[]>(() => {

@@ -3,7 +3,6 @@ import { Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { alertClasses, type AlertVariant } from "@/core/design/states";
 
-
 interface AlertProps {
 	variant?: AlertVariant;
 	title?: string;
@@ -19,7 +18,7 @@ const iconMap: Record<AlertVariant, "success" | "error" | "warning" | "info"> = 
 };
 
 /**
- * Displays à contextual alert banner with icon and optional title.
+ * Displays à contextual alert
  * @param {AlertProps} props - Component props
  * @param {AlertVariant} [props.variant="info"] - Alert severity level
  * @param {string} [props.title] - Optional bold heading text

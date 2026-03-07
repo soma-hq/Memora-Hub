@@ -3,8 +3,8 @@
 // Next.js
 import Link from "next/link";
 import { Card, CardHeader, CardBody, Icon, Avatar } from "@/components/ui";
+import { useModePalette } from "@/hooks/useModePalette";
 import { useDashboardActivity } from "../hooks";
-
 
 /** Props for the ActivityWidget component */
 interface ActivityWidgetProps {
@@ -20,16 +20,14 @@ interface ActivityWidgetProps {
 export function ActivityWidget({ className }: ActivityWidgetProps) {
 	// State
 	const { activities } = useDashboardActivity();
+	const palette = useModePalette();
 
 	// Render
 	return (
 		<Card padding="sm" className={className}>
 			<CardHeader>
 				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Activite recente</h3>
-				<Link
-					href="/activity"
-					className="text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
-				>
+				<Link href="/activity" className={`${palette.linkClass} text-sm font-medium transition-colors`}>
 					Voir tout
 				</Link>
 			</CardHeader>

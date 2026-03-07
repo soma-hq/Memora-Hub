@@ -1,7 +1,6 @@
 // Utils & hooks
 import { cn } from "@/lib/utils/cn";
 
-
 interface LoaderProps {
 	size?: "sm" | "md" | "lg";
 	className?: string;
@@ -15,7 +14,7 @@ const sizeMap = {
 } as const;
 
 /**
- * Spinning loader indicator with optional text label.
+ * Spinning loader indicator
  * @param {LoaderProps} props - Component props
  * @param {"sm" | "md" | "lg"} [props.size="md"] - Spinner size
  * @param {string} [props.className] - Additional CSS classes
@@ -38,7 +37,7 @@ export function Loader({ size = "md", className, text }: LoaderProps) {
 }
 
 /**
- * Full-screen centered loader for page-level loading states.
+ * Full-screen centered loader
  * @returns {JSX.Element} Full page loader
  */
 export function PageLoader() {

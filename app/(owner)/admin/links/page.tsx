@@ -134,7 +134,7 @@ const selectClasses = cn(
 );
 
 /**
- * Generates a random alphanumeric hash for link URLs.
+ * Generates a random alphanumeric hash for link URLs
  * @returns An 8-character random hash string
  */
 function generateMockHash(): string {
@@ -142,7 +142,7 @@ function generateMockHash(): string {
 }
 
 /**
- * Computes the expiration date from a preset duration string.
+ * Computes the expiration date from a preset duration string
  * @param exp - Expiration preset (24h, 7j, 30j, permanent)
  * @returns Formatted expiration date or Permanent
  */
@@ -171,7 +171,7 @@ function truncateUrl(url: string, maxLength: number = 38): string {
 }
 
 /**
- * Generated links management page for invitations, shares and temporary URLs.
+ * Generated links management page for invitations, shares and temporary URLs
  * @returns The links management page
  */
 export default function AdminLinksPage() {
@@ -316,7 +316,7 @@ export default function AdminLinksPage() {
 							Activer la première connexion
 						</label>
 						<span className="text-xs text-gray-500 dark:text-gray-400">
-							Le lien déclenchera le parcours d&apos;onboarding
+							Le lien déclenchera le parcours d'onboarding
 						</span>
 					</div>
 				)}

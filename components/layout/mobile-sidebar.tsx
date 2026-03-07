@@ -9,7 +9,6 @@ import { useHubStore } from "@/store/hub.store";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 
-
 interface NavItem {
 	label: string;
 	href: string;
@@ -41,7 +40,7 @@ function getCollapsedSections(): Record<string, boolean> {
 }
 
 /**
- * Saves collapsed sections to storage.
+ * Saves collapsed sections
  * @param {Record<string, boolean>} sections - Section collapse map
  */
 
@@ -54,7 +53,7 @@ function saveCollapsedSections(sections: Record<string, boolean>) {
 }
 
 /**
- * Mobile sidebar overlay.
+ * Mobile sidebar overlay
  * @returns {JSX.Element | null} Mobile sidebar or null
  */
 
@@ -71,9 +70,8 @@ export function MobileSidebar() {
 		setCollapsedSections(getCollapsedSections());
 	}, []);
 
-	// Handlers
 	/**
-	 * Toggles section collapse.
+	 * Toggles section collapse
 	 * @param {string} sectionId - Section ID
 	 */
 
@@ -87,10 +85,7 @@ export function MobileSidebar() {
 
 	if (!isOpen) return null;
 
-	/**
-	 * Closes the sidebar.
-	 */
-
+	// Closes the sidebar
 	const close = () => setOpen(false);
 
 	// Computed

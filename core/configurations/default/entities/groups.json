@@ -1,0 +1,43 @@
+{
+	"_meta": {
+		"version": "1.0.0",
+		"description": "Groupes (squads) — un groupe par entité gérée"
+	},
+	"groups": [
+		{
+			"id": "grp-bazalthe",
+			"name": "Squad Bazalthe",
+			"entityId": "bazalthe",
+			"type": "squad",
+			"description": "Équipe principale — gestion transverse de l'organisation"
+		},
+		{
+			"id": "grp-inoxtag",
+			"name": "Squad Inoxtag",
+			"entityId": "inoxtag",
+			"type": "squad",
+			"description": "Modération et gestion de la communauté Inoxtag"
+		},
+		{
+			"id": "grp-michou",
+			"name": "Squad Michou",
+			"entityId": "michou",
+			"type": "squad",
+			"description": "Modération et gestion de la communauté Michou"
+		},
+		{
+			"id": "grp-doigby",
+			"name": "Squad Doigby",
+			"entityId": "doigby",
+			"type": "squad",
+			"description": "Modération et gestion de la communauté Doigby"
+		},
+		{
+			"id": "grp-anthony",
+			"name": "Squad Anthony",
+			"entityId": "anthony",
+			"type": "squad",
+			"description": "Modération et gestion de la communauté Anthony"
+		}
+	]
+}

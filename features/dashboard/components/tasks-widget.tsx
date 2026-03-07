@@ -6,6 +6,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils/cn";
 import { Card, CardHeader, CardBody, Badge, Avatar, Checkbox, StyledEmptyState } from "@/components/ui";
 import { useUIStore } from "@/store/ui.store";
+import { useModePalette } from "@/hooks/useModePalette";
 import type { BadgeVariant } from "@/core/design/states";
 
 /** Task item for the dashboard widget */
@@ -39,6 +40,7 @@ export function TasksWidget({ className }: TasksWidgetProps) {
 	// State
 	const [tasks, setTasks] = useState<TaskItem[]>([]);
 	const legacyMode = useUIStore((s) => s.legacyMode);
+	const palette = useModePalette();
 
 	// Handlers
 	/**
@@ -58,10 +60,7 @@ export function TasksWidget({ className }: TasksWidgetProps) {
 		<Card padding="sm" className={className}>
 			<CardHeader>
 				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Tâches récentes</h3>
-				<Link
-					href="/tasks"
-					className="text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
-				>
+				<Link href="/tasks" className={`${palette.linkClass} text-sm font-medium transition-colors`}>
 					Voir tout
 				</Link>
 			</CardHeader>

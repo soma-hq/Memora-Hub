@@ -15,6 +15,7 @@ interface PageContainerProps {
 	hideBreadcrumbs?: boolean;
 }
 
+// Pages routes
 const ROUTE_LABELS: Record<string, string> = {
 	hub: "Hub",
 	projects: "Projets",
@@ -70,7 +71,7 @@ const ROUTE_LABELS: Record<string, string> = {
 };
 
 /**
- * Page layout container.
+ * Page layout container
  * @param {PageContainerProps} props - Component props
  * @param {string} [props.title] - Page heading
  * @param {string} [props.description] - Page subtitle
@@ -103,7 +104,7 @@ export function PageContainer({
 		for (const segment of segments) {
 			currentPath += `/${segment}`;
 
-			// Skip groupId segments (dynamic route params)
+			// Skip groupId segments
 			if (segments[0] === "hub" && segments.indexOf(segment) === 1) {
 				continue;
 			}

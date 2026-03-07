@@ -329,15 +329,15 @@ export default function LogsPage() {
 					<div className="mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-700">
 						<Icon name="search" size="lg" className="text-gray-300 dark:text-gray-500" />
 					</div>
-					<p className="text-sm font-medium text-gray-500 dark:text-gray-400">Aucun log trouve</p>
-					<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">Essayez de modifier vos filtres</p>
+					<p className="text-sm font-medium text-gray-500 dark:text-gray-400">Aucune log trouvée</p>
+					<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">Essaie de modifier vos filtres</p>
 					{hasFilters && (
 						<button
 							type="button"
 							onClick={clearFilters}
 							className="bg-primary-500 hover:bg-primary-600 mt-4 rounded-lg px-4 py-2 text-sm font-medium text-white transition-all duration-200"
 						>
-							Reinitialiser les filtres
+							Réinitialiser les filtres
 						</button>
 					)}
 				</div>
@@ -445,7 +445,7 @@ export default function LogsPage() {
 															)}
 															{!log.metadata && isExpanded && (
 																<p className="border-t border-gray-100 pt-3 text-[10px] text-gray-400 italic dark:border-gray-700 dark:text-gray-500">
-																	Aucune metadonnee disponible
+																	Aucune métadonnée disponible
 																</p>
 															)}
 														</div>

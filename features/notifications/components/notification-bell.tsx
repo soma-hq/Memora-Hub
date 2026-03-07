@@ -9,7 +9,7 @@ import { useActivityStore } from "@/store/activity.store";
 import { useUIStore } from "@/store/ui.store";
 import { usePing } from "@/features/ping/hooks";
 import { PingBubble } from "@/features/ping/components/ping-bubble";
-
+import { useModePalette } from "@/hooks/useModePalette";
 
 /**
  * Notification bell
@@ -22,6 +22,7 @@ export function NotificationBell() {
 	const { unreadCount } = useNotifications();
 	const activityUnread = useActivityStore((s) => s.unreadCount);
 	const absenceMode = useUIStore((s) => s.absenceMode);
+	const palette = useModePalette();
 	const { latestUnread, bubbleVisible, unreadCount: pingUnread, dismissBubble, markAsRead } = usePing();
 
 	// Computed
@@ -70,7 +71,8 @@ export function NotificationBell() {
 				<span
 					className={cn(
 						"absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center",
-						"bg-primary-500 rounded-full px-1 text-[10px] font-bold text-white",
+						"rounded-full px-1 text-[10px] font-bold text-white",
+						palette.sidebarBadgeClass,
 						"ring-2 ring-white dark:ring-gray-800",
 					)}
 				>
@@ -92,11 +94,7 @@ export function NotificationBell() {
 
 			{/* Ping bubble */}
 			{bubbleVisible && latestUnread && !isOpen && !isAbsent && (
-				<PingBubble
-					ping={latestUnread}
-					onDismiss={dismissBubble}
-					onNavigate={handlePingNavigate}
-				/>
+				<PingBubble ping={latestUnread} onDismiss={dismissBubble} onNavigate={handlePingNavigate} />
 			)}
 
 			<NotificationCenter isOpen={isOpen} onClose={() => setIsOpen(false)} />

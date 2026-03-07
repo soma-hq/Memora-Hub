@@ -4,7 +4,6 @@
 import { useState } from "react";
 import { Modal, ModalFooter, Button } from "@/components/ui";
 
-
 interface ConfirmActionProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -23,7 +22,7 @@ const variantMap = {
 };
 
 /**
- * Modal dialog that asks the user to confirm à potentially destructive action.
+ * Modal dialog
  * @param {ConfirmActionProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
@@ -50,7 +49,7 @@ export function ConfirmAction({
 
 	// Handlers
 	/**
-	 * Executes the confirm callback with loading state management.
+	 * Executes the confirm callback
 	 * @returns {Promise<void>} Resolves when confirmation is complete
 	 */
 	const handleConfirm = async () => {

@@ -5,7 +5,6 @@ import { useEffect, useCallback } from "react";
 import { cn } from "@/lib/utils/cn";
 import { themeClasses } from "@/core/design/themes";
 
-
 interface ModalProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -24,7 +23,7 @@ const sizeMap = {
 } as const;
 
 /**
- * Overlay modal with escape-to-close and click-outside-to-close.
+ * Overlay modal
  * @param {ModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
@@ -61,14 +60,25 @@ export function Modal({ isOpen, onClose, title, description, children, size = "m
 
 	if (!isOpen) return null;
 
+	const titleId = title ? "modal-title" : undefined;
+	const descId = description ? "modal-desc" : undefined;
+
 	// Render
 	return (
 		<div className="fixed inset-0 z-50 flex items-center justify-center p-4">
 			{/* Overlay */}
-			<div className={cn(themeClasses.overlay, "animate-fade-in fixed inset-0 z-0")} onClick={onClose} />
+			<div
+				className={cn(themeClasses.overlay, "animate-fade-in fixed inset-0 z-0")}
+				onClick={onClose}
+				aria-hidden="true"
+			/>
 
 			{/* Modal content */}
 			<div
+				role="dialog"
+				aria-modal="true"
+				aria-labelledby={titleId}
+				aria-describedby={descId}
 				className={cn(
 					"animate-scale-in relative z-10 w-full rounded-2xl shadow-xl",
 					themeClasses.modal,
@@ -79,14 +89,23 @@ export function Modal({ isOpen, onClose, title, description, children, size = "m
 				{/* Header */}
 				{(title || description) && (
 					<div className="border-b border-gray-200 px-6 py-4 dark:border-gray-700">
-						{title && <h2 className="text-xl font-semibold text-gray-900 dark:text-white">{title}</h2>}
-						{description && <p className="mt-1 text-sm text-gray-400">{description}</p>}
+						{title && (
+							<h2 id={titleId} className="text-xl font-semibold text-gray-900 dark:text-white">
+								{title}
+							</h2>
+						)}
+						{description && (
+							<p id={descId} className="mt-1 text-sm text-gray-400">
+								{description}
+							</p>
+						)}
 					</div>
 				)}
 
 				{/* Close button */}
 				<button
 					onClick={onClose}
+					aria-label="Fermer"
 					className="absolute top-4 right-4 rounded-lg p-1 text-gray-400 transition-all duration-200 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
 				>
 					<svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

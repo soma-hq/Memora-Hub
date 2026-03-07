@@ -364,7 +364,7 @@ interface SearchModalProps {
 }
 
 /**
- * Command palette modal with keyboard navigation and category-grouped results.
+ * Command palette modal
  * @param {SearchModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
@@ -395,7 +395,7 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 		return acc;
 	}, {});
 
-	// Reset state when modal opens
+	// Reset state
 	useEffect(() => {
 		if (!isOpen) return;
 		setQuery("");
@@ -403,9 +403,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 		setTimeout(() => inputRef.current?.focus(), 50);
 	}, [isOpen]);
 
-	// Handlers
 	/**
-	 * Handles arrow key and enter navigation within results.
+	 * Handles arrow key and enter navigation
 	 * @param {React.KeyboardEvent} e - Keyboard event
 	 * @returns {void}
 	 */

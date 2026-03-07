@@ -12,6 +12,7 @@ import {
 	ClipboardDocumentListIcon,
 	ChevronRightIcon,
 } from "@heroicons/react/24/outline";
+import { useModePalette } from "@/hooks/useModePalette";
 
 // Utils & hooks
 import { cn } from "@/lib/utils/cn";
@@ -35,34 +36,58 @@ const ICON_MAP: Record<string, ComponentType<SVGProps<SVGSVGElement>>> = {
 interface CategoryConfig {
 	label: string;
 	icon: ComponentType<SVGProps<SVGSVGElement>>;
-	iconColor: string;
+	iconColorByMode: {
+		owner: string;
+		legacy: string;
+		default: string;
+	};
 }
 
 const CATEGORY_CONFIG: Record<BriefingItem["category"], CategoryConfig> = {
 	deadlines: {
 		label: "Échéances",
 		icon: ExclamationTriangleIcon,
-		iconColor: "text-red-500 dark:text-red-400",
+		iconColorByMode: {
+			owner: "text-red-500 dark:text-red-300",
+			legacy: "text-orange-500 dark:text-orange-300",
+			default: "text-slate-500 dark:text-slate-300",
+		},
 	},
 	projects: {
 		label: "Projets",
 		icon: FolderIcon,
-		iconColor: "text-pink-500 dark:text-pink-400",
+		iconColorByMode: {
+			owner: "text-red-500 dark:text-red-300",
+			legacy: "text-amber-500 dark:text-amber-300",
+			default: "text-slate-500 dark:text-slate-300",
+		},
 	},
 	tasks: {
 		label: "Tâches",
 		icon: CheckCircleIcon,
-		iconColor: "text-blue-500 dark:text-blue-400",
+		iconColorByMode: {
+			owner: "text-red-500 dark:text-red-300",
+			legacy: "text-orange-500 dark:text-orange-300",
+			default: "text-slate-500 dark:text-slate-300",
+		},
 	},
 	schedule: {
 		label: "Agenda",
 		icon: CalendarDaysIcon,
-		iconColor: "text-purple-500 dark:text-purple-400",
+		iconColorByMode: {
+			owner: "text-red-500 dark:text-red-300",
+			legacy: "text-amber-500 dark:text-amber-300",
+			default: "text-slate-500 dark:text-slate-300",
+		},
 	},
 	team: {
 		label: "Équipe",
 		icon: UsersIcon,
-		iconColor: "text-green-500 dark:text-green-400",
+		iconColorByMode: {
+			owner: "text-red-500 dark:text-red-300",
+			legacy: "text-orange-500 dark:text-orange-300",
+			default: "text-slate-500 dark:text-slate-300",
+		},
 	},
 };
 
@@ -131,6 +156,8 @@ function BriefingCard({ item }: { item: BriefingItem }) {
  * Groups items by category and renders them in a prioritized order.
  */
 export function BriefingSection({ greeting, subtitle, items }: BriefingSectionProps) {
+	const palette = useModePalette();
+
 	// Group items by category
 	const groupedItems = useMemo(() => {
 		const groups: Partial<Record<BriefingItem["category"], BriefingItem[]>> = {};
@@ -147,7 +174,17 @@ export function BriefingSection({ greeting, subtitle, items }: BriefingSectionPr
 	return (
 		<div className="space-y-6">
 			{/* Greeting banner */}
-			<div className="rounded-2xl bg-gradient-to-r from-pink-500/10 to-purple-500/10 p-6 dark:from-pink-500/5 dark:to-purple-500/5">
+			<div
+				className={cn(
+					"rounded-2xl p-6",
+					palette.mode === "owner" &&
+						"bg-gradient-to-r from-red-100/80 to-rose-100/80 dark:from-red-900/20 dark:to-rose-900/20",
+					palette.mode === "legacy" &&
+						"bg-gradient-to-r from-orange-100/80 to-amber-100/80 dark:from-orange-900/20 dark:to-amber-900/20",
+					palette.mode === "default" &&
+						"bg-gradient-to-r from-rose-50/80 to-slate-100/85 dark:from-rose-950/25 dark:to-slate-800/70",
+				)}
+			>
 				<h1 className="text-2xl font-bold text-gray-900 dark:text-white">{greeting}</h1>
 				<p className="mt-1 text-sm text-gray-500 dark:text-gray-400">{subtitle}</p>
 			</div>
@@ -162,7 +199,7 @@ export function BriefingSection({ greeting, subtitle, items }: BriefingSectionPr
 					<div key={category}>
 						{/* Category header */}
 						<div className="mb-3 flex items-center gap-2">
-							<CategoryIcon className={cn("h-5 w-5", config.iconColor)} />
+							<CategoryIcon className={cn("h-5 w-5", config.iconColorByMode[palette.mode])} />
 							<h2 className="text-base font-semibold text-gray-900 dark:text-white">{config.label}</h2>
 							<span className="text-xs text-gray-400 dark:text-gray-500">({categoryItems.length})</span>
 						</div>

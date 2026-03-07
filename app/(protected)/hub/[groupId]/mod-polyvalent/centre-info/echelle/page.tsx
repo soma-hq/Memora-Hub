@@ -85,10 +85,8 @@ const HIERARCHY: HierarchyLevel[] = [
 	},
 ];
 
-// Page
-
 /**
- * Cross-platform priority scale page displaying the moderation chain of command.
+ * Cross-platform priority scale page displaying the moderation chain of command
  * @returns The polyvalent hierarchy and priority levels view
  */
 export default function EchellePolyvalentPage() {
@@ -111,8 +109,8 @@ export default function EchellePolyvalentPage() {
 			<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 mb-8 flex items-start gap-3 rounded-lg border p-4">
 				<Icon name="info" size="md" className="text-info-500 mt-0.5 shrink-0" />
 				<p className="text-info-700 dark:text-info-400 text-sm">
-					En cas de doute sur une action de moderation sur Discord ou Twitch, remontez toujours au niveau
-					superieur. La chaine de commandement est identique pour les deux plateformes.
+					En cas de doute sur une action de moderation sur Discord ou Twitch, remonte toujours au niveau
+					superieur. La chaine de commandement est identique pour tout notre écosystème
 				</p>
 			</div>
 

@@ -1,10 +1,8 @@
 "use client";
 
-// React
 import { useState } from "react";
 import { Modal, ModalFooter, Button, Badge, Icon, Avatar, Tabs, Divider } from "@/components/ui";
 import type { BadgeVariant } from "@/core/design/states";
-
 
 interface GroupMember {
 	id: string;
@@ -38,7 +36,7 @@ const roleVariant: Record<string, BadgeVariant> = {
 };
 
 /**
- * Detail modal for a group showing stats, members, and permissions.
+ * Detail modal for a group
  * @param {GroupDetailModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
@@ -110,7 +108,7 @@ export function GroupDetailModal({ isOpen, onClose, group }: GroupDetailModalPro
 
 				{activeTab === "permissions" && (
 					<div className="space-y-4">
-						<p className="text-sm text-gray-400">Permissions par role pour ce groupement.</p>
+						<p className="text-sm text-gray-400">Permissions par rôle pour ce groupement.</p>
 						{["Owner", "Admin", "Manager", "Collaborator", "Guest"].map((role) => (
 							<div key={role} className="rounded-lg border border-gray-200 p-4 dark:border-gray-700">
 								<div className="mb-2 flex items-center gap-2">

@@ -3,9 +3,8 @@
 // Components
 import { Icon, Button } from "@/components/ui";
 
-
 /**
- * Global error boundary displayed when an unhandled error occurs at root level.
+ * Global error boundary
  * @param props - Component props
  * @param props.error - The caught error object with optional digest
  * @param props.reset - Callback to retry rendering the failed segment
@@ -26,7 +25,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 							Une erreur est survenue
 						</h1>
 						<p className="mb-8 text-sm text-gray-400">
-							Quelque chose s&apos;est mal passe. Veuillez reessayer ou contacter le support.
+							Quelque chose s'est mal passé. Réessaie ou contacte tes responsables.
 						</p>
 						<div className="flex items-center justify-center gap-3">
 							<Button onClick={reset}>Reessayer</Button>

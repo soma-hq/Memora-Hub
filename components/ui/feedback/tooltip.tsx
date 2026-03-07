@@ -1,9 +1,7 @@
 "use client";
 
-// React
 import { useState } from "react";
 import { cn } from "@/lib/utils/cn";
-
 
 interface TooltipProps {
 	content: string;
@@ -20,7 +18,7 @@ const positionMap = {
 } as const;
 
 /**
- * Hover-triggered tooltip displaying text near the wrapped element.
+ * Hover-triggered tooltip displaying text near the wrapped element
  * @param {TooltipProps} props - Component props
  * @param {string} props.content - Tooltip text
  * @param {React.ReactNode} props.children - Element that triggers the tooltip
@@ -42,6 +40,7 @@ export function Tooltip({ content, children, position = "top", className }: Tool
 			{children}
 			{visible && (
 				<div
+					role="tooltip"
 					className={cn(
 						"animate-fade-in pointer-events-none absolute z-50 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-white shadow-lg dark:bg-gray-700",
 						positionMap[position],

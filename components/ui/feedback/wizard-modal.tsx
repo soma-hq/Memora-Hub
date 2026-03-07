@@ -6,7 +6,7 @@ import { themeClasses } from "@/core/design/themes";
 import { Icon } from "@/components/ui/display/icon";
 import type { IconName } from "@/core/design/icons";
 
-/** Configuration for a single wizard step */
+// Configuration for a single wizard step
 export interface WizardStep {
 	id: string;
 	title: string;
@@ -14,7 +14,7 @@ export interface WizardStep {
 	icon: IconName;
 }
 
-/** Props for the WizardModal component */
+// Props for the WizardModal component
 interface WizardModalProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -36,8 +36,7 @@ const sizeMap = {
 } as const;
 
 /**
- * Multi-step wizard modal with breadcrumb progress indicator.
- * Includes skip-all button and step-by-step navigation with green check marks.
+ * Multi-step wizard modal with breadcrumb progress indicator
  * @param {WizardModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal
@@ -68,7 +67,7 @@ export function WizardModal({
 	const isFirstStep = currentStep === 0;
 
 	/**
-	 * Closes the modal when Escape is pressed.
+	 * Closes the modal when Escape is pressed
 	 * @param {KeyboardEvent} e - Keyboard event
 	 * @returns {void}
 	 */
@@ -95,7 +94,7 @@ export function WizardModal({
 	if (!isOpen) return null;
 
 	/**
-	 * Navigates to the next step or submits on the last step.
+	 * Navigates to the next step
 	 * @returns {void}
 	 */
 
@@ -108,7 +107,7 @@ export function WizardModal({
 	};
 
 	/**
-	 * Navigates to the previous step.
+	 * Navigates to the previous step
 	 * @returns {void}
 	 */
 
@@ -119,7 +118,7 @@ export function WizardModal({
 	};
 
 	/**
-	 * Skips directly to the last step.
+	 * Skips directly to the last step
 	 * @returns {void}
 	 */
 

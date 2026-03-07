@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils/cn";
 
-
 interface DividerProps {
 	label?: string;
 	className?: string;
@@ -8,7 +7,7 @@ interface DividerProps {
 }
 
 /**
- * Separator line.
+ * Separator line
  * @param {DividerProps} props - Component props
  * @param {string} [props.label] - Center label text
  * @param {string} [props.className] - Extra CSS classes

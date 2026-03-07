@@ -2,25 +2,11 @@
 
 import { useState, useMemo } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button, Tag, Tabs, SectionHeaderBanner } from "@/components/ui";
+import { Card, Badge, Icon, Button, Tabs, SectionHeaderBanner } from "@/components/ui";
 import { useDataStore } from "@/store/data.store";
-import {
-	ROLES_LIST,
-	ROLE_LABELS,
-	ROLE_BADGE_CLASSES,
-	ROLE_DESCRIPTIONS,
-	type RoleId,
-} from "@/core/config/roles";
-import {
-	MODULE_LABELS,
-	ALL_MODULES,
-	PERMISSION_LABELS,
-	type Module,
-} from "@/core/config/capabilities";
-import {
-	getPermissionsForModule,
-	getAccessibleModules,
-} from "@/core/permissions/capabilityMap";
+import { ROLES_LIST, ROLE_LABELS, ROLE_BADGE_CLASSES, ROLE_DESCRIPTIONS, type RoleId } from "@/core/config/roles";
+import { MODULE_LABELS, ALL_MODULES, PERMISSION_LABELS, type Module } from "@/core/config/capabilities";
+import { getPermissionsForModule, getAccessibleModules } from "@/core/permissions/capabilityMap";
 import { ENTITIES, resolveEntityAccess } from "@/core/data/entities";
 import { getTeamForRole } from "@/core/config/teams";
 import { cn } from "@/lib/utils/cn";
@@ -37,7 +23,7 @@ const PAGE_CONFIG = definePageConfig({
 	ownerOnly: true,
 });
 
-// --- Avatar background helper ---
+// Avatar background helper
 const AVATAR_BG: Record<string, string> = {
 	A: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
 	B: "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
@@ -60,7 +46,7 @@ function getAvatarBg(name: string) {
 	return AVATAR_BG[letter] ?? "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300";
 }
 
-// --- Role border colors for user rows ---
+// Role border colors for user rows
 const ROLE_BORDER: Record<RoleId, string> = {
 	owner: "border-l-red-500",
 	marsha_teams: "border-l-primary-500",
@@ -70,7 +56,7 @@ const ROLE_BORDER: Record<RoleId, string> = {
 	momentum_talent: "border-l-purple-500",
 };
 
-// --- Permission badge colors ---
+// Permission badge colors
 const PERM_COLORS: Record<string, string> = {
 	view: "bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400",
 	create: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400",
@@ -79,14 +65,14 @@ const PERM_COLORS: Record<string, string> = {
 	manage: "bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400",
 };
 
-// --- View tabs ---
+// View tabs
 const VIEW_TABS = [
 	{ id: "members" as const, label: "Membres" },
 	{ id: "roles" as const, label: "Rôles" },
 	{ id: "matrix" as const, label: "Matrice" },
 ];
 
-// --- Select classes ---
+// Select classes
 const selectClasses = cn(
 	"rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm",
 	"text-gray-700 shadow-sm transition-all duration-200",
@@ -95,8 +81,7 @@ const selectClasses = cn(
 );
 
 /**
- * Owner Access Management page with Discord-style permission system.
- * Three views: Members (user management), Roles (role overview), Matrix (permission matrix).
+ * Owner Access Management page with Discord-style permission system
  * @returns {JSX.Element} Access management page
  */
 export default function AdminAccessPage() {
@@ -131,19 +116,13 @@ export default function AdminAccessPage() {
 
 	// Role filter options
 	const roleFilterOptions = useMemo(
-		() => [
-			{ value: "all", label: "Rôle : Tous" },
-			...ROLES_LIST.map((r) => ({ value: r.id, label: r.label })),
-		],
+		() => [{ value: "all", label: "Rôle : Tous" }, ...ROLES_LIST.map((r) => ({ value: r.id, label: r.label }))],
 		[],
 	);
 
 	// Entity filter options
 	const entityFilterOptions = useMemo(
-		() => [
-			{ value: "all", label: "Entité : Toutes" },
-			...ENTITIES.map((e) => ({ value: e.id, label: e.name })),
-		],
+		() => [{ value: "all", label: "Entité : Toutes" }, ...ENTITIES.map((e) => ({ value: e.id, label: e.name }))],
 		[],
 	);
 
@@ -194,7 +173,10 @@ export default function AdminAccessPage() {
 
 	// Render
 	return (
-		<PageContainer title="Gestion des accès" description="Système de permissions Discord-style. Rôles, entités et modules.">
+		<PageContainer
+			title="Gestion des accès"
+			description="Système de permissions Discord-style. Rôles, entités et modules."
+		>
 			{/* View tabs */}
 			<div className="mb-6 border-b border-gray-200 dark:border-gray-700">
 				<Tabs
@@ -205,9 +187,7 @@ export default function AdminAccessPage() {
 				/>
 			</div>
 
-			{/* ═══════════════════════════════════════════════════════ */}
-			{/* TAB: MEMBERS                                          */}
-			{/* ═══════════════════════════════════════════════════════ */}
+			{/* Members */}
 			{activeView === "members" && (
 				<>
 					{/* Filters */}
@@ -233,7 +213,10 @@ export default function AdminAccessPage() {
 						<select
 							value={entityFilter}
 							onChange={(e) => setEntityFilter(e.target.value)}
-							className={cn(selectClasses, entityFilter !== "all" && "border-red-400 ring-1 ring-red-400")}
+							className={cn(
+								selectClasses,
+								entityFilter !== "all" && "border-red-400 ring-1 ring-red-400",
+							)}
 							aria-label="Filtrer par entité"
 						>
 							{entityFilterOptions.map((opt) => (
@@ -290,7 +273,7 @@ export default function AdminAccessPage() {
 										padding="md"
 										hover
 										className={cn(
-											"border-l-4 cursor-pointer border border-red-100 dark:border-red-900/20",
+											"cursor-pointer border border-l-4 border-red-100 dark:border-red-900/20",
 											ROLE_BORDER[user.roleId],
 										)}
 										onClick={() => setExpandedUser(isExpanded ? null : user.id)}
@@ -411,7 +394,10 @@ export default function AdminAccessPage() {
 															className={cn(
 																"rounded-lg border px-3 py-1.5 text-xs font-medium transition-all",
 																user.roleId === role.id
-																	? cn(ROLE_BADGE_CLASSES[role.id], "border-current ring-1 ring-current")
+																	? cn(
+																			ROLE_BADGE_CLASSES[role.id],
+																			"border-current ring-1 ring-current",
+																		)
 																	: "border-gray-200 text-gray-500 hover:border-gray-300 hover:text-gray-700 dark:border-gray-600 dark:text-gray-400 dark:hover:border-gray-500",
 															)}
 														>
@@ -442,13 +428,14 @@ export default function AdminAccessPage() {
 															}}
 															className="rounded-md px-2 py-0.5 text-[10px] font-medium text-purple-600 transition-colors hover:bg-purple-50 dark:text-purple-400 dark:hover:bg-purple-900/20"
 														>
-														Activer toutes les entités
+															Activer toutes les entités
 														</button>
 													)}
 												</div>
 												<div className="flex flex-wrap gap-2">
 													{ENTITIES.map((entity) => {
-														const hasAccess = isWildcard || user.entityAccess.includes(entity.id);
+														const hasAccess =
+															isWildcard || user.entityAccess.includes(entity.id);
 														return (
 															<button
 																key={entity.id}
@@ -478,12 +465,14 @@ export default function AdminAccessPage() {
 																		"h-3 w-3 rounded-full",
 																		!hasAccess && "bg-gray-300 dark:bg-gray-600",
 																	)}
-																	style={hasAccess ? { backgroundColor: entity.color } : undefined}
+																	style={
+																		hasAccess
+																			? { backgroundColor: entity.color }
+																			: undefined
+																	}
 																/>
 																{entity.name}
-																{hasAccess && (
-																	<Icon name="check" size="xs" />
-																)}
+																{hasAccess && <Icon name="check" size="xs" />}
 															</button>
 														);
 													})}
@@ -516,7 +505,9 @@ export default function AdminAccessPage() {
 																<span
 																	className={cn(
 																		"h-2 w-2 shrink-0 rounded-full",
-																		hasAccess ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600",
+																		hasAccess
+																			? "bg-emerald-400"
+																			: "bg-gray-300 dark:bg-gray-600",
 																	)}
 																/>
 																<span
@@ -570,7 +561,10 @@ export default function AdminAccessPage() {
 																: "border-gray-200 text-gray-500 dark:border-gray-600 dark:text-gray-400",
 														)}
 													>
-														<Icon name={user.twoFactorEnabled ? "lock" : "lock"} size="sm" />
+														<Icon
+															name={user.twoFactorEnabled ? "lock" : "lock"}
+															size="sm"
+														/>
 														2FA {user.twoFactorEnabled ? "Activé" : "Désactivé"}
 													</button>
 													<span className="text-xs text-gray-400">
@@ -597,9 +591,7 @@ export default function AdminAccessPage() {
 				</>
 			)}
 
-			{/* ═══════════════════════════════════════════════════════ */}
-			{/* TAB: ROLES                                            */}
-			{/* ═══════════════════════════════════════════════════════ */}
+			{/* Roles */}
 			{activeView === "roles" && (
 				<div className="space-y-3">
 					{ROLES_LIST.map((role) => {
@@ -631,7 +623,7 @@ export default function AdminAccessPage() {
 										</span>
 
 										{/* Level */}
-										<span className="hidden rounded bg-gray-100 px-2 py-0.5 text-xs font-mono text-gray-500 sm:inline dark:bg-gray-700 dark:text-gray-400">
+										<span className="hidden rounded bg-gray-100 px-2 py-0.5 font-mono text-xs text-gray-500 sm:inline dark:bg-gray-700 dark:text-gray-400">
 											Lvl {role.level}
 										</span>
 
@@ -724,7 +716,9 @@ export default function AdminAccessPage() {
 														<span
 															className={cn(
 																"h-2 w-2 shrink-0 rounded-full",
-																hasAccess ? "bg-emerald-400" : "bg-gray-300 dark:bg-gray-600",
+																hasAccess
+																	? "bg-emerald-400"
+																	: "bg-gray-300 dark:bg-gray-600",
 															)}
 														/>
 														<span
@@ -762,12 +756,15 @@ export default function AdminAccessPage() {
 				</div>
 			)}
 
-			{/* ═══════════════════════════════════════════════════════ */}
-			{/* TAB: PERMISSION MATRIX                                */}
-			{/* ═══════════════════════════════════════════════════════ */}
+			{/* Permission Matrix */}
 			{activeView === "matrix" && (
 				<Card padding="lg">
-					<SectionHeaderBanner icon="shield" title="Matrice des permissions" accentColor="red" className="mb-4" />
+					<SectionHeaderBanner
+						icon="shield"
+						title="Matrice des permissions"
+						accentColor="red"
+						className="mb-4"
+					/>
 
 					{/* Legend */}
 					<div className="mb-4 flex flex-wrap gap-3">
@@ -787,7 +784,7 @@ export default function AdminAccessPage() {
 							{/* Header: Roles */}
 							<thead>
 								<tr>
-									<th className="sticky left-0 z-10 min-w-[140px] border-b border-r border-gray-200 bg-gray-50 px-3 py-2 text-left font-semibold text-gray-500 dark:border-gray-700 dark:bg-gray-800">
+									<th className="sticky left-0 z-10 min-w-[140px] border-r border-b border-gray-200 bg-gray-50 px-3 py-2 text-left font-semibold text-gray-500 dark:border-gray-700 dark:bg-gray-800">
 										Module
 									</th>
 									{ROLES_LIST.map((role) => (
@@ -808,13 +805,15 @@ export default function AdminAccessPage() {
 								</tr>
 							</thead>
 
-							{/* Body: Modules x Roles */}
+							{/* Modules x Roles */}
 							<tbody>
 								{ALL_MODULES.map((mod, idx) => (
 									<tr
 										key={mod}
 										className={cn(
-											idx % 2 === 0 ? "bg-white dark:bg-gray-900" : "bg-gray-50/50 dark:bg-gray-800/50",
+											idx % 2 === 0
+												? "bg-white dark:bg-gray-900"
+												: "bg-gray-50/50 dark:bg-gray-800/50",
 										)}
 									>
 										{/* Module name */}
@@ -835,7 +834,12 @@ export default function AdminAccessPage() {
 													{perms.length === 0 ? (
 														<span className="text-gray-300 dark:text-gray-600">--</span>
 													) : hasManage ? (
-														<span className={cn("rounded px-1.5 py-0.5 text-[10px] font-medium", PERM_COLORS.manage)}>
+														<span
+															className={cn(
+																"rounded px-1.5 py-0.5 text-[10px] font-medium",
+																PERM_COLORS.manage,
+															)}
+														>
 															Tout
 														</span>
 													) : (
@@ -865,7 +869,12 @@ export default function AdminAccessPage() {
 
 					{/* Entity access summary */}
 					<div className="mt-6 border-t border-gray-200 pt-4 dark:border-gray-700">
-						<SectionHeaderBanner icon="shield" title="Accès aux entités par rôle" accentColor="red" className="mb-3" />
+						<SectionHeaderBanner
+							icon="shield"
+							title="Accès aux entités par rôle"
+							accentColor="red"
+							className="mb-3"
+						/>
 						<div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
 							{ROLES_LIST.map((role) => {
 								const roleUsers = users.filter((u) => u.roleId === role.id);
@@ -887,14 +896,12 @@ export default function AdminAccessPage() {
 											</span>
 										</div>
 										{hasWildcard ? (
-											<span className="text-xs text-purple-500">
-												Toutes les entités
-											</span>
+											<span className="text-xs text-purple-500">Toutes les entités</span>
 										) : (
 											<div className="flex flex-wrap gap-1">
 												{ENTITIES.map((entity) => {
-													const usersWithAccess = roleUsers.filter(
-														(u) => u.entityAccess.includes(entity.id),
+													const usersWithAccess = roleUsers.filter((u) =>
+														u.entityAccess.includes(entity.id),
 													);
 													if (usersWithAccess.length === 0) return null;
 

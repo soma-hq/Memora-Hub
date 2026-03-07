@@ -3,8 +3,8 @@
 // Utils & hooks
 import { cn } from "@/lib/utils/cn";
 import { Card, Icon } from "@/components/ui";
+import { useModePalette } from "@/hooks/useModePalette";
 import type { IconName } from "@/core/design/icons";
-
 
 /** Props for the StatWidget component */
 interface StatWidgetProps {
@@ -21,6 +21,7 @@ interface StatWidgetProps {
 /** Props for the MiniBarChart component */
 interface MiniBarChartProps {
 	data: number[];
+	barClassName: string;
 	className?: string;
 }
 
@@ -31,7 +32,7 @@ interface MiniBarChartProps {
  * @param props.className - Additional CSS classes
  * @returns Horizontal bar chart element
  */
-function MiniBarChart({ data, className }: MiniBarChartProps) {
+function MiniBarChart({ data, barClassName, className }: MiniBarChartProps) {
 	// Computed
 	const max = Math.max(...data, 1);
 
@@ -41,7 +42,7 @@ function MiniBarChart({ data, className }: MiniBarChartProps) {
 			{data.map((value, idx) => (
 				<div
 					key={idx}
-					className="bg-primary-300 dark:bg-primary-500/40 flex-1 rounded-sm transition-all duration-300"
+					className={cn("flex-1 rounded-sm transition-all duration-300", barClassName)}
 					style={{ height: `${(value / max) * 100}%` }}
 				/>
 			))}
@@ -96,16 +97,21 @@ function TrendIndicator({ change, trend }: TrendIndicatorProps) {
  * @param props.className - Additional CSS classes
  * @returns Stat widget card
  */
-export function StatWidget({
-	label,
-	value,
-	icon,
-	iconColor = "bg-primary-100 text-primary-500 dark:bg-primary-900/20",
-	change,
-	trend,
-	sparkline,
-	className,
-}: StatWidgetProps) {
+export function StatWidget({ label, value, icon, iconColor, change, trend, sparkline, className }: StatWidgetProps) {
+	const palette = useModePalette();
+	const defaultIconColor =
+		palette.mode === "owner"
+			? "bg-red-100 text-red-500 dark:bg-red-900/20"
+			: palette.mode === "legacy"
+				? "bg-orange-100 text-orange-500 dark:bg-orange-900/20"
+				: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300";
+	const barClassName =
+		palette.mode === "owner"
+			? "bg-red-300 dark:bg-red-500/40"
+			: palette.mode === "legacy"
+				? "bg-orange-300 dark:bg-orange-500/40"
+				: "bg-slate-300 dark:bg-slate-500/40";
+
 	// Render
 	return (
 		<Card padding="md" className={className}>
@@ -115,14 +121,16 @@ export function StatWidget({
 					<p className="mt-1 text-3xl font-bold text-gray-900 dark:text-white">{value}</p>
 				</div>
 
-				<div className={cn("shrink-0 rounded-lg p-2", iconColor)}>
+				<div className={cn("shrink-0 rounded-lg p-2", iconColor || defaultIconColor)}>
 					<Icon name={icon} style="solid" size="lg" />
 				</div>
 			</div>
 
 			<div className="mt-4 flex items-end justify-between gap-4">
 				<TrendIndicator change={change} trend={trend} />
-				{sparkline && sparkline.length > 0 && <MiniBarChart data={sparkline} className="w-20 shrink-0" />}
+				{sparkline && sparkline.length > 0 && (
+					<MiniBarChart data={sparkline} barClassName={barClassName} className="w-20 shrink-0" />
+				)}
 			</div>
 		</Card>
 	);

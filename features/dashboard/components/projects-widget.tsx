@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { Card, CardHeader, CardBody, Badge, ProgressBar, StyledEmptyState } from "@/components/ui";
+import { useModePalette } from "@/hooks/useModePalette";
 import type { BadgeVariant } from "@/core/design/states";
 
 /** Project item for the dashboard widget */
@@ -44,16 +45,14 @@ const progressVariantMap: Record<string, "primary" | "success" | "warning" | "er
 export function ProjectsWidget({ className }: ProjectsWidgetProps) {
 	// State
 	const [projects] = useState<ProjectItem[]>([]);
+	const palette = useModePalette();
 
 	// Render
 	return (
 		<Card padding="sm" className={className}>
 			<CardHeader>
 				<h3 className="text-base font-semibold text-gray-900 dark:text-white">Projets</h3>
-				<Link
-					href="/projects"
-					className="text-primary-500 hover:text-primary-600 text-sm font-medium transition-colors"
-				>
+				<Link href="/projects" className={`${palette.linkClass} text-sm font-medium transition-colors`}>
 					Voir tout
 				</Link>
 			</CardHeader>

@@ -14,7 +14,7 @@ const PAGE_CONFIG = definePageConfig({
 	description: "Vue Legacy de l'espace de gestion.",
 });
 
-/** Legacy category definition */
+// Legacy category definition
 interface LegacyCategory {
 	id: string;
 	title: string;
@@ -23,7 +23,7 @@ interface LegacyCategory {
 	items: LegacyCategoryItem[];
 }
 
-/** Single item within a legacy category */
+// Single item within a legacy category
 interface LegacyCategoryItem {
 	label: string;
 	href: string;
@@ -32,7 +32,7 @@ interface LegacyCategoryItem {
 	status?: "ok" | "warning" | "error";
 }
 
-/** Mock stats for the legacy dashboard */
+// Mock stats for the legacy dashboard
 interface LegacyStat {
 	label: string;
 	value: string;
@@ -42,7 +42,6 @@ interface LegacyStat {
 }
 
 // Stats
-
 const STATS: LegacyStat[] = [
 	{ label: "Membres actifs", value: "19", icon: "users", trend: "up", trendValue: "+2" },
 	{ label: "Projets en cours", value: "7", icon: "folder", trend: "up", trendValue: "+1" },
@@ -51,7 +50,6 @@ const STATS: LegacyStat[] = [
 ];
 
 // Categories
-
 const CATEGORIES: LegacyCategory[] = [
 	{
 		id: "operations",
@@ -81,7 +79,7 @@ const CATEGORIES: LegacyCategory[] = [
 		description: "Structure de l'équipe et gestion des groupes.",
 		items: [
 			{ label: "Squad", href: "/users", icon: "users", count: 19 },
-			{ label: "Groupes", href: "/admin/access", icon: "group" },
+			{ label: "Groupes", href: "/groups", icon: "group" },
 		],
 	},
 ];
@@ -94,8 +92,7 @@ const STATUS_VARIANT: Record<string, string> = {
 };
 
 /**
- * Standalone legacy dashboard page with orange accent theme.
- * Independent from owner — displays stats overview and categorized navigation.
+ * Standalone legacy dashboard page with orange accent theme
  * @returns {JSX.Element} Legacy dashboard page
  */
 
@@ -110,7 +107,7 @@ export default function LegacyDashboardPage() {
 					icon="folder"
 					title="Espace Legacy"
 					description="Gestion des opérations, supervision et organisation de l'équipe."
-					accentColor="orange"
+					accentColor="orange-pastel"
 				>
 					<Badge variant="warning" showDot={false}>
 						Legacy

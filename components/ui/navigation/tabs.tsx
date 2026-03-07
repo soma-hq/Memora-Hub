@@ -5,7 +5,6 @@ import { Icon } from "../display/icon";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 
-
 interface Tab {
 	id: string;
 	label: string;
@@ -32,20 +31,38 @@ interface TabsProps {
  * @returns {JSX.Element} Tab bar
  */
 export function Tabs({ tabs, activeTab, onTabChange, variant = "underline", className }: TabsProps) {
+	const handleKeyDown = (e: React.KeyboardEvent, index: number) => {
+		let nextIndex: number | null = null;
+		if (e.key === "ArrowRight") nextIndex = (index + 1) % tabs.length;
+		else if (e.key === "ArrowLeft") nextIndex = (index - 1 + tabs.length) % tabs.length;
+		else if (e.key === "Home") nextIndex = 0;
+		else if (e.key === "End") nextIndex = tabs.length - 1;
+
+		if (nextIndex !== null) {
+			e.preventDefault();
+			onTabChange(tabs[nextIndex].id);
+		}
+	};
+
 	return (
 		<div
+			role="tablist"
 			className={cn(
 				"flex gap-1 overflow-x-auto",
 				variant === "underline" && "border-b border-gray-200 dark:border-gray-700",
 				className,
 			)}
 		>
-			{tabs.map((tab) => {
+			{tabs.map((tab, index) => {
 				const isActive = tab.id === activeTab;
 				return (
 					<button
 						key={tab.id}
+						role="tab"
+						aria-selected={isActive}
+						tabIndex={isActive ? 0 : -1}
 						onClick={() => onTabChange(tab.id)}
+						onKeyDown={(e) => handleKeyDown(e, index)}
 						className={cn(
 							"flex items-center gap-2 text-sm font-medium whitespace-nowrap transition-all duration-200",
 							variant === "underline" && [

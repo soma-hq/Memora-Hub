@@ -3,7 +3,6 @@
 import { cn } from "@/lib/utils/cn";
 import type { AbsenceMode } from "@/features/absences/absence-mode";
 
-
 interface AbsenceIndicatorProps {
 	children: React.ReactNode;
 	absenceMode?: AbsenceMode;
@@ -11,7 +10,7 @@ interface AbsenceIndicatorProps {
 }
 
 /**
- * Absence mode indicator.
+ * Absence mode indicator
  * @param {AbsenceIndicatorProps} props - Component props
  * @param {React.ReactNode} props.children - Content to wrap
  * @param {AbsenceMode} [props.absenceMode="none"] - Current absence mode

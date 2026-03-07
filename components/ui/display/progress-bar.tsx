@@ -1,6 +1,5 @@
 import { cn } from "@/lib/utils/cn";
 
-
 interface ProgressBarProps {
 	value: number;
 	max?: number;
@@ -26,7 +25,7 @@ const sizeMap = {
 } as const;
 
 /**
- * Progress bar.
+ * Progress bar
  * @param {ProgressBarProps} props - Component props
  * @param {number} props.value - Current value
  * @param {number} [props.max=100] - Maximum value

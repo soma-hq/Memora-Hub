@@ -2,7 +2,6 @@ import { Icon } from "./icon";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 
-
 interface TimelineItem {
 	id: string;
 	icon?: IconName;
@@ -18,7 +17,7 @@ interface TimelineProps {
 }
 
 /**
- * Vertical timeline.
+ * Vertical timeline
  * @param {TimelineProps} props - Component props
  * @param {TimelineItem[]} props.items - Ordered timeline entries
  * @param {string} [props.className] - Extra CSS classes

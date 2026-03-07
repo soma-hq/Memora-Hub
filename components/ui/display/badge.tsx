@@ -1,7 +1,6 @@
 import { cn } from "@/lib/utils/cn";
 import { badgeVariants, badgeDotColors, type BadgeVariant } from "@/core/design/states";
 
-
 interface BadgeProps {
 	variant?: BadgeVariant;
 	children: React.ReactNode;
@@ -10,7 +9,7 @@ interface BadgeProps {
 }
 
 /**
- * Status badge pill.
+ * Status badge pill
  * @param {BadgeProps} props - Component props
  * @param {BadgeVariant} [props.variant="neutral"] - Color variant
  * @param {React.ReactNode} props.children - Badge label content

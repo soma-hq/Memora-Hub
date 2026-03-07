@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@/components/ui";
 import { useTheme } from "@/components/providers/theme-provider";
 import { EntityModal } from "@/components/modals/entity-modal";
@@ -19,6 +20,7 @@ import { useDataStore } from "@/store/data.store";
 import { ROLE_LABELS } from "@/core/config/roles";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
+import { logoutAction } from "@/features/auth/actions";
 
 interface HeaderProps {
 	onMobileMenuToggle?: () => void;
@@ -26,7 +28,7 @@ interface HeaderProps {
 }
 
 /**
- * App header with mode-aware title (SQUAD / OWNER / LEGACY).
+ * App header with mode-aware title
  * @param {HeaderProps} props - Component props
  * @param {() => void} [props.onMobileMenuToggle] - Mobile sidebar toggle callback
  * @param {() => void} [props.onSearchOpen] - Search modal open callback
@@ -35,20 +37,25 @@ interface HeaderProps {
 
 export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 	// State
+	const pathname = usePathname();
+	const router = useRouter();
 	const { theme, setTheme, resolvedTheme } = useTheme();
 	const [userMenuOpen, setUserMenuOpen] = useState(false);
 	const [entityModalOpen, setEntityModalOpen] = useState(false);
-	const [activeEntityId, setActiveEntityId] = useState("bazalthe");
 	const userRef = useRef<HTMLDivElement>(null);
 	const adminMode = useUIStore((s) => s.adminMode);
 	const legacyMode = useUIStore((s) => s.legacyMode);
 	const activeGroupId = useHubStore((s) => s.activeGroupId);
+	const setActiveGroup = useHubStore((s) => s.setActiveGroup);
+	const entities = useDataStore((s) => s.entities);
+	const getEntitiesForCurrentUser = useDataStore((s) => s.getEntitiesForCurrentUser);
 	const currentUser = useDataStore((s) => s.currentUser);
-	const [showChatbotBubble, setShowChatbotBubble] = useState(false);
-
-	useEffect(() => {
-		setShowChatbotBubble(localStorage.getItem("memora-chatbot-bubble-dismissed") !== "true");
-	}, []);
+	const [showChatbotBubble, setShowChatbotBubble] = useState(() => {
+		if (typeof window === "undefined") return false;
+		return localStorage.getItem("memora-chatbot-bubble-dismissed") !== "true";
+	});
+	const accessibleEntities = getEntitiesForCurrentUser();
+	const fallbackEntityId = activeGroupId ?? accessibleEntities[0]?.id ?? entities[0]?.id ?? "default";
 
 	useEffect(() => {
 		const handler = (e: MouseEvent) => {
@@ -58,11 +65,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 		return () => document.removeEventListener("mousedown", handler);
 	}, []);
 
-	// Handlers
-	/**
-	 * Cycles light/dark/system themes.
-	 */
-
+	// Cycles light/dark/system themes
 	const cycleTheme = () => {
 		if (theme === "light") setTheme("dark");
 		else if (theme === "dark") setTheme("system");
@@ -70,30 +73,55 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 	};
 
 	/**
-	 * Clears session and redirects.
+	 * Clears session and redirects
 	 * @returns {Promise<void>} Resolves on logout
 	 * @throws {Error} If logout fails
 	 */
 
 	const handleLogout = async () => {
 		try {
-			document.cookie = "memora-session=; path=/; max-age=0";
 			localStorage.removeItem("authToken");
 			sessionStorage.clear();
 			showSuccess("Déconnexion réussie.");
-			window.location.href = "/login";
-		} catch (error) {
-			showError("Erreur lors de la déconnexion.");
+			await logoutAction();
+		} catch {
+			// logoutAction redirects to /login — this catch is a fallback
+			showError("La connexion a échouée");
 		}
 	};
 
-	/**
-	 * Dismisses chatbot bubble.
-	 */
-
+	// Dismisses chatbot bubble
 	const dismissChatbotBubble = () => {
 		setShowChatbotBubble(false);
 		localStorage.setItem("memora-chatbot-bubble-dismissed", "true");
+	};
+
+	/**
+	 * Resolve next route from selected entity.
+	 * @param entityId - Selected entity ID
+	 * @returns Target route path
+	 */
+	const resolveEntityRoutePath = (entityId: string): string => {
+		if (pathname.startsWith("/hub/")) {
+			const segments = pathname.split("/");
+			if (segments.length >= 3) {
+				segments[2] = entityId;
+				return segments.join("/");
+			}
+		}
+
+		return `/hub/${entityId}`;
+	};
+
+	/**
+	 * Handle entity selection from modal.
+	 * @param entityId - Selected entity ID
+	 * @returns void
+	 */
+	const handleEntitySelect = (entityId: string): void => {
+		const selectedEntity = entities.find((entity) => entity.id === entityId);
+		setActiveGroup(entityId, selectedEntity?.name ?? entityId);
+		router.push(resolveEntityRoutePath(entityId));
 	};
 
 	// Computed
@@ -117,7 +145,8 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 				<div className="flex items-center gap-3">
 					<button
 						onClick={onMobileMenuToggle}
-						className="rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-700"
+						aria-label="Menu"
+						className="rounded-lg p-3 text-gray-500 transition-all duration-200 hover:bg-gray-100 lg:hidden dark:text-gray-400 dark:hover:bg-gray-700"
 					>
 						<Icon name="menu" size="md" />
 					</button>
@@ -134,14 +163,14 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 								legacyMode && "ring-2 ring-orange-500",
 							)}
 						/>
-						<div className="hidden items-center gap-1.5 sm:flex">
+						<div className="flex items-center gap-1.5">
 							{adminMode ? (
 								<span className="text-2xl font-black tracking-tight text-red-500 transition-colors duration-300">
 									OWNER
 								</span>
 							) : legacyMode ? (
 								<>
-									<span className="text-lg font-medium text-gray-500 transition-colors duration-300 dark:text-gray-400">
+									<span className="hidden text-lg font-medium text-gray-500 transition-colors duration-300 sm:inline dark:text-gray-400">
 										Memora
 									</span>
 									<span className="text-2xl font-black tracking-tight text-orange-500 transition-colors duration-300">
@@ -150,7 +179,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 								</>
 							) : (
 								<>
-									<span className="text-lg font-medium text-gray-500 transition-colors duration-300 dark:text-gray-400">
+									<span className="hidden text-lg font-medium text-gray-500 transition-colors duration-300 sm:inline dark:text-gray-400">
 										Memora
 									</span>
 									<span className="text-xl font-bold text-gray-900 transition-colors duration-300 dark:text-white">
@@ -170,9 +199,10 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 
 					{/* Chat link */}
 					<Link
-						href={`/hub/${activeGroupId}/chat`}
+						href={`/hub/${fallbackEntityId}/chat`}
 						title="Chat"
-						className="rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+						aria-label="Chat"
+						className="rounded-lg p-3 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 					>
 						<Icon name="chat" size="md" />
 					</Link>
@@ -189,10 +219,11 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 											<Icon name="sparkles" size="xs" className="text-rose-400" />
 										</div>
 										<p className="text-sm text-gray-600 dark:text-gray-300">
-											Salut, je suis ton ChatBot, tu as besoin d&apos;aide ?
+											Salut, je suis Memora AI, tu as besoin d&apos;aide sur quelque chose ?
 										</p>
 										<button
 											onClick={dismissChatbotBubble}
+											aria-label="Fermer"
 											className="shrink-0 rounded p-0.5 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
 										>
 											<Icon name="close" size="xs" />
@@ -207,7 +238,8 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					<button
 						onClick={() => setEntityModalOpen(true)}
 						title="Changer d'entité"
-						className="rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+						aria-label="Changer d'entité"
+						className="rounded-lg p-3 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 					>
 						<Icon name="group" size="md" />
 					</button>
@@ -216,7 +248,8 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					<button
 						onClick={onSearchOpen}
 						title="Rechercher (Ctrl+K)"
-						className="rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
+						aria-label="Rechercher"
+						className="rounded-lg p-3 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 						data-tutorial="search"
 					>
 						<Icon name="search" size="md" />
@@ -233,8 +266,9 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					<button
 						onClick={cycleTheme}
 						title={`Thème : ${themeLabel}`}
+						aria-label={`Thème : ${themeLabel}`}
 						className={cn(
-							"rounded-lg p-2 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700",
+							"rounded-lg p-3 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700",
 							theme === "system" && "ring-primary-300 ring-1 ring-offset-1 dark:ring-offset-gray-800",
 						)}
 					>
@@ -267,7 +301,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 
 						{/* User dropdown */}
 						{userMenuOpen && (
-							<div className="animate-slide-in absolute top-full right-0 z-50 mt-2 w-56 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+							<div className="animate-slide-in absolute top-full right-0 z-50 mt-2 w-56 max-w-[calc(100vw-1rem)] rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
 								<div className="border-b border-gray-200 px-4 py-3 dark:border-gray-700">
 									<p className="text-sm font-medium text-gray-900 dark:text-white">
 										{currentUser?.pseudo ?? "Utilisateur"}
@@ -279,7 +313,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 								<div className="p-1.5">
 									{[
 										{
-											label: "Mon profil",
+											label: "Profil",
 											icon: "profile" as const,
 											href: "/profile",
 										},
@@ -321,8 +355,8 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 			<EntityModal
 				isOpen={entityModalOpen}
 				onClose={() => setEntityModalOpen(false)}
-				activeEntityId={activeEntityId}
-				onSelect={(id) => setActiveEntityId(id)}
+				activeEntityId={fallbackEntityId}
+				onSelect={handleEntitySelect}
 			/>
 
 			{/* AI Assistant modal */}

@@ -3,7 +3,6 @@
 // Components
 import { Modal, ModalFooter, Button, Badge, Icon, Avatar, AvatarGroup, Divider } from "@/components/ui";
 
-
 interface MeetingData {
 	id: string;
 	title: string;
@@ -24,7 +23,7 @@ interface MeetingDetailModalProps {
 }
 
 /**
- * Detail modal for a meeting with schedule info, participants, and notes.
+ * Detail modal for a meeting
  * @param {MeetingDetailModalProps} props - Component props
  * @param {boolean} props.isOpen - Whether the modal is visible
  * @param {() => void} props.onClose - Callback to close the modal

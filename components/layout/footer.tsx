@@ -1,5 +1,5 @@
 /**
- * App footer.
+ * App footer
  * @returns {JSX.Element} Footer bar
  */
 

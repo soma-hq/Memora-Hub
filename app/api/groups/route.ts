@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import { GroupService } from "@/services/GroupService";
 import { AuthService } from "@/services/AuthService";
 import { createGroupSchema } from "@/lib/validators/schemas";
+import { getAllowedGroupIds, hasGlobalEntityAccess } from "@/lib/server/entity-scope";
 
 /**
  * GET /api/groups - List groups paginated
@@ -19,6 +21,23 @@ export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
 	const page = parseInt(searchParams.get("page") ?? "1", 10);
 	const pageSize = parseInt(searchParams.get("pageSize") ?? "20", 10);
+	const skip = (page - 1) * pageSize;
+
+	if (!hasGlobalEntityAccess(currentUser)) {
+		const allowedGroupIds = getAllowedGroupIds(currentUser) ?? [];
+		const [groups, total] = await Promise.all([
+			prisma.group.findMany({
+				where: { id: { in: allowedGroupIds } },
+				skip,
+				take: pageSize,
+				include: { _count: { select: { members: true, projects: true } } },
+				orderBy: { createdAt: "desc" },
+			}),
+			prisma.group.count({ where: { id: { in: allowedGroupIds } } }),
+		]);
+
+		return NextResponse.json({ groups, total, page, pageSize });
+	}
 
 	// Fetch paginated groups
 	const result = await GroupService.getAll(page, pageSize);
@@ -36,6 +55,10 @@ export async function POST(request: NextRequest) {
 	const currentUser = await AuthService.getCurrentUser();
 	if (!currentUser) {
 		return NextResponse.json({ error: "Non authentifie" }, { status: 401 });
+	}
+
+	if (!hasGlobalEntityAccess(currentUser)) {
+		return NextResponse.json({ error: "Acces refuse" }, { status: 403 });
 	}
 
 	// Parse request body

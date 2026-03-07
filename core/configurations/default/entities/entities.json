@@ -1,0 +1,19 @@
+{
+	"_meta": {
+		"version": "1.0.0",
+		"description": "Définitions des entités gérées par Memora Hub"
+	},
+	"entities": [
+		{
+			"id": "bazalthe",
+			"name": "Bazalthe",
+			"avatar": "/avatars/bazalthe.png",
+			"color": "#6366F1",
+			"type": "organization"
+		},
+		{ "id": "inoxtag", "name": "Inoxtag", "avatar": "/avatars/inoxtag.png", "color": "#45B7D1", "type": "creator" },
+		{ "id": "michou", "name": "Michou", "avatar": "/avatars/michou.png", "color": "#FF6B6B", "type": "creator" },
+		{ "id": "doigby", "name": "Doigby", "avatar": "/avatars/doigby.png", "color": "#4ECDC4", "type": "creator" },
+		{ "id": "anthony", "name": "Anthony", "avatar": "/avatars/anthony.png", "color": "#96CEB4", "type": "creator" }
+	]
+}

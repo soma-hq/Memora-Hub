@@ -1,3 +1,7 @@
+/**
+ * Centralized icon registry for Memora UI.
+ * Use `IconName` everywhere instead of importing Heroicons directly in feature components.
+ */
 import {
 	HomeIcon as HomeOutline,
 	UserGroupIcon as UsersOutline,
@@ -109,6 +113,7 @@ import {
 } from "@heroicons/react/24/solid";
 
 export const icons = {
+	// Core navigation
 	home: { outline: HomeOutline, solid: HomeSolid },
 	users: { outline: UsersOutline, solid: UsersSolid },
 	folder: { outline: FolderOutline, solid: FolderSolid },
@@ -175,6 +180,7 @@ export const icons = {
 	tools: { outline: ToolsOutline, solid: ToolsOutline },
 	chat: { outline: ChatOutline, solid: ChatOutline },
 	video: { outline: VideoOutline, solid: VideoOutline },
+	// Assistant and communication
 	bot: { outline: BotOutline, solid: BotSolid },
 	news: { outline: NewsOutline, solid: NewsSolid },
 	logs: { outline: LogsOutline, solid: LogsOutline },
@@ -192,8 +198,8 @@ export type IconStyle = "outline" | "solid";
 
 /**
  * Get an icon component
- * @param name -  Icon name
- * @param style - Outline
+ * @param name - Registered icon name from IconName
+ * @param style - Visual style variant (outline or solid)
  */
 
 export function getIcon(name: IconName, style: IconStyle = "outline") {

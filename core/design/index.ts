@@ -33,3 +33,4 @@ export { lightTheme, darkTheme, themeClasses } from "./themes";
 export { icons, getIcon } from "./icons";
 
 export type { IconName, IconStyle } from "./icons";
+export * from "./spacing";

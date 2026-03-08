@@ -5,12 +5,15 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button, Timeline, Tag } from "@/components/ui";
-import { UserArchives } from "@/features/users/components/user-archives";
+import { Card, Badge, Icon, Button, Timeline, Tag, SectionHeaderBanner } from "@/components/ui";
+import { UserArchives } from "@/features/admin/users/components/user-archives";
 import { cn } from "@/lib/utils/cn";
 import type { BadgeVariant } from "@/core/design/states";
 import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
+import { useHubStore } from "@/store/hub.store";
+import type { PimStatus } from "@/features/academy/momentum/types";
+import { pimStatusVariantMap } from "@/features/academy/momentum/types";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "profile",
@@ -48,6 +51,7 @@ const teamColors: Record<string, string> = {
 	Legacy: "text-amber-500",
 	Talent: "text-emerald-500",
 	Momentum: "text-blue-500",
+	Entité: "text-gray-400",
 	Squad: "text-gray-400",
 };
 
@@ -77,6 +81,8 @@ const mockProfile = {
 	entity: "Bazalthe",
 	division: "Technologie",
 	arrivalDate: "Janvier 2024",
+	/** Statut PIM du membre — null si pas en PIM */
+	pimStatus: null as PimStatus | null,
 };
 
 const entityAccessData = [
@@ -312,6 +318,11 @@ function ProfilView({ onEditProfile }: { onEditProfile: () => void }) {
 										Team {mockProfile.team}
 									</Badge>
 									<Badge variant="success">Actif</Badge>
+									{mockProfile.pimStatus && (
+										<Badge variant={pimStatusVariantMap[mockProfile.pimStatus]} showDot={false}>
+											PIM · {mockProfile.pimStatus}
+										</Badge>
+									)}
 								</div>
 								<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">
 									{mockProfile.roleSecondary} · {mockProfile.entity} · {mockProfile.division}
@@ -606,6 +617,7 @@ function AccessView() {
 function InfosView() {
 	const [birthdayWish, setBirthdayWish] = useState(mockProfile.birthdayWish);
 	const router = useRouter();
+	const activeGroupId = useHubStore((s) => s.activeGroupId);
 
 	return (
 		<div className="space-y-5">
@@ -683,7 +695,7 @@ function InfosView() {
 					</div>
 					<div>
 						<h3 className="text-lg font-semibold text-gray-900 dark:text-white">Organisation</h3>
-						<p className="text-sm text-gray-500 dark:text-gray-400">Rôles, entité et division</p>
+						<p className="text-sm text-gray-500 dark:text-gray-400">Rôles, squad et division</p>
 					</div>
 				</div>
 
@@ -705,7 +717,7 @@ function InfosView() {
 							</span>
 						}
 					/>
-					<InfoRow label="Entité" value={mockProfile.entity} />
+					<InfoRow label="Squad" value={mockProfile.entity} />
 					<InfoRow label="Division" value={mockProfile.division} />
 					<InfoRow label="Date d'arrivée" value={mockProfile.arrivalDate} />
 					<div className="flex items-center justify-between gap-4 py-3">
@@ -713,7 +725,7 @@ function InfosView() {
 							Suivi PIM
 						</span>
 						<button
-							onClick={() => router.push("/hub/default/momentum/sessions")}
+							onClick={() => router.push(`/hub/${activeGroupId ?? "default"}/training/pim`)}
 							className="text-primary-600 dark:text-primary-400 flex items-center gap-1 text-sm font-medium transition-colors hover:underline"
 						>
 							Voir les sessions
@@ -830,6 +842,12 @@ export default function ProfilePage() {
 
 	return (
 		<PageContainer title="Mon profil" description="Consultez vos informations, accès et activité récente">
+			<SectionHeaderBanner
+				icon="profile"
+				title="Mon Profil"
+				description="Vos informations personnelles, accès et activité récente."
+				className="mb-6"
+			/>
 			{/* Tab navigation */}
 			<div className="mb-6 border-b border-gray-200 dark:border-gray-700">
 				<nav className="-mb-px flex gap-1 overflow-x-auto">

@@ -3,10 +3,10 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge, Button, StyledEmptyState } from "@/components/ui";
+import { Card, Icon, Badge, Button, StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/meetings",
@@ -421,6 +421,12 @@ export default function MeetingsPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="calendar"
+				title="Réunions"
+				description="Planifiez et gérez les réunions de votre groupe."
+				className="mb-6"
+			/>
 			{/* Tabs */}
 			<div className="mb-6 flex gap-1 rounded-lg border border-gray-200 bg-gray-100 p-1 transition-all duration-200 dark:border-gray-700 dark:bg-gray-800">
 				{TABS.map((tab) => (

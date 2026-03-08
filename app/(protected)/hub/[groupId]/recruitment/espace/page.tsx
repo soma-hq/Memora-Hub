@@ -1,13 +1,13 @@
 "use client";
 
 // Features & Components
-import { useRecruiterEspace } from "@/features/recruitment/hooks";
-import { CandidateCard } from "@/features/recruitment/components/candidate-card";
-import { decisionVariantMap } from "@/features/recruitment/types";
+import { useRecruiterEspace } from "@/features/operations/recruitment/hooks";
+import { CandidateCard } from "@/features/operations/recruitment/components/candidate-card";
+import { decisionVariantMap } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { StatCard, Card, Badge, Icon, EmptyState } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/recruitment/espace",

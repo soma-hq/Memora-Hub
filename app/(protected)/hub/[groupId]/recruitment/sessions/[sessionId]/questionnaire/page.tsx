@@ -2,7 +2,7 @@
 
 // Next.js
 import { useRouter } from "next/navigation";
-import { QuestionnaireCarousel } from "@/features/recruitment/components/questionnaire-carousel";
+import { QuestionnaireCarousel } from "@/features/operations/recruitment/components/questionnaire-carousel";
 
 
 /**

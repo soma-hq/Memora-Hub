@@ -2,12 +2,12 @@
 
 // React
 import { useState } from "react";
-import { useCandidates } from "@/features/recruitment/hooks";
-import { KanbanBoard } from "@/features/recruitment/components/kanban-board";
-import { CandidateDetail } from "@/features/recruitment/components/candidate-detail";
+import { useCandidates } from "@/features/operations/recruitment/hooks";
+import { KanbanBoard } from "@/features/operations/recruitment/components/kanban-board";
+import { CandidateDetail } from "@/features/operations/recruitment/components/candidate-detail";
 import { PageContainer } from "@/components/layout/page-container";
 import { Modal } from "@/components/ui";
-import type { Candidate } from "@/features/recruitment/types";
+import type { Candidate } from "@/features/operations/recruitment/types";
 
 
 /**

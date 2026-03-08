@@ -2,14 +2,14 @@
 
 // React
 import { useState } from "react";
-import { useRecruitmentSessions } from "@/features/recruitment/hooks";
-import { RecruitmentSessionCard } from "@/features/recruitment/components/recruitment-session-card";
-import { RECRUITMENT_SESSION_TYPES, RECRUITMENT_SESSION_STATUSES } from "@/features/recruitment/types";
+import { useRecruitmentSessions } from "@/features/operations/recruitment/hooks";
+import { RecruitmentSessionCard } from "@/features/operations/recruitment/components/recruitment-session-card";
+import { RECRUITMENT_SESSION_TYPES, RECRUITMENT_SESSION_STATUSES } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
-import { Modal, Button, Icon, EmptyState } from "@/components/ui";
+import { Modal, Button, Icon, EmptyState, SectionHeaderBanner } from "@/components/ui";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import type { RecruitmentSessionFormData, RecruitmentSessionType } from "@/features/recruitment/types";
-import { definePageConfig } from "@/structures";
+import type { RecruitmentSessionFormData, RecruitmentSessionType } from "@/features/operations/recruitment/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/recruitment",
@@ -66,6 +66,12 @@ export default function RecruitmentPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="recruitment"
+				title="Recrutement"
+				description="Gérez et suivez les sessions de recrutement."
+				className="mb-6"
+			/>
 			{/* Filters */}
 			<div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
 				<div className="relative flex-1">
@@ -144,14 +150,12 @@ export default function RecruitmentPage() {
 
 					{/* Entity */}
 					<div>
-						<label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-							Entite
-						</label>
+						<label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">Squad</label>
 						<input
 							type="text"
 							value={formEntity}
 							onChange={(e) => setFormEntity(e.target.value)}
-							placeholder="Ex: Michou, Inoxtag..."
+							placeholder="Ex: Michou Squad, Inoxtag Squad..."
 							className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 dark:border-gray-600 dark:bg-gray-800 dark:text-white"
 						/>
 					</div>

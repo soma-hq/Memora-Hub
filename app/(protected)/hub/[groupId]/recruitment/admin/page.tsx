@@ -3,12 +3,12 @@
 // React
 import { useMemo } from "react";
 import { useParams } from "next/navigation";
-import { useCandidates } from "@/features/recruitment/hooks";
-import { decisionVariantMap, avisRoleVariantMap } from "@/features/recruitment/types";
+import { useCandidates } from "@/features/operations/recruitment/hooks";
+import { decisionVariantMap, avisRoleVariantMap } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { StatCard, Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/recruitment/admin",

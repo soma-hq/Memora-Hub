@@ -2,12 +2,12 @@
 
 // React
 import { useState } from "react";
-import { useConsignes } from "@/features/recruitment/hooks";
-import { avisRoleVariantMap, CONSIGNE_PROFILE_TYPES } from "@/features/recruitment/types";
+import { useConsignes } from "@/features/operations/recruitment/hooks";
+import { avisRoleVariantMap, CONSIGNE_PROFILE_TYPES } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { Modal, Button, Icon, Badge, Card } from "@/components/ui";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import type { ConsigneProfileType } from "@/features/recruitment/types";
+import type { ConsigneProfileType } from "@/features/operations/recruitment/types";
 
 
 /**

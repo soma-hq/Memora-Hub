@@ -2,14 +2,14 @@
 
 // React
 import { useState } from "react";
-import { useCandidates } from "@/features/recruitment/hooks";
-import { CandidateCard } from "@/features/recruitment/components/candidate-card";
-import { CandidateDetail } from "@/features/recruitment/components/candidate-detail";
-import { CANDIDATE_DECISIONS } from "@/features/recruitment/types";
+import { useCandidates } from "@/features/operations/recruitment/hooks";
+import { CandidateCard } from "@/features/operations/recruitment/components/candidate-card";
+import { CandidateDetail } from "@/features/operations/recruitment/components/candidate-detail";
+import { CANDIDATE_DECISIONS } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { Modal, Icon, EmptyState } from "@/components/ui";
-import type { Candidate } from "@/features/recruitment/types";
-import { definePageConfig } from "@/structures";
+import type { Candidate } from "@/features/operations/recruitment/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/recruitment/candidates",

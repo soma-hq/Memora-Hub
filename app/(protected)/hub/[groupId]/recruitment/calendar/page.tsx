@@ -2,13 +2,13 @@
 
 // React
 import { useState, useMemo } from "react";
-import { useCandidates } from "@/features/recruitment/hooks";
-import { decisionVariantMap } from "@/features/recruitment/types";
+import { useCandidates } from "@/features/operations/recruitment/hooks";
+import { decisionVariantMap } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { Button, Badge, Icon, Card } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/recruitment/calendar",

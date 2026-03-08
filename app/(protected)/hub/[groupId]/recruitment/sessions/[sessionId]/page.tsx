@@ -3,16 +3,16 @@
 // React
 import { useState } from "react";
 import { useParams } from "next/navigation";
-import { useSessionDetail } from "@/features/recruitment/hooks";
-import { CandidateCard } from "@/features/recruitment/components/candidate-card";
-import { CandidateDetail } from "@/features/recruitment/components/candidate-detail";
-import { QuestionnaireCarousel } from "@/features/recruitment/components/questionnaire-carousel";
-import { TimelineRecruitment } from "@/features/recruitment/components/timeline-recruitment";
-import { sessionStatusVariantMap, sessionTypeVariantMap, CANDIDATE_DECISIONS } from "@/features/recruitment/types";
+import { useSessionDetail } from "@/features/operations/recruitment/hooks";
+import { CandidateCard } from "@/features/operations/recruitment/components/candidate-card";
+import { CandidateDetail } from "@/features/operations/recruitment/components/candidate-detail";
+import { QuestionnaireCarousel } from "@/features/operations/recruitment/components/questionnaire-carousel";
+import { TimelineRecruitment } from "@/features/operations/recruitment/components/timeline-recruitment";
+import { sessionStatusVariantMap, sessionTypeVariantMap, CANDIDATE_DECISIONS } from "@/features/operations/recruitment/types";
 import { PageContainer } from "@/components/layout/page-container";
 import { Modal, Badge, Icon, Tabs, EmptyState } from "@/components/ui";
-import type { Candidate } from "@/features/recruitment/types";
-import { definePageConfig } from "@/structures";
+import type { Candidate } from "@/features/operations/recruitment/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/recruitment/sessions/[sessionId]",

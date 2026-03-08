@@ -5,7 +5,7 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/mod-youtube/centre-info/tickets",

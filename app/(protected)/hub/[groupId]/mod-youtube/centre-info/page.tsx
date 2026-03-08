@@ -1,13 +1,8 @@
 "use client";
 
-// Next.js
-import Link from "next/link";
-import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon } from "@/components/ui";
-import { cn } from "@/lib/utils/cn";
-import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { SectionHeaderBanner } from "@/components/ui";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/mod-youtube/centre-info",
@@ -18,69 +13,47 @@ const PAGE_CONFIG = definePageConfig({
 	entityScoped: true,
 });
 
-interface InfoSection {
-	title: string;
-	href: string;
-	icon: IconName;
-	description: string;
-}
+// Consignes opérationnelles YouTube
+const CONSIGNES = [
+	{
+		title: "Vérification du contexte",
+		description: "Croiser l'historique des commentaires et la gravité avant de bloquer un utilisateur.",
+	},
+	{
+		title: "Justification concise",
+		description: "Renseigner une raison claire pour chaque action afin de faciliter l'audit interne.",
+	},
+	{
+		title: "Escalade sur cas sensibles",
+		description: "Les cas de harcèlement ciblé ou doxxing doivent être remontés au référent sans délai.",
+	},
+];
 
 /**
- * YouTube information center hub with links to priority scale, tickets and tips.
- * @returns The YouTube centre-info navigation page
+ * Centre d'informations YouTube — consignes opérationnelles sous forme de boxes.
+ * Suit le pattern "flush-header" (SectionHeaderBanner collée à son contenu).
+ * @returns La page Centre d'informations Modération YouTube
  */
 export default function CentreInfoYouTubePage() {
-	const { groupId } = useParams<{ groupId: string }>();
-
-	const sections: InfoSection[] = [
-		{
-			title: "Echelle de priorite",
-			href: `/hub/${groupId}/mod-youtube/centre-info/echelle`,
-			icon: "users",
-			description: "Chaine de commandement et hierarchie de la moderation YouTube",
-		},
-		{
-			title: "Systeme de Tickets",
-			href: `/hub/${groupId}/mod-youtube/centre-info/tickets`,
-			icon: "chat",
-			description: "Fonctionnement et procedures du systeme de tickets",
-		},
-		{
-			title: "Tips",
-			href: `/hub/${groupId}/mod-youtube/centre-info/tips`,
-			icon: "info",
-			description: "Conseils et procedures pour les situations courantes sur YouTube",
-		},
-	];
+	void PAGE_CONFIG;
 
 	return (
-		<PageContainer title="Centre d'informations" description="Documentation et procedures de moderation YouTube">
-			<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-				{sections.map((section) => (
-					<Link key={section.href} href={section.href} className="block">
-						<Card hover padding="lg" className="h-full">
-							<div className="flex flex-col items-start gap-3">
-								<div
-									className={cn(
-										"flex h-10 w-10 items-center justify-center rounded-lg",
-										"bg-primary-50 text-primary-600",
-										"dark:bg-primary-900/20 dark:text-primary-400",
-									)}
-								>
-									<Icon name={section.icon} size="lg" />
-								</div>
-								<div>
-									<h3 className="text-base font-semibold text-gray-900 dark:text-white">
-										{section.title}
-									</h3>
-									<p className="mt-1 text-sm text-gray-400 dark:text-gray-400">
-										{section.description}
-									</p>
-								</div>
-							</div>
-						</Card>
-					</Link>
-				))}
+		<PageContainer title="Centre d'informations" description="Consignes et procédures de modération YouTube">
+			{/* Consignes — flush-header card (pattern identique à Agenda du Jour) */}
+			<div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+				<SectionHeaderBanner icon="flag" title="Consignes" className="rounded-none" />
+
+				<div className="grid grid-cols-1 gap-3 p-4 md:grid-cols-3">
+					{CONSIGNES.map((consigne) => (
+						<div
+							key={consigne.title}
+							className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40"
+						>
+							<p className="text-sm font-semibold text-gray-900 dark:text-white">{consigne.title}</p>
+							<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{consigne.description}</p>
+						</div>
+					))}
+				</div>
 			</div>
 		</PageContainer>
 	);

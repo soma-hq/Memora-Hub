@@ -4,14 +4,14 @@ import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge, StyledEmptyState } from "@/components/ui";
-import { UserOnboardingWizard } from "@/features/users/components/user-onboarding-wizard";
+import { Card, Icon, Badge, StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
+import { UserOnboardingWizard } from "@/features/admin/users/components/user-onboarding-wizard";
 import { TEAM_TEXT_COLORS, type Team } from "@/core/config/teams";
-import { getEntities } from "@/features/users/data";
-import { DIVISION_ICONS } from "@/features/users/types";
-import type { UserProfile } from "@/features/users/types";
+import { getEntities } from "@/features/admin/users/data";
+import { DIVISION_ICONS } from "@/features/admin/users/types";
+import type { UserProfile } from "@/features/admin/users/types";
 import { cn } from "@/lib/utils/cn";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 import { useDataStore } from "@/store/data.store";
 
 const PAGE_CONFIG = definePageConfig({
@@ -133,6 +133,12 @@ export default function UsersPage() {
 					</button>
 				}
 			>
+				<SectionHeaderBanner
+					icon="users"
+					title="Utilisateurs"
+					description="Gérez les membres de la plateforme."
+					className="mb-6"
+				/>
 				{/* Filters bar */}
 				<div
 					className={cn(
@@ -161,7 +167,7 @@ export default function UsersPage() {
 					>
 						{TEAMS.map((t) => (
 							<option key={t} value={t}>
-								{t === "Toutes" ? "Team : Toutes" : t}
+								{t === "Toutes" ? "Team : Toutes" : t === "Squad" ? "Entité" : t}
 							</option>
 						))}
 					</select>

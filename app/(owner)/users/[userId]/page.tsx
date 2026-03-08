@@ -5,17 +5,18 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import Image from "next/image";
 import { Card, Badge, Icon, Button, Tag, StyledEmptyState } from "@/components/ui";
-import { getUserById } from "@/features/users/data";
-import { DIVISION_ICONS, DIVISION_LABELS } from "@/features/users/types";
+import { getUserById } from "@/features/admin/users/data";
+import { DIVISION_ICONS, DIVISION_LABELS } from "@/features/admin/users/types";
 import { TEAM_TEXT_COLORS, TEAM_DESCRIPTIONS, type Team } from "@/core/config/teams";
-import type { UserProfile } from "@/features/users/types";
+import type { UserProfile } from "@/features/admin/users/types";
 import type { BadgeVariant } from "@/core/design/states";
 import type { IconName } from "@/core/design/icons";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
 import { useUserRelations } from "@/hooks/use-data-store";
-import { UserArchives } from "@/features/users/components/user-archives";
-import { definePageConfig } from "@/structures";
+import { UserArchives } from "@/features/admin/users/components/user-archives";
+import { PolitiqueContent } from "@/features/admin/moderation/components/politique-content";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "users/[userId]",
@@ -27,7 +28,7 @@ const PAGE_CONFIG = definePageConfig({
 	ownerOnly: true,
 });
 
-type ProfileTab = "profil" | "access" | "infos" | "activite";
+type ProfileTab = "profil" | "access" | "infos" | "activite" | "politiques";
 
 interface TabDef {
 	id: ProfileTab;
@@ -40,6 +41,7 @@ const TABS: TabDef[] = [
 	{ id: "access", label: "Accès", icon: "shield" },
 	{ id: "infos", label: "Informations", icon: "edit" },
 	{ id: "activite", label: "Activité", icon: "clock" },
+	{ id: "politiques", label: "Politiques", icon: "document" },
 ];
 
 const roleVariant: Record<string, BadgeVariant> = {
@@ -49,6 +51,7 @@ const roleVariant: Record<string, BadgeVariant> = {
 	Legacy: "warning",
 	Talent: "success",
 	Momentum: "info",
+	Entité: "neutral",
 	Squad: "neutral",
 };
 
@@ -272,8 +275,36 @@ export default function UserDetailPage() {
 					{activeTab === "access" && <AccessView user={user} />}
 					{activeTab === "infos" && <InfosView user={user} />}
 					{activeTab === "activite" && <ActiviteView user={user} />}
+					{activeTab === "politiques" && <PolitiquesView user={user} />}
 				</div>
 			</div>
+		</div>
+	);
+}
+
+function resolvePolicyPlatform(user: UserProfile): "Discord" | "Twitch" | "YouTube" | "Polyvalent" {
+	const roleText = `${user.roleSecondary} ${user.team}`.toLowerCase();
+	if (roleText.includes("polyvalent")) return "Polyvalent";
+	if (roleText.includes("youtube")) return "YouTube";
+	if (roleText.includes("twitch")) return "Twitch";
+	return "Discord";
+}
+
+function PolitiquesView({ user }: { user: UserProfile }) {
+	const platform = resolvePolicyPlatform(user);
+
+	return (
+		<div className="space-y-5">
+			<Card padding="md" className="border-l-4 border-l-primary-500">
+				<div className="flex items-start gap-2">
+					<Icon name="info" size="sm" className="mt-0.5 text-primary-500" />
+					<p className="text-sm text-gray-700 dark:text-gray-300">
+						La politique de moderation est centralisee ici. Le sommaire reste epingle pendant la lecture.
+					</p>
+				</div>
+			</Card>
+
+			<PolitiqueContent platform={platform} />
 		</div>
 	);
 }
@@ -761,7 +792,7 @@ function InfosView({ user }: { user: UserProfile }) {
 						{ label: "Legacy", value: "Legacy" },
 						{ label: "Talent", value: "Talent" },
 						{ label: "Momentum", value: "Momentum" },
-						{ label: "Squad", value: "Squad" },
+						{ label: "Entité", value: "Squad" },
 					],
 				};
 			case "firstName":

@@ -29,7 +29,7 @@ export default function GlobalError({ error, reset }: { error: Error & { digest?
 						</p>
 						<div className="flex items-center justify-center gap-3">
 							<Button onClick={reset}>Reessayer</Button>
-							<a href="/hub/default">
+							<a href="/hub">
 								<Button variant="outline-neutral">
 									<Icon name="home" size="sm" />
 									Retour à l&apos;accueil

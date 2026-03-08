@@ -1,11 +1,11 @@
 "use client";
 
 // Components
-import { Icon } from "@/components/ui";
+import { Icon, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-import { PATCHNOTES } from "@/features/patchnotes/data/patchnotes";
-import type { PatchnoteChange } from "@/features/patchnotes/types";
-import { definePageConfig } from "@/structures";
+import { PATCHNOTES } from "@/features/admin/patchnotes/data/patchnotes";
+import type { PatchnoteChange } from "@/features/admin/patchnotes/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/patchnotes",
@@ -50,19 +50,12 @@ export default function PatchnotesPage() {
 	return (
 		<div className="mx-auto max-w-3xl px-4 py-8">
 			{/* Page header */}
-			<div className="mb-8">
-				<div className="flex items-center gap-3">
-					<div className="bg-primary-100 dark:bg-primary-900/30 flex h-11 w-11 items-center justify-center rounded-2xl">
-						<Icon name="news" size="md" className="text-primary-600 dark:text-primary-400" />
-					</div>
-					<div>
-						<h1 className="text-2xl font-bold text-gray-900 dark:text-white">Patchnotes</h1>
-						<p className="text-sm text-gray-500 dark:text-gray-400">
-							Historique complet des mises à jour de Memora Hub
-						</p>
-					</div>
-				</div>
-			</div>
+			<SectionHeaderBanner
+				icon="news"
+				title="Notes de mise à jour"
+				description="Historique complet des versions de Memora Hub."
+				className="mb-8"
+			/>
 
 			{/* Timeline */}
 			<div className="relative">

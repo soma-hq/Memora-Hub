@@ -1,6 +1,7 @@
 // External libraries
 import { z } from "zod";
 import { UserRoles, TaskStatus, TaskPriority, ProjectStatus, AbsenceType } from "@/constants";
+import { ALL_MODULES, type Module } from "@/core/config/capabilities";
 
 // Converts an enum-like object to à Zod-compatible tuple [T, ...T[]]
 const toZodEnum = <T extends string>(obj: Record<string, T>): [T, ...T[]] => Object.values(obj) as [T, ...T[]];
@@ -143,7 +144,28 @@ export type GroupAccess = z.infer<typeof groupAccessSchema>;
 export const createGroupSchema = z.object({
 	name: z.string().min(2, "Minimum 2 caracteres"),
 	description: z.string().optional(),
-	logoUrl: z.string().url("URL invalide").optional().or(z.literal("")),
+	logoUrl: z
+		.string()
+		.trim()
+		.min(1, "La banniere est requise")
+		.refine((value) => value.startsWith("/") || /^https?:\/\//i.test(value), "Banniere invalide"),
+	roleTemplates: z
+		.array(
+			z.object({
+				key: z.string().min(2, "Cle de role invalide"),
+				label: z.string().min(2, "Libelle de role invalide"),
+				modules: z
+					.array(
+						z.custom<Module>(
+							(value): value is Module =>
+								typeof value === "string" && ALL_MODULES.includes(value as Module),
+							"Module invalide",
+						),
+					)
+					.min(1, "Au moins un module est requis"),
+			}),
+		)
+		.optional(),
 });
 
 export type CreateGroupFormData = z.infer<typeof createGroupSchema>;

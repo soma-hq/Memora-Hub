@@ -1,8 +1,8 @@
 // Constants & types
-import type { Project } from "@/features/projects/types";
-import type { Task } from "@/features/tasks/types";
-import type { Meeting } from "@/features/meetings/types";
-import type { AbsenceMode } from "@/features/absences/absence-mode";
+import type { Project } from "@/features/operations/projects/types";
+import type { Task } from "@/features/operations/tasks/types";
+import type { Meeting } from "@/features/communication/meetings/types";
+import type { AbsenceMode } from "@/features/operations/absences/absence-mode";
 
 
 /**

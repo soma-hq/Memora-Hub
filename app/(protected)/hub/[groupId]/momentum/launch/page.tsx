@@ -4,13 +4,12 @@
 import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Button, Modal, EmptyState, Icon } from "@/components/ui";
-import { LaunchForm } from "@/features/momentum/components/launch-form";
-import { useSessions, useSessionActions } from "@/features/momentum/hooks";
-import { sessionStatusVariantMap } from "@/features/momentum/types";
+import { Card, Badge, Button, Modal, EmptyState, Icon, SectionHeaderBanner } from "@/components/ui";
+import { LaunchForm } from "@/features/academy/momentum/components/launch-form";
+import { useSessions, useSessionActions } from "@/features/academy/momentum/hooks";
+import { sessionStatusVariantMap } from "@/features/academy/momentum/types";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import type { LaunchSessionFormData } from "@/features/momentum/types";
-
+import type { LaunchSessionFormData } from "@/features/academy/momentum/types";
 
 /**
  * Momentum launch page for creating and managing PIM sessions.
@@ -54,6 +53,12 @@ export default function MomentumLaunchPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="rocket"
+				title="Lancement PIM"
+				description="Créez et gérez les sessions d'intégration Momentum."
+				className="mb-6"
+			/>
 			<div className="mt-2">
 				<h3 className="mb-3 text-sm font-medium text-gray-500 dark:text-gray-400">Sessions récentes</h3>
 

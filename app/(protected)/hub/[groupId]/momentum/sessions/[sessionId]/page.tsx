@@ -5,22 +5,22 @@ import { useState, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Button, Tabs, Modal, EmptyState, Icon, StyledEmptyState } from "@/components/ui";
-import { JuniorCard } from "@/features/momentum/components/junior-card";
-import { FSIPanel } from "@/features/momentum/components/fsi-panel";
-import { FormationCard } from "@/features/momentum/components/formation-card";
-import { useSessionDetail, useFormations } from "@/features/momentum/hooks";
+import { JuniorCard } from "@/features/academy/momentum/components/junior-card";
+import { FSIPanel } from "@/features/academy/momentum/components/fsi-panel";
+import { FormationCard } from "@/features/academy/momentum/components/formation-card";
+import { useSessionDetail, useFormations } from "@/features/academy/momentum/hooks";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import type { Junior, AuthorRole, RemarkType } from "@/features/momentum/types";
+import type { Junior, AuthorRole, RemarkType } from "@/features/academy/momentum/types";
 import {
 	sessionStatusVariantMap,
 	remarkTypeVariantMap,
 	PIM_STATUSES,
 	DISPOSITIFS,
 	MODERATION_FUNCTIONS,
-} from "@/features/momentum/types";
-import type { PimStatus, Dispositif, ModerationFunction } from "@/features/momentum/types";
-import { definePageConfig } from "@/structures";
+} from "@/features/academy/momentum/types";
+import type { PimStatus, Dispositif, ModerationFunction } from "@/features/academy/momentum/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/momentum/sessions/[sessionId]",

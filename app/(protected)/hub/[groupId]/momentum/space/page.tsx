@@ -3,10 +3,10 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge, Tabs, Divider } from "@/components/ui";
+import { Card, Icon, Badge, Tabs, Divider, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/momentum/space",
@@ -138,6 +138,12 @@ export default function MomentumSpacePage() {
 			title="Espace Momentum"
 			description="Referentiel interne — mission, organisation, processus et ressources."
 		>
+			<SectionHeaderBanner
+				icon="rocket"
+				title="Espace Momentum"
+				description="Mission, organisation, processus et ressources internes."
+				className="mb-6"
+			/>
 			{/* Tabs */}
 			<Tabs tabs={SPACE_TABS} activeTab={activeTab} onTabChange={setActiveTab} className="mb-8" />
 

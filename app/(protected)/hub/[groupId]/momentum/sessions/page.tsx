@@ -3,12 +3,12 @@
 // Next.js
 import { useRouter, useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { EmptyState, Icon } from "@/components/ui";
-import { PimSessionCard } from "@/features/momentum/components/pim-session-card";
-import { useSessions } from "@/features/momentum/hooks";
+import { EmptyState, Icon, SectionHeaderBanner } from "@/components/ui";
+import { PimSessionCard } from "@/features/academy/momentum/components/pim-session-card";
+import { useSessions } from "@/features/academy/momentum/hooks";
 import { cn } from "@/lib/utils/cn";
-import type { SessionStatus } from "@/features/momentum/types";
-import { definePageConfig } from "@/structures";
+import type { SessionStatus } from "@/features/academy/momentum/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/momentum/sessions",
@@ -53,6 +53,12 @@ export default function MomentumSessionsPage() {
 
 	return (
 		<PageContainer title="Sessions PIM" description="Retrouvez l'ensemble des sessions PIM en cours et passees.">
+			<SectionHeaderBanner
+				icon="rocket"
+				title="Sessions PIM"
+				description="Historique et suivi des sessions d'intégration."
+				className="mb-6"
+			/>
 			{/* Filter bar */}
 			<div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center">
 				{/* Search */}

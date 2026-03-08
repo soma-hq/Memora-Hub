@@ -4,14 +4,25 @@
 import { useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Button, Tabs, Modal, EmptyState, Icon, ProgressBar, Divider } from "@/components/ui";
-import { FSIPanel } from "@/features/momentum/components/fsi-panel";
-import { useSessions, useManagement } from "@/features/momentum/hooks";
+import {
+	Card,
+	Badge,
+	Button,
+	Tabs,
+	Modal,
+	EmptyState,
+	Icon,
+	ProgressBar,
+	Divider,
+	SectionHeaderBanner,
+} from "@/components/ui";
+import { FSIPanel } from "@/features/academy/momentum/components/fsi-panel";
+import { useSessions, useManagement } from "@/features/academy/momentum/hooks";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import type { Junior, RemarkType } from "@/features/momentum/types";
-import { sessionStatusVariantMap, pimStatusVariantMap, dispositifVariantMap } from "@/features/momentum/types";
-import { definePageConfig } from "@/structures";
+import type { Junior, RemarkType } from "@/features/academy/momentum/types";
+import { sessionStatusVariantMap, pimStatusVariantMap, dispositifVariantMap } from "@/features/academy/momentum/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/momentum/management",
@@ -231,6 +242,12 @@ export default function MomentumManagementPage() {
 
 	return (
 		<PageContainer title="Management" description="Tableau de bord de pilotage pour Marsha Teams et Legacy.">
+			<SectionHeaderBanner
+				icon="rocket"
+				title="Management Momentum"
+				description="Tableau de bord de pilotage pour Marsha Teams et Legacy."
+				className="mb-6"
+			/>
 			{/* Accèss restriction banner */}
 			<div className="border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-900/20 mb-6 flex items-center gap-3 rounded-lg border px-4 py-2.5">
 				<Icon name="shield" size="sm" className="text-warning-500 shrink-0" />

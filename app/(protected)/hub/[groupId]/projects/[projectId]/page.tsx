@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showWarning, showInfo, showError } from "@/lib/utils/toast";
 import type { IconName } from "@/core/design/icons";
 import type { BadgeVariant } from "@/core/design/states";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/projects/[projectId]",
@@ -34,7 +34,7 @@ interface TabDef {
 const TABS: TabDef[] = [
 	{ id: "communication", label: "Communication", icon: "chat" },
 	{ id: "contenu", label: "Contenu", icon: "document" },
-	{ id: "squad", label: "Squad", icon: "users" },
+	{ id: "squad", label: "Équipe", icon: "users" },
 	{ id: "tâches", label: "Tâches", icon: "tasks" },
 ];
 

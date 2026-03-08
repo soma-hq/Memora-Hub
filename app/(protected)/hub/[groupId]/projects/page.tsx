@@ -4,13 +4,13 @@
 import { useState, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Button, Icon } from "@/components/ui";
-import { ProjectList } from "@/features/projects/components/project-list";
-import { ProjectCreationWizard } from "@/features/projects/components/project-creation-wizard";
+import { Button, Icon, SectionHeaderBanner } from "@/components/ui";
+import { ProjectList } from "@/features/operations/projects/components/project-list";
+import { ProjectCreationWizard } from "@/features/operations/projects/components/project-creation-wizard";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import { useProjectActions } from "@/features/projects/hooks";
-import type { ProjectFormData } from "@/features/projects/types";
-import { definePageConfig } from "@/structures";
+import { useProjectActions } from "@/features/operations/projects/hooks";
+import type { ProjectFormData } from "@/features/operations/projects/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/projects",
@@ -63,6 +63,12 @@ export default function ProjectsPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="folder"
+				title="Projets"
+				description="Gérez et suivez l'avancement de vos projets."
+				className="mb-6"
+			/>
 			<ProjectList groupId={groupId} onCreateClick={() => setWizardOpen(true)} />
 
 			<ProjectCreationWizard isOpen={wizardOpen} onClose={() => setWizardOpen(false)} onSubmit={handleCreate} />

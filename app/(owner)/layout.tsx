@@ -9,7 +9,7 @@ import { MobileNav } from "@/components/navigation/mobile-nav";
 import { SearchModal } from "@/components/modals/search-modal";
 import { MissedEventsModal } from "@/components/modals/missed-events-modal";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { AssistantModal } from "@/features/assistant/components/assistant-modal";
+import { AssistantModal } from "@/features/system/assistant/components/assistant-modal";
 import { Icon } from "@/components/ui";
 import { useUIStore } from "@/store/ui.store";
 import { useDataStore } from "@/store/data.store";

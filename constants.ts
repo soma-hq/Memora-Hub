@@ -40,6 +40,7 @@ export const STORAGE_KEYS = {
 
 // Responsive breakpoints
 export const BREAKPOINTS = {
+	XS: 375,
 	SM: 640,
 	MD: 768,
 	LG: 1024,

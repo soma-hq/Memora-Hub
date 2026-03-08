@@ -5,15 +5,15 @@ import { PageContainer } from "@/components/layout/page-container";
 import { StyledEmptyState } from "@/components/ui/display/styled-empty-state";
 import { SectionHeaderBanner } from "@/components/ui/display/section-header-banner";
 import { Badge, Card, Icon } from "@/components/ui";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 import {
 	PROGRAM_STATUS_LABELS,
 	PROGRAM_PHASE_LABELS,
 	PROGRAM_FUNCTION_LABELS,
 	programStatusVariantMap,
 	programPhaseVariantMap,
-} from "@/features/programs/types";
-import type { ProgramEnrollment, ProgramDefinition, ProgramTrack } from "@/features/programs/types";
+} from "@/features/academy/programs/types";
+import type { ProgramEnrollment, ProgramDefinition, ProgramTrack } from "@/features/academy/programs/types";
 import type { IconName } from "@/core/design/icons";
 
 // Static fallback data (programs.json is gitignored — will be replaced with server actions)

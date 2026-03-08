@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Icon, Button, Badge, WizardModal, StyledEmptyState } from "@/components/ui";
+import { Icon, Button, Badge, WizardModal, StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
 import type { WizardStep } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import { useUIStore } from "@/store/ui.store";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/personnel/absences",
@@ -26,6 +27,15 @@ interface TimelineAbsence {
 	reason: string;
 	mode: "partial" | "complete";
 	status: "active" | "upcoming" | "past";
+}
+
+interface ApiAbsence {
+	id: string;
+	startDate: string;
+	endDate: string;
+	reason: string;
+	type?: string;
+	status: "pending" | "approved" | "rejected";
 }
 
 /** Month names in French */
@@ -125,12 +135,16 @@ function groupByMonth(abs: TimelineAbsence[]): Map<string, TimelineAbsence[]> {
  */
 
 export default function AbsencesPage() {
+	const params = useParams();
+	const groupId = (params.groupId as string) ?? "";
+
 	// Store
 	const absenceMode = useUIStore((s) => s.absenceMode);
 	const setAbsenceMode = useUIStore((s) => s.setAbsenceMode);
 
 	// State
 	const [absences, setAbsences] = useState<TimelineAbsence[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
 	const [wizardOpen, setWizardOpen] = useState(false);
 	const [wizardStep, setWizardStep] = useState(0);
 	const [selectedMode, setSelectedMode] = useState<"partial" | "complete">("partial");
@@ -140,8 +154,83 @@ export default function AbsencesPage() {
 	const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
 	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
 
+	useEffect(() => {
+		let isMounted = true;
+
+		function deriveStatus(
+			startDate: string,
+			endDate: string,
+			status: ApiAbsence["status"],
+		): TimelineAbsence["status"] {
+			if (status === "rejected") return "past";
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+			const start = new Date(startDate);
+			start.setHours(0, 0, 0, 0);
+			const end = new Date(endDate);
+			end.setHours(0, 0, 0, 0);
+
+			if (today < start) return "upcoming";
+			if (today > end) return "past";
+			return "active";
+		}
+
+		async function loadAbsences() {
+			try {
+				const meRes = await fetch("/api/users/me", { cache: "no-store" });
+				if (!meRes.ok) throw new Error("Utilisateur introuvable");
+				const mePayload = (await meRes.json()) as { user?: { id?: string } };
+				const userId = mePayload.user?.id;
+				if (!userId) throw new Error("Utilisateur non authentifie");
+
+				const query = new URLSearchParams({ userId, entityId: groupId });
+				const absRes = await fetch(`/api/absences?${query.toString()}`, { cache: "no-store" });
+				if (!absRes.ok) throw new Error("Impossible de charger les absences");
+				const absPayload = (await absRes.json()) as { absences?: ApiAbsence[] };
+
+				const mapped: TimelineAbsence[] = (absPayload.absences ?? []).map((absence) => {
+					const rawReason = (absence.reason ?? "").trim();
+					const reason = rawReason.replace(/^\[(TOTAL|PARTIAL)\]\s*/i, "");
+					const mode: TimelineAbsence["mode"] = /^\[TOTAL\]/i.test(rawReason) ? "complete" : "partial";
+					return {
+						id: absence.id,
+						startDate: absence.startDate.slice(0, 10),
+						endDate: absence.endDate.slice(0, 10),
+						reason: reason || "Aucun motif fourni.",
+						mode,
+						status: deriveStatus(absence.startDate, absence.endDate, absence.status),
+					};
+				});
+
+				if (!isMounted) return;
+				setAbsences(mapped);
+				const active = mapped.find((item) => item.status === "active");
+				setAbsenceMode(active ? active.mode : "none");
+			} catch {
+				if (!isMounted) return;
+				setAbsences([]);
+				setAbsenceMode("none");
+			} finally {
+				if (isMounted) setIsLoading(false);
+			}
+		}
+
+		void loadAbsences();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [groupId, setAbsenceMode]);
+
 	// Derived data
 	const activeAbsence = useMemo(() => absences.find((a) => a.status === "active"), [absences]);
+	const upcomingAbsences = useMemo(
+		() =>
+			absences
+				.filter((a) => a.status === "upcoming")
+				.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()),
+		[absences],
+	);
 	const pastAbsences = useMemo(
 		() =>
 			absences
@@ -186,11 +275,38 @@ export default function AbsencesPage() {
 	 * @returns {void}
 	 */
 
-	const handleCancel = useCallback(() => {
-		setAbsences((prev) => prev.filter((a) => a.status !== "active"));
-		setAbsenceMode("none");
-		showSuccess("Absence annulée avec succès.");
-	}, [setAbsenceMode]);
+	const cancelAbsence = useCallback(
+		async (absenceId: string) => {
+			const targetAbsence = absences.find((a) => a.id === absenceId);
+			if (!targetAbsence) return;
+			const previousAbsences = absences;
+			const nextAbsences = previousAbsences.filter((a) => a.id !== absenceId);
+			const nextActive = nextAbsences.find((a) => a.status === "active");
+
+			setAbsences(nextAbsences);
+			setAbsenceMode(nextActive ? nextActive.mode : "none");
+
+			try {
+				const response = await fetch(`/api/absences/${encodeURIComponent(absenceId)}`, {
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+				});
+
+				if (!response.ok) throw new Error("Suppression impossible");
+				showSuccess(
+					targetAbsence.status === "upcoming"
+						? "Absence à venir annulée avec succès."
+						: "Absence annulée avec succès.",
+				);
+			} catch {
+				setAbsences(previousAbsences);
+				const previousActive = previousAbsences.find((a) => a.status === "active");
+				setAbsenceMode(previousActive ? previousActive.mode : "none");
+				showError("Impossible d'annuler l'absence pour le moment.");
+			}
+		},
+		[absences, setAbsenceMode],
+	);
 
 	/**
 	 * Resets the wizard form fields back to defaults.
@@ -220,7 +336,7 @@ export default function AbsencesPage() {
 	 * @returns {void}
 	 */
 
-	const handleSubmit = useCallback(() => {
+	const handleSubmit = useCallback(async () => {
 		if (!formStart || !formEnd || !formReason.trim()) {
 			showError("Remplis tous les champs.");
 			return;
@@ -235,20 +351,56 @@ export default function AbsencesPage() {
 			return;
 		}
 
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const startDate = new Date(formStart);
+		startDate.setHours(0, 0, 0, 0);
+
+		const status: TimelineAbsence["status"] = startDate > today ? "upcoming" : "active";
+
 		const newAbsence: TimelineAbsence = {
 			id: `tl-${Date.now()}`,
 			startDate: formStart,
 			endDate: formEnd,
 			reason: formReason.trim(),
 			mode: selectedMode,
-			status: "active",
+			status,
 		};
+		const previousAbsences = absences;
 
 		setAbsences((prev) => [newAbsence, ...prev.filter((a) => a.status !== "active")]);
-		setAbsenceMode(selectedMode === "complete" ? "complete" : "partial");
-		closeWizard();
-		showSuccess("Absence déclarée avec succès.");
-	}, [formStart, formEnd, formReason, selectedMode, setAbsenceMode, closeWizard]);
+		setAbsenceMode(status === "active" ? (selectedMode === "complete" ? "complete" : "partial") : "none");
+
+		try {
+			const response = await fetch("/api/absences", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: selectedMode === "complete" ? "maladie" : "autre",
+					startDate: formStart,
+					endDate: formEnd,
+					reason: `${selectedMode === "complete" ? "[TOTAL]" : "[PARTIAL]"} ${formReason.trim()}`,
+				}),
+			});
+
+			if (!response.ok) throw new Error("Creation impossible");
+
+			const created = (await response.json()) as { id?: string };
+			if (created.id) {
+				setAbsences((prev) =>
+					prev.map((absence) => (absence.id === newAbsence.id ? { ...absence, id: created.id! } : absence)),
+				);
+			}
+
+			closeWizard();
+			showSuccess("Absence déclarée avec succès.");
+		} catch {
+			setAbsences(previousAbsences);
+			const previousActive = previousAbsences.find((absence) => absence.status === "active");
+			setAbsenceMode(previousActive ? previousActive.mode : "none");
+			showError("Impossible d'enregistrer l'absence pour le moment.");
+		}
+	}, [absences, formStart, formEnd, formReason, selectedMode, setAbsenceMode, closeWizard]);
 
 	// Progress calculation for active absence
 	const progress = useMemo(() => {
@@ -392,7 +544,7 @@ export default function AbsencesPage() {
 	return (
 		<PageContainer
 			title="Absences"
-			description={`${absences.length} absence${absences.length > 1 ? "s" : ""} enregistrée${absences.length > 1 ? "s" : ""}`}
+			description={`${isLoading ? "Chargement..." : `${absences.length} absence${absences.length > 1 ? "s" : ""} enregistrée${absences.length > 1 ? "s" : ""}`}`}
 			actions={
 				<Button variant="primary" onClick={() => setWizardOpen(true)} className="gap-2">
 					<Icon name="plus" size="sm" />
@@ -400,8 +552,9 @@ export default function AbsencesPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner icon="absence" title="Absences" description="Déclarez et suivez les absences du personnel." className="mb-6" />
 			<div className="space-y-6">
-				{/* Status Banner */}
+				{/* Status Banner */}}
 				{absenceMode !== "none" && (
 					<div
 						className={cn(
@@ -457,7 +610,11 @@ export default function AbsencesPage() {
 								</p>
 							</div>
 						</div>
-						<Button variant="ghost" size="sm" onClick={handleCancel}>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => activeAbsence && cancelAbsence(activeAbsence.id)}
+						>
 							Annuler l&apos;absence
 						</Button>
 					</div>
@@ -507,7 +664,7 @@ export default function AbsencesPage() {
 									</p>
 								</div>
 							</div>
-							<Button variant="cancel" size="sm" onClick={handleCancel}>
+							<Button variant="cancel" size="sm" onClick={() => cancelAbsence(activeAbsence.id)}>
 								Annuler
 							</Button>
 						</div>
@@ -532,6 +689,45 @@ export default function AbsencesPage() {
 									style={{ width: `${progress.pct}%` }}
 								/>
 							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Upcoming absences */}
+				{upcomingAbsences.length > 0 && (
+					<div>
+						<h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+							À venir
+						</h3>
+
+						<div className="space-y-3">
+							{upcomingAbsences.map((absence) => (
+								<div
+									key={absence.id}
+									className="rounded-xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+								>
+									<div className="flex items-start justify-between gap-4">
+										<div>
+											<div className="flex items-center gap-2">
+												<Badge variant={absence.mode === "partial" ? "warning" : "error"}>
+													{absence.mode === "partial" ? "Partielle" : "Totale"}
+												</Badge>
+												<Badge variant="info">Planifiée</Badge>
+											</div>
+											<p className="mt-2 text-sm font-medium text-gray-800 dark:text-gray-100">
+												{formatDate(absence.startDate)} — {formatDate(absence.endDate)}
+											</p>
+											<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+												{absence.reason}
+											</p>
+										</div>
+
+										<Button variant="ghost" size="sm" onClick={() => cancelAbsence(absence.id)}>
+											Annuler
+										</Button>
+									</div>
+								</div>
+							))}
 						</div>
 					</div>
 				)}
@@ -652,17 +848,11 @@ export default function AbsencesPage() {
 
 				{/* Empty state */}
 				{absences.length === 0 && (
-					<div className="flex flex-col items-center justify-center py-16">
-						<div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800">
-							<Icon name="absence" size="lg" className="text-gray-400 dark:text-gray-500" />
-						</div>
-						<p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-							Aucune absence déclarée
-						</p>
-						<p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
-							Déclare ta prochaine absence pour prévenir ton équipe.
-						</p>
-					</div>
+					<StyledEmptyState
+						icon="absence"
+						title="Aucune absence déclarée"
+						description="Déclare ta prochaine absence pour prévenir ton équipe."
+					/>
 				)}
 			</div>
 

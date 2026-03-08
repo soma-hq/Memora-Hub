@@ -1,16 +1,17 @@
 "use client";
 
 // React
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
+import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Button, Icon, Modal, ModalFooter, WizardModal } from "@/components/ui";
+import { Badge, Button, Icon, Modal, ModalFooter, Tabs, WizardModal, SectionHeaderBanner } from "@/components/ui";
 import type { WizardStep } from "@/components/ui";
-import { usePlanning } from "@/features/personnel/hooks";
-import { PLANNING_EVENT_TYPES, planningEventTypeLabels } from "@/features/personnel/types";
+import { usePlanning } from "@/features/operations/personnel/hooks";
+import { PLANNING_EVENT_TYPES, planningEventTypeLabels } from "@/features/operations/personnel/types";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import type { PlanningEvent, PlanningEventType } from "@/features/personnel/types";
-import { definePageConfig } from "@/structures";
+import type { PlanningEvent, PlanningEventType } from "@/features/operations/personnel/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/personnel/planning",
@@ -21,12 +22,22 @@ const PAGE_CONFIG = definePageConfig({
 	entityScoped: true,
 });
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
-
+// Types
 type ViewMode = "month" | "week" | "3day";
 
-// ─── Constants ──────────────────────────────────────────────────────────────────
+interface SubjectBlock {
+	id: string;
+	title: string;
+	content: string;
+}
 
+interface CurrentUserInfo {
+	id: string;
+	firstName?: string | null;
+	lastName?: string | null;
+}
+
+// Constants
 const MONTH_NAMES = [
 	"Janvier",
 	"Février",
@@ -51,7 +62,7 @@ const HOUR_END = 20;
 const HOURS = Array.from({ length: HOUR_END - HOUR_START }, (_, i) => HOUR_START + i);
 const HOUR_HEIGHT = 64;
 
-/** Style configuration for each event type used across all views. */
+// Style configuration for each event type used across all views
 const EVENT_TYPE_STYLES: Record<PlanningEventType, { bg: string; text: string; border: string }> = {
 	meeting: {
 		bg: "bg-primary-50 dark:bg-primary-900/20",
@@ -75,36 +86,91 @@ const EVENT_TYPE_STYLES: Record<PlanningEventType, { bg: string; text: string; b
 	},
 };
 
-/** Predefined event templates that pre-fill the creation form. */
+// Predefined event templates that pre-fill the creation form
 const TEMPLATES: {
 	label: string;
 	type: PlanningEventType;
-	durationMinutes: number;
 	isPublic: boolean;
+	preview: string;
+	description: string;
 }[] = [
-	{ label: "Moment d'échange", type: "meeting", durationMinutes: 60, isPublic: true },
-	{ label: "Entrevue personnelle", type: "personal", durationMinutes: 30, isPublic: false },
-	{ label: "Entrevue personnelle annuelle", type: "personal", durationMinutes: 60, isPublic: false },
-	{ label: "Live", type: "other", durationMinutes: 120, isPublic: true },
-	{ label: "Events spéciaux", type: "other", durationMinutes: 180, isPublic: true },
-	{ label: "Processus de dérank", type: "meeting", durationMinutes: 45, isPublic: false },
-	{ label: "Entrevue Référent / Junior", type: "meeting", durationMinutes: 30, isPublic: false },
-	{ label: "Entrevue Resp. / Réf. / Junior", type: "meeting", durationMinutes: 45, isPublic: false },
+	{
+		label: "Moment d'échange",
+		type: "meeting",
+		isPublic: true,
+		preview: "Session collaborative courte, cadrée autour d'un enjeu précis.",
+		description: "Ouverture, point d'alignement et décisions actionnables.",
+	},
+	{
+		label: "Entrevue personnelle",
+		type: "personal",
+		isPublic: false,
+		preview: "Entretien individuel de suivi avec focus humain.",
+		description: "Etat du moral, charge, besoins immédiats.",
+	},
+	{
+		label: "Entrevue personnelle annuelle",
+		type: "personal",
+		isPublic: false,
+		preview: "Bilan annuel structuré et plan de progression.",
+		description: "Objectifs, feedback mutuel, projection annuelle.",
+	},
+	{
+		label: "Live",
+		type: "other",
+		isPublic: true,
+		preview: "Format diffusion/live avec gestion des séquences clés.",
+		description: "Rythme, points de parole, pilotage en temps réel.",
+	},
+	{
+		label: "Events spéciaux",
+		type: "other",
+		isPublic: true,
+		preview: "Cadre événementiel avec préparation multi-acteurs.",
+		description: "Brief, déroulé, contingences et communication.",
+	},
+	{
+		label: "Processus de dérank",
+		type: "meeting",
+		isPublic: false,
+		preview: "Cadre sensible, factuel, avec traçabilité.",
+		description: "Faits, impacts, actions et clôture du processus.",
+	},
+	{
+		label: "Entrevue Référent / Junior",
+		type: "meeting",
+		isPublic: false,
+		preview: "Point de mentorat opérationnel.",
+		description: "Blocages, progression et prochains jalons.",
+	},
+	{
+		label: "Entrevue Resp. / Réf. / Junior",
+		type: "meeting",
+		isPublic: false,
+		preview: "Trilatérale d'arbitrage et d'alignement.",
+		description: "Décisions, responsabilités, points de contrôle.",
+	},
 ];
 
-/** Wizard steps definition for planning event creation */
+// Wizard steps definition for planning event creation
 const PLANNING_STEPS: WizardStep[] = [
 	{
 		id: "template",
 		title: "Template",
-		description: "Sélectionne un template pour pré-remplir le formulaire.",
+		description: "Sélectionne une base visuelle, puis confirme son application.",
 		icon: "sparkles",
 	},
 	{
-		id: "details",
-		title: "Détails",
+		id: "informations",
+		title: "Informations",
 		description: "Renseigne les informations principales de l'événement.",
 		icon: "document",
+	},
+	{
+		id: "topics",
+		title: "Blocs sujets",
+		description: "Ajoute des sujets par bloc avec contenu markdown détaillé.",
+		icon: "tasks",
 	},
 	{
 		id: "schedule",
@@ -120,19 +186,19 @@ const VIEW_MODE_OPTIONS: { value: ViewMode; label: string }[] = [
 	{ value: "3day", label: "3 jours" },
 ];
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
+// Helpers
 
-/** Formats year/month/date into an ISO date string (YYYY-MM-DD). */
+// Formats year/month/date into an ISO date string (YYYY-MM-DD)
 function toDateString(year: number, month: number, date: number): string {
 	return `${year}-${String(month + 1).padStart(2, "0")}-${String(date).padStart(2, "0")}`;
 }
 
-/** Converts a Date object into an ISO date string (YYYY-MM-DD). */
+// Converts a Date object into an ISO date string (YYYY-MM-DD)
 function dateToString(d: Date): string {
 	return toDateString(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-/** Returns a 42-element grid for the given month, including overflow from adjacent months. */
+// Returns a 42-element grid for the given month, including overflow from adjacent months
 function getCalendarDays(year: number, month: number) {
 	const firstDay = new Date(year, month, 1);
 	const lastDay = new Date(year, month + 1, 0);
@@ -163,7 +229,7 @@ function getCalendarDays(year: number, month: number) {
 	return days;
 }
 
-/** Returns the Monday of the week that contains the given date. */
+// Returns the Monday of the week that contains the given date
 function getMonday(d: Date): Date {
 	const result = new Date(d);
 	const day = result.getDay();
@@ -173,7 +239,7 @@ function getMonday(d: Date): Date {
 	return result;
 }
 
-/** Returns 7 Date objects (Mon-Sun) for the week containing the anchor. */
+// Returns 7 Date objects (Mon-Sun) for the week containing the anchor
 function getWeekDates(anchor: Date): Date[] {
 	const monday = getMonday(anchor);
 	return Array.from({ length: 7 }, (_, i) => {
@@ -183,7 +249,7 @@ function getWeekDates(anchor: Date): Date[] {
 	});
 }
 
-/** Returns 3 Date objects centered on the anchor (prev day, anchor, next day). */
+// Returns 3 Date objects centered on the anchor
 function getThreeDayDates(anchor: Date): Date[] {
 	return Array.from({ length: 3 }, (_, i) => {
 		const d = new Date(anchor);
@@ -192,7 +258,7 @@ function getThreeDayDates(anchor: Date): Date[] {
 	});
 }
 
-/** Adds a number of minutes to a time string (HH:mm) and returns the result. */
+// Adds a number of minutes to a time string (HH:mm) and returns the result
 function addMinutesToTime(time: string, minutes: number): string {
 	const [h, m] = time.split(":").map(Number);
 	const totalMin = h * 60 + m + minutes;
@@ -201,7 +267,7 @@ function addMinutesToTime(time: string, minutes: number): string {
 	return `${String(newH).padStart(2, "0")}:${String(newM).padStart(2, "0")}`;
 }
 
-/** Converts a time string (HH:mm) to a fractional hour offset from HOUR_START. */
+// Converts a time string (HH:mm) to a fractional hour offset from HOUR_START
 function timeToOffset(time: string): number {
 	const [h, m] = time.split(":").map(Number);
 	return h + m / 60 - HOUR_START;
@@ -213,17 +279,17 @@ function getDowIndex(d: Date): number {
 	return dow === 0 ? 6 : dow - 1;
 }
 
-// ─── Component ──────────────────────────────────────────────────────────────────
-
 /**
- * Planning page with monthly, weekly, and 3-day calendar views.
- * Supports event creation with predefined templates, event viewing, and deletion.
+ * Planning page with monthly, weekly, and 3-day calendar views
  * @returns The planning calendar page
  */
 export default function PlanningPage() {
-	const { events, currentMonth, goToNextMonth, goToPrevMonth, goToToday, addEvent, deleteEvent } = usePlanning();
+	const params = useParams();
+	const groupId = (params.groupId as string) ?? "";
+	const { events, currentMonth, goToNextMonth, goToPrevMonth, goToToday, addEvent, deleteEvent } =
+		usePlanning(groupId);
 
-	// ─── View State ──────────────────────────────────────────────────────────
+	// View State
 	const [viewMode, setViewMode] = useState<ViewMode>("month");
 	const [anchorDate, setAnchorDate] = useState(() => {
 		const now = new Date();
@@ -231,10 +297,12 @@ export default function PlanningPage() {
 		return now;
 	});
 
-	// ─── Modal State ─────────────────────────────────────────────────────────
+	// Modal State
 	const [modalOpen, setModalOpen] = useState(false);
 	const [wizardStep, setWizardStep] = useState(0);
 	const [detailEvent, setDetailEvent] = useState<PlanningEvent | null>(null);
+	const [detailTab, setDetailTab] = useState<"informations" | "sujets">("informations");
+	const [currentUser, setCurrentUser] = useState<CurrentUserInfo | null>(null);
 	const [formTitle, setFormTitle] = useState("");
 	const [formDescription, setFormDescription] = useState("");
 	const [formDate, setFormDate] = useState("");
@@ -243,10 +311,13 @@ export default function PlanningPage() {
 	const [formType, setFormType] = useState<PlanningEventType>("meeting");
 	const [formIsPublic, setFormIsPublic] = useState(true);
 	const [formLocation, setFormLocation] = useState("");
+	const [selectedTemplate, setSelectedTemplate] = useState<(typeof TEMPLATES)[number] | null>(null);
+	const [subjectBlocks, setSubjectBlocks] = useState<SubjectBlock[]>([
+		{ id: `sb-${Date.now()}`, title: "Introduction", content: "- Contexte\n- Objectif" },
+	]);
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
-	// ─── Form Helpers ────────────────────────────────────────────────────────
-
+	// Form Helpers
 	function resetForm() {
 		setFormTitle("");
 		setFormDescription("");
@@ -256,6 +327,8 @@ export default function PlanningPage() {
 		setFormType("meeting");
 		setFormIsPublic(true);
 		setFormLocation("");
+		setSelectedTemplate(null);
+		setSubjectBlocks([{ id: `sb-${Date.now()}`, title: "Introduction", content: "- Contexte\n- Objectif" }]);
 		setWizardStep(0);
 	}
 
@@ -265,14 +338,43 @@ export default function PlanningPage() {
 		setModalOpen(true);
 	}
 
-	function applyTemplate(template: (typeof TEMPLATES)[number]) {
+	function previewTemplate(template: (typeof TEMPLATES)[number]) {
+		setSelectedTemplate(template);
+	}
+
+	function applyTemplate(template: (typeof TEMPLATES)[number], accept: boolean) {
+		if (!accept) {
+			setSelectedTemplate(null);
+			return;
+		}
+
 		setFormTitle(template.label);
 		setFormType(template.type);
 		setFormIsPublic(template.isPublic);
+		setFormDescription(template.description);
 
 		const baseTime = formStartTime || "09:00";
 		setFormStartTime(baseTime);
-		setFormEndTime(addMinutesToTime(baseTime, template.durationMinutes));
+		setFormEndTime(addMinutesToTime(baseTime, 60));
+		setSelectedTemplate(template);
+	}
+
+	function addSubjectBlock() {
+		setSubjectBlocks((prev) => [
+			...prev,
+			{ id: `sb-${Date.now()}-${prev.length}`, title: `Sujet ${prev.length + 1}`, content: "" },
+		]);
+	}
+
+	function updateSubjectBlock(id: string, key: "title" | "content", value: string) {
+		setSubjectBlocks((prev) => prev.map((block) => (block.id === id ? { ...block, [key]: value } : block)));
+	}
+
+	function removeSubjectBlock(id: string) {
+		setSubjectBlocks((prev) => {
+			if (prev.length <= 1) return prev;
+			return prev.filter((block) => block.id !== id);
+		});
 	}
 
 	async function handleSubmit() {
@@ -287,22 +389,41 @@ export default function PlanningPage() {
 		}
 
 		setIsSubmitting(true);
-		await new Promise((resolve) => setTimeout(resolve, 300));
 
-		addEvent({
+		const normalizedBlocks = subjectBlocks
+			.map((block) => ({ title: block.title.trim(), content: block.content.trim() }))
+			.filter((block) => block.title || block.content);
+
+		const topicsMarkdown = normalizedBlocks
+			.map((block) => {
+				const header = block.title ? `## ${block.title}` : "## Sujet";
+				return `${header}\n${block.content || "- A completer"}`;
+			})
+			.join("\n\n");
+
+		const metadata = `<!--memora:authorId=${currentUser?.id ?? "user-1"};authorName=${[currentUser?.firstName, currentUser?.lastName].filter(Boolean).join(" ") || "Equipe"};template=${selectedTemplate?.label ?? "libre"};public=${formIsPublic ? "1" : "0"}-->`;
+		const mergedDescription = [metadata, formDescription.trim(), topicsMarkdown].filter(Boolean).join("\n\n");
+
+		const created = await addEvent({
 			title: formTitle.trim(),
-			description: formDescription.trim() || undefined,
+			description: mergedDescription,
 			date: formDate,
 			startTime: formStartTime,
 			endTime: formEndTime,
 			type: formType,
 			isPublic: formIsPublic,
-			authorId: "user-1",
-			authorName: "Jeremy Alpha",
+			authorId: currentUser?.id ?? "user-1",
+			authorName: [currentUser?.firstName, currentUser?.lastName].filter(Boolean).join(" ") || "Jeremy Alpha",
 			location: formLocation.trim() || undefined,
 		});
 
 		setIsSubmitting(false);
+
+		if (!created) {
+			showError("Impossible de créer l'événement pour le moment.");
+			return;
+		}
+
 		setModalOpen(false);
 		showSuccess("Événement créé avec succès.");
 	}
@@ -313,8 +434,29 @@ export default function PlanningPage() {
 		showSuccess("Événement supprimé.");
 	}
 
-	// ─── Calendar Data ───────────────────────────────────────────────────────
+	useEffect(() => {
+		let isMounted = true;
 
+		async function loadCurrentUser() {
+			try {
+				const response = await fetch("/api/users/me", { cache: "no-store" });
+				if (!response.ok) return;
+				const payload = (await response.json()) as { user?: CurrentUserInfo };
+				if (!isMounted || !payload.user) return;
+				setCurrentUser(payload.user);
+			} catch {
+				// Keep fallback values when user profile cannot be loaded.
+			}
+		}
+
+		void loadCurrentUser();
+
+		return () => {
+			isMounted = false;
+		};
+	}, []);
+
+	// Calendar Data
 	const calendarDays = useMemo(() => getCalendarDays(currentMonth.year, currentMonth.month), [currentMonth]);
 
 	const eventsByDate = useMemo(() => {
@@ -334,8 +476,7 @@ export default function PlanningPage() {
 		return [];
 	}, [viewMode, anchorDate]);
 
-	// ─── Navigation ──────────────────────────────────────────────────────────
-
+	// Navigation
 	function handlePrev() {
 		if (viewMode === "month") {
 			goToPrevMonth();
@@ -392,8 +533,7 @@ export default function PlanningPage() {
 		return `${first.getDate()} ${MONTH_NAMES[first.getMonth()]} — ${last.getDate()} ${MONTH_NAMES[last.getMonth()]} ${last.getFullYear()}`;
 	}, [viewMode, currentMonth, viewDates]);
 
-	// ─── Current Time Indicator ──────────────────────────────────────────────
-
+	// Current Time Indicator
 	const currentTimeOffset = useMemo(() => {
 		const now = new Date();
 		const hours = now.getHours() + now.getMinutes() / 60;
@@ -401,8 +541,27 @@ export default function PlanningPage() {
 		return (hours - HOUR_START) * HOUR_HEIGHT;
 	}, []);
 
-	// ─── Styles ──────────────────────────────────────────────────────────────
+	const detailSubjects = useMemo(() => {
+		if (!detailEvent?.description) return [] as Array<{ title: string; content: string }>;
+		const chunks = detailEvent.description
+			.split(/\n(?=##\s+)/)
+			.map((chunk) => chunk.trim())
+			.filter((chunk) => chunk.startsWith("## "));
 
+		return chunks.map((chunk) => {
+			const [header, ...rest] = chunk.split("\n");
+			return {
+				title: header.replace(/^##\s+/, "").trim(),
+				content: rest.join("\n").trim(),
+			};
+		});
+	}, [detailEvent?.description]);
+
+	useEffect(() => {
+		setDetailTab("informations");
+	}, [detailEvent?.id]);
+
+	// Styles
 	const inputClasses = cn(
 		"w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm text-gray-900",
 		"placeholder-gray-400 transition-colors",
@@ -411,8 +570,7 @@ export default function PlanningPage() {
 		"dark:focus:border-primary-600 dark:focus:ring-primary-600",
 	);
 
-	// ─── Render ──────────────────────────────────────────────────────────────
-
+	// Render
 	return (
 		<PageContainer
 			title="Planning"
@@ -424,6 +582,12 @@ export default function PlanningPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="calendar"
+				title="Planning"
+				description="Consultez et gérez votre planning et les événements partagés."
+				className="mb-6"
+			/>
 			{/* ─── Toolbar ─── */}
 			<div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 				{/* View mode toggle */}
@@ -515,38 +679,72 @@ export default function PlanningPage() {
 					description={planningEventTypeLabels[detailEvent.type]}
 					size="md"
 				>
-					<div className="space-y-3">
-						<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-							<Icon name="calendar" size="sm" />
-							<span>
-								{new Date(detailEvent.date).toLocaleDateString("fr-FR", {
-									weekday: "long",
-									day: "numeric",
-									month: "long",
-									year: "numeric",
-								})}
-							</span>
-						</div>
-						<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-							<Icon name="clock" size="sm" />
-							<span>
-								{detailEvent.startTime} — {detailEvent.endTime}
-							</span>
-						</div>
-						{detailEvent.location && (
-							<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-								<Icon name="location" size="sm" />
-								<span>{detailEvent.location}</span>
+					<div className="space-y-4">
+						<Tabs
+							tabs={[
+								{ id: "informations", label: "Informations", icon: "info" },
+								{ id: "sujets", label: "Sujets", icon: "document", count: detailSubjects.length },
+							]}
+							activeTab={detailTab}
+							onTabChange={(tab) => setDetailTab(tab as "informations" | "sujets")}
+						/>
+
+						{detailTab === "informations" && (
+							<div className="space-y-3">
+								<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+									<Icon name="calendar" size="sm" />
+									<span>
+										{new Date(detailEvent.date).toLocaleDateString("fr-FR", {
+											weekday: "long",
+											day: "numeric",
+											month: "long",
+											year: "numeric",
+										})}
+									</span>
+								</div>
+								<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+									<Icon name="clock" size="sm" />
+									<span>
+										{detailEvent.startTime} — {detailEvent.endTime}
+									</span>
+								</div>
+								{detailEvent.location && (
+									<div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+										<Icon name="location" size="sm" />
+										<span>{detailEvent.location}</span>
+									</div>
+								)}
+								<div className="flex items-center gap-2 text-xs text-gray-400">
+									<span>Par {detailEvent.authorName}</span>
+									<span>&middot;</span>
+									<span>{detailEvent.isPublic ? "Public" : "Privé"}</span>
+								</div>
 							</div>
 						)}
-						{detailEvent.description && (
-							<p className="mt-2 text-sm text-gray-500 dark:text-gray-400">{detailEvent.description}</p>
+
+						{detailTab === "sujets" && (
+							<div className="space-y-2">
+								{detailSubjects.length === 0 ? (
+									<p className="rounded-lg border border-dashed border-gray-300 px-3 py-2 text-sm text-gray-500 dark:border-gray-700 dark:text-gray-400">
+										Aucun bloc sujet déclaré pour cet événement.
+									</p>
+								) : (
+									detailSubjects.map((subject) => (
+										<div
+											key={`${subject.title}-${subject.content}`}
+											className="rounded-lg border border-gray-200 bg-gray-50 p-3 dark:border-gray-700 dark:bg-gray-800/60"
+										>
+											<p className="text-sm font-semibold text-gray-900 dark:text-white">
+												{subject.title}
+											</p>
+											<p className="mt-1 text-xs whitespace-pre-wrap text-gray-600 dark:text-gray-300">
+												{subject.content || "-"}
+											</p>
+										</div>
+									))
+								)}
+							</div>
 						)}
-						<div className="flex items-center gap-2 text-xs text-gray-400">
-							<span>Par {detailEvent.authorName}</span>
-							<span>&middot;</span>
-							<span>{detailEvent.isPublic ? "Public" : "Privé"}</span>
-						</div>
 					</div>
 
 					<ModalFooter className="-mx-6 mt-4 -mb-4">
@@ -575,50 +773,78 @@ export default function PlanningPage() {
 			>
 				{/* Step 1: Template selection */}
 				{wizardStep === 0 && (
-					<div>
-						<div className="flex flex-wrap gap-2">
+					<div className="grid grid-cols-1 gap-4 lg:grid-cols-[1fr_1.2fr]">
+						<div className="space-y-2">
 							{TEMPLATES.map((tpl) => {
-								const isActive = formTitle === tpl.label;
+								const isSelected = selectedTemplate?.label === tpl.label;
 								return (
 									<button
 										key={tpl.label}
 										type="button"
-										onClick={() => applyTemplate(tpl)}
+										onClick={() => previewTemplate(tpl)}
 										className={cn(
-											"rounded-xl border-2 px-4 py-3 text-left transition-all duration-200",
-											isActive
+											"w-full rounded-xl border px-4 py-3 text-left transition-all duration-200",
+											isSelected
 												? "border-primary-400 bg-primary-50 dark:border-primary-600 dark:bg-primary-900/20"
-												: cn(
-														"border-gray-200 bg-white hover:border-gray-300",
-														"dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600",
-													),
+												: "border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600",
 										)}
 									>
-										<span
-											className={cn(
-												"text-sm font-semibold",
-												isActive
-													? "text-primary-700 dark:text-primary-400"
-													: "text-gray-700 dark:text-gray-300",
-											)}
-										>
+										<p className="text-sm font-semibold text-gray-900 dark:text-white">
 											{tpl.label}
-										</span>
-										<p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
-											{planningEventTypeLabels[tpl.type]} &middot; {tpl.durationMinutes} min
-											{tpl.isPublic ? " · Public" : ""}
 										</p>
+										<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{tpl.preview}</p>
 									</button>
 								);
 							})}
 						</div>
-						<p className="mt-3 text-xs text-gray-400 dark:text-gray-500">
-							Tu peux aussi passer cette étape et remplir manuellement.
-						</p>
+
+						<div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-800/60">
+							{selectedTemplate ? (
+								<>
+									<p className="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+										Prévisualisation
+									</p>
+									<h3 className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
+										{selectedTemplate.label}
+									</h3>
+									<p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
+										{selectedTemplate.description}
+									</p>
+									<div className="mt-3 flex items-center gap-2 text-xs">
+										<Badge variant="neutral" showDot={false}>
+											{planningEventTypeLabels[selectedTemplate.type]}
+										</Badge>
+										<Badge
+											variant={selectedTemplate.isPublic ? "success" : "warning"}
+											showDot={false}
+										>
+											{selectedTemplate.isPublic ? "Public" : "Privé"}
+										</Badge>
+									</div>
+									<div className="mt-4 flex gap-2">
+										<Button size="sm" onClick={() => applyTemplate(selectedTemplate, true)}>
+											Oui, appliquer ce template
+										</Button>
+										<Button
+											variant="ghost"
+											size="sm"
+											onClick={() => applyTemplate(selectedTemplate, false)}
+										>
+											Non, je passe en manuel
+										</Button>
+									</div>
+								</>
+							) : (
+								<p className="text-sm text-gray-500 dark:text-gray-400">
+									Clique sur un template à gauche pour afficher son visuel, puis confirme si tu veux
+									l'utiliser.
+								</p>
+							)}
+						</div>
 					</div>
 				)}
 
-				{/* Step 2: Event details */}
+				{/* Step 2: Informations */}
 				{wizardStep === 1 && (
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
 						{/* Title */}
@@ -670,13 +896,13 @@ export default function PlanningPage() {
 						{/* Description */}
 						<div className="sm:col-span-2">
 							<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
-								Description
+								Contexte
 							</label>
 							<textarea
 								value={formDescription}
 								onChange={(e) => setFormDescription(e.target.value)}
-								rows={2}
-								placeholder="Description optionnelle..."
+								rows={4}
+								placeholder="Contexte global, objectifs, contraintes..."
 								className={cn(inputClasses, "resize-none")}
 							/>
 						</div>
@@ -700,8 +926,57 @@ export default function PlanningPage() {
 					</div>
 				)}
 
-				{/* Step 3: Date & Time */}
+				{/* Step 3: Subject blocks */}
 				{wizardStep === 2 && (
+					<div className="space-y-3">
+						<div className="flex items-center justify-between">
+							<p className="text-sm text-gray-600 dark:text-gray-300">
+								Ajoute des sujets par bloc. Chaque bloc accepte du markdown libre.
+							</p>
+							<Button variant="ghost" size="sm" onClick={addSubjectBlock}>
+								<Icon name="plus" size="xs" />
+								Ajouter un nouveau sujet
+							</Button>
+						</div>
+
+						<div className="space-y-3">
+							{subjectBlocks.map((block, index) => (
+								<div
+									key={block.id}
+									className="rounded-xl border border-gray-200 bg-white p-3 dark:border-gray-700 dark:bg-gray-900"
+								>
+									<div className="mb-2 flex items-center justify-between gap-2">
+										<input
+											type="text"
+											value={block.title}
+											onChange={(e) => updateSubjectBlock(block.id, "title", e.target.value)}
+											placeholder={`Sujet ${index + 1}`}
+											className={cn(inputClasses, "py-1.5")}
+										/>
+										<button
+											type="button"
+											onClick={() => removeSubjectBlock(block.id)}
+											disabled={subjectBlocks.length <= 1}
+											className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600 disabled:cursor-not-allowed disabled:opacity-40 dark:hover:bg-gray-800"
+										>
+											<Icon name="close" size="sm" />
+										</button>
+									</div>
+									<textarea
+										rows={4}
+										value={block.content}
+										onChange={(e) => updateSubjectBlock(block.id, "content", e.target.value)}
+										placeholder="- Point 1\n- Point 2\n- Decision"
+										className={cn(inputClasses, "resize-y py-2")}
+									/>
+								</div>
+							))}
+						</div>
+					</div>
+				)}
+
+				{/* Step 4: Date & Time */}
+				{wizardStep === 3 && (
 					<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 						{/* Date */}
 						<div>
@@ -748,8 +1023,7 @@ export default function PlanningPage() {
 	);
 }
 
-// ─── Monthly View ───────────────────────────────────────────────────────────────
-
+// Monthly View
 interface MonthlyViewProps {
 	calendarDays: ReturnType<typeof getCalendarDays>;
 	eventsByDate: Record<string, PlanningEvent[]>;
@@ -793,8 +1067,7 @@ function MonthlyView({ calendarDays, eventsByDate, todayStr, onAddEvent, onSelec
 								"transition-colors duration-150",
 								day.isCurrentMonth ? "bg-white dark:bg-gray-900" : "bg-gray-50/70 dark:bg-gray-900/60",
 								!isToday && "hover:bg-gray-50 dark:hover:bg-gray-800/60",
-								isToday &&
-									"bg-primary-50/50 ring-primary-200 dark:bg-primary-950/30 dark:ring-primary-800 ring-1 ring-inset",
+								isToday && "ring-0",
 							)}
 						>
 							{/* Top row: + button (left) and date number (right) */}
@@ -816,7 +1089,7 @@ function MonthlyView({ calendarDays, eventsByDate, todayStr, onAddEvent, onSelec
 									className={cn(
 										"flex h-7 w-7 items-center justify-center rounded-full text-xs",
 										isToday
-											? "bg-primary-500 shadow-primary-500/25 font-bold text-white shadow-sm"
+											? "border border-amber-500 font-bold text-amber-600 dark:text-amber-400"
 											: day.isCurrentMonth
 												? "font-medium text-gray-800 dark:text-gray-200"
 												: "text-gray-300 dark:text-gray-600",
@@ -907,9 +1180,7 @@ function TimeGridView({
 							<span
 								className={cn(
 									"text-[11px] font-semibold tracking-wider uppercase",
-									isToday
-										? "text-primary-600 dark:text-primary-400"
-										: "text-gray-500 dark:text-gray-400",
+									isToday ? "text-amber-600 dark:text-amber-400" : "text-gray-500 dark:text-gray-400",
 								)}
 							>
 								{viewMode === "week" ? DAY_NAMES_SHORT[dowIdx] : DAY_NAMES_FULL[dowIdx]}
@@ -918,7 +1189,7 @@ function TimeGridView({
 								className={cn(
 									"flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
 									isToday
-										? "bg-primary-500 shadow-primary-500/25 text-white shadow-sm"
+										? "border border-amber-500 text-amber-600 dark:text-amber-400"
 										: "text-gray-700 dark:text-gray-300",
 								)}
 							>
@@ -960,7 +1231,7 @@ function TimeGridView({
 								key={colIdx}
 								className={cn(
 									"group relative border-r border-gray-200 last:border-r-0 dark:border-gray-700",
-									isToday && "bg-primary-50/30 dark:bg-primary-950/15",
+									isToday && "bg-amber-50/40 dark:bg-amber-950/10",
 								)}
 							>
 								{/* Hour grid lines */}

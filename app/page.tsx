@@ -1,6 +1,6 @@
 // Next.js
 import { redirect } from "next/navigation";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "home",
@@ -13,5 +13,5 @@ const PAGE_CONFIG = definePageConfig({
  * @returns Never renders
  */
 export default function RootPage() {
-	redirect("/hub/default");
+	redirect("/hub");
 }

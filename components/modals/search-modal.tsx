@@ -1,10 +1,11 @@
 "use client";
 
 // React
-import { useState, useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
+import { useHubStore } from "@/store/hub.store";
 import type { IconName } from "@/core/design/icons";
 
 interface SearchResult {
@@ -179,10 +180,10 @@ const searchData: SearchResult[] = [
 	},
 	{
 		id: "a2",
-		title: "Entités",
+		title: "Squads",
 		description: "Gestion des organisations",
 		icon: "group",
-		href: "/admin/accèss",
+		href: "/admin/access",
 		category: "Pages",
 	},
 	{
@@ -246,7 +247,7 @@ const searchData: SearchResult[] = [
 		title: "Gestion des accès",
 		description: "Permissions et accès",
 		icon: "shield",
-		href: "/admin/accèss",
+		href: "/admin/access",
 		category: "Admin",
 	},
 	{
@@ -378,16 +379,51 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 	const onCloseRef = useRef(onClose);
 	onCloseRef.current = onClose;
 	const router = useRouter();
+	const pathname = usePathname();
+	const activeGroupId = useHubStore((s) => s.activeGroupId);
+
+	const currentGroupId = useMemo(() => {
+		if (activeGroupId) return activeGroupId;
+		const legacyMatch = pathname.match(/^\/([^/]+)\/legacy(?:\/|$)/);
+		if (legacyMatch?.[1]) return legacyMatch[1];
+		const hubMatch = pathname.match(/^\/hub\/([^/]+)(?:\/|$)/);
+		if (hubMatch?.[1]) return hubMatch[1];
+		return "default";
+	}, [activeGroupId, pathname]);
+
+	const scopeHrefToGroup = useCallback(
+		(href: string): string => {
+			const normalizedHref = href.replace("/admin/accèss", "/admin/access");
+			if (normalizedHref.startsWith("/hub/default")) {
+				return normalizedHref.replace("/hub/default", `/hub/${currentGroupId}`);
+			}
+			if (normalizedHref === "/legacy" || normalizedHref.startsWith("/legacy/")) {
+				return `/${currentGroupId}${normalizedHref}`;
+			}
+			return normalizedHref;
+		},
+		[currentGroupId],
+	);
+
+	const scopedSearchData = useMemo(
+		() => searchData.map((item) => ({ ...item, href: scopeHrefToGroup(item.href) })),
+		[scopeHrefToGroup],
+	);
+
+	const scopedRecentVisits = useMemo(
+		() => recentVisits.map((item) => ({ ...item, href: scopeHrefToGroup(item.href) })),
+		[scopeHrefToGroup],
+	);
 
 	// Computed
 	const displayItems =
 		query.length > 0
-			? searchData.filter(
+			? scopedSearchData.filter(
 					(item) =>
 						item.title.toLowerCase().includes(query.toLowerCase()) ||
 						item.description?.toLowerCase().includes(query.toLowerCase()),
 				)
-			: recentVisits;
+			: scopedRecentVisits;
 
 	const grouped = displayItems.reduce<Record<string, SearchResult[]>>((acc, item) => {
 		if (!acc[item.category]) acc[item.category] = [];
@@ -409,6 +445,8 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 	 * @returns {void}
 	 */
 	const handleKeyDown = (e: React.KeyboardEvent) => {
+		if (displayItems.length === 0) return;
+
 		if (e.key === "ArrowDown") {
 			e.preventDefault();
 			setSelectedIndex((prev) => (prev + 1) % displayItems.length);
@@ -421,15 +459,15 @@ export function SearchModal({ isOpen, onClose }: SearchModalProps) {
 		}
 	};
 
-	// Global Ctrl+K shortcut to close
+	// Global Ctrl/Cmd+P shortcut closes when already open.
 	useEffect(() => {
 		/**
-		 * Closes the modal on Ctrl+K when already open.
+		 * Closes the modal on Ctrl/Cmd+P when already open.
 		 * @param {KeyboardEvent} e - Native keyboard event
 		 * @returns {void}
 		 */
 		const handler = (e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+			if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
 				e.preventDefault();
 				if (isOpen) onCloseRef.current();
 			}

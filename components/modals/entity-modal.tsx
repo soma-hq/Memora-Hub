@@ -48,11 +48,9 @@ export function EntityModal({ isOpen, onClose, activeEntityId, onSelect }: Entit
 					<div className="flex items-center gap-2.5">
 						<Icon name="group" size="md" className="text-primary-500" />
 						<div>
-							<h2 className="text-base font-semibold text-gray-900 dark:text-white">Entités</h2>
+							<h2 className="text-base font-semibold text-gray-900 dark:text-white">Squads</h2>
 							<p className="text-xs text-gray-500 dark:text-gray-400">
-								{isAdmin
-									? "Toutes les entites"
-									: `${accessibleEntities.length} entite(s) accessible(s)`}
+								{isAdmin ? "Toutes les squads" : `${accessibleEntities.length} squad(s) accessible(s)`}
 							</p>
 						</div>
 					</div>

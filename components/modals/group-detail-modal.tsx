@@ -53,23 +53,18 @@ export function GroupDetailModal({ isOpen, onClose, group }: GroupDetailModalPro
 	return (
 		<Modal isOpen={isOpen} onClose={onClose} title={group.name} description={group.description} size="lg">
 			<div className="space-y-6">
-				{/* Stats */}
-				<div className="grid grid-cols-3 gap-4">
-					<div className="rounded-lg border border-gray-200 p-3 text-center dark:border-gray-700">
-						<p className="text-2xl font-bold text-gray-900 dark:text-white">{group.members.length}</p>
-						<p className="text-xs text-gray-400">Membres</p>
-					</div>
-					<div className="rounded-lg border border-gray-200 p-3 text-center dark:border-gray-700">
-						<p className="text-2xl font-bold text-gray-900 dark:text-white">{group.projects}</p>
-						<p className="text-xs text-gray-400">Projets</p>
-					</div>
-					<div className="rounded-lg border border-gray-200 p-3 text-center dark:border-gray-700">
-						<Badge variant={group.status === "active" ? "success" : "neutral"} className="mx-auto">
-							{group.status === "active" ? "Actif" : "Inactif"}
-						</Badge>
-						<p className="mt-1 text-xs text-gray-400">Statut</p>
-					</div>
+				<div className="flex flex-wrap items-center gap-2">
+					<Badge variant="neutral" showDot={false}>
+						{group.members.length} membres
+					</Badge>
+					<Badge variant="neutral" showDot={false}>
+						{group.projects} projets
+					</Badge>
+					<Badge variant={group.status === "active" ? "success" : "neutral"} showDot={false}>
+						{group.status === "active" ? "Actif" : "Inactif"}
+					</Badge>
 				</div>
+				<Divider />
 
 				{/* Tabs */}
 				<Tabs

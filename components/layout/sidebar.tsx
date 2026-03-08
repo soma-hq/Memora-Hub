@@ -13,6 +13,7 @@ import { AdminModePopover } from "@/components/layout/admin-mode-popover";
 import { LegacyModePopover } from "@/components/layout/legacy-mode-popover";
 import { StreamerModePopover } from "@/components/layout/streamer-mode-popover";
 import { cn } from "@/lib/utils/cn";
+import { getEntitySidebarBanner } from "@/core/design/entity-banners";
 import type { IconName } from "@/core/design/icons";
 import type { Module } from "@/core/config/capabilities";
 
@@ -124,7 +125,11 @@ export function Sidebar() {
 	const palette = useModePalette();
 	const t = useTranslations();
 	const groupId = activeGroupId ?? "default";
-	const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>(() => getCollapsedSections());
+	const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
+
+	useEffect(() => {
+		setCollapsedSections(getCollapsedSections());
+	}, []);
 
 	const toggleSection = useCallback((sectionId: string) => {
 		setCollapsedSections((prev) => {
@@ -138,18 +143,6 @@ export function Sidebar() {
 
 	const adminNav: NavSection[] = useMemo(
 		() => [
-			{
-				id: "admin-overview",
-				requiredModule: "admin" as Module,
-				items: [
-					{
-						label: "Dashboards",
-						href: "/admin",
-						icon: "home",
-						tooltip: "Vue d'ensemble de l'administration et indicateurs clés",
-					},
-				],
-			},
 			{
 				id: "admin-management",
 				title: "Gestion",
@@ -204,16 +197,16 @@ export function Sidebar() {
 			},
 			{
 				id: "admin-entities",
-				title: "Entités",
+				title: "Squads",
 				collapsible: true,
 				requiredModule: "admin" as Module,
 				items: [
-					{ label: "Squad", href: "/users", icon: "users", tooltip: "Membres et profils de l'équipe" },
+					{ label: "Équipe", href: "/users", icon: "users", tooltip: "Membres et profils de l'équipe" },
 					{
-						label: "Groupes",
+						label: "Squads",
 						href: "/groups",
 						icon: "group",
-						tooltip: "Gestion des squads par entité",
+						tooltip: "Gestion des squads",
 					},
 				],
 			},
@@ -224,29 +217,25 @@ export function Sidebar() {
 	const legacyNav: NavSection[] = useMemo(
 		() => [
 			{
-				id: "legacy-overview",
-				items: [{ label: "Dashboards", href: "/legacy", icon: "home", tooltip: "Dashboard du mode Legacy" }],
-			},
-			{
 				id: "legacy-operations",
 				title: "Opérations",
 				collapsible: true,
 				items: [
 					{
 						label: "Tâches",
-						href: `/hub/${groupId}/tasks`,
+						href: `/${groupId}/legacy/tasks`,
 						icon: "tasks",
 						tooltip: "Tâches assignées et en cours",
 					},
 					{
 						label: "Projets",
-						href: `/hub/${groupId}/projects`,
+						href: `/${groupId}/legacy/projects`,
 						icon: "folder",
 						tooltip: "Projets en cours et planifiés",
 					},
 					{
 						label: "Réunions",
-						href: `/hub/${groupId}/meetings`,
+						href: `/${groupId}/legacy/meetings`,
 						icon: "calendar",
 						tooltip: "Réunions prévues et historique",
 					},
@@ -259,13 +248,13 @@ export function Sidebar() {
 				items: [
 					{
 						label: "Logs",
-						href: `/hub/${groupId}/logs`,
+						href: `/${groupId}/legacy/logs`,
 						icon: "logs",
 						tooltip: "Journal d'activité et historique",
 					},
 					{
 						label: "Accès",
-						href: `/hub/${groupId}/permissions`,
+						href: `/${groupId}/legacy/permissions`,
 						icon: "lock",
 						tooltip: "Matrice des permissions par rôle",
 					},
@@ -276,8 +265,8 @@ export function Sidebar() {
 				title: "Organisation",
 				collapsible: true,
 				items: [
-					{ label: "Squad", href: "/users", icon: "users", tooltip: "Membres de l'équipe" },
-					{ label: "Groupes", href: "/admin/access", icon: "group", tooltip: "Groupes et entités" },
+					{ label: "Équipe", href: "/users", icon: "users", tooltip: "Membres de l'équipe" },
+					{ label: "Squads", href: "/admin/access", icon: "group", tooltip: "Groupes et squads" },
 				],
 			},
 		],
@@ -286,17 +275,6 @@ export function Sidebar() {
 
 	const hubNav: NavSection[] = useMemo(
 		() => [
-			{
-				id: "dashboard",
-				items: [
-					{
-						label: "Dashboards",
-						href: `/hub/${groupId}`,
-						icon: "home",
-						tooltip: "Dashboards — vue d'ensemble de ton activité",
-					},
-				],
-			},
 			{
 				id: "personnel",
 				title: t.nav.personnel,
@@ -336,12 +314,6 @@ export function Sidebar() {
 				requiredModule: "moderation_discord" as Module,
 				items: [
 					{
-						label: "Panel",
-						href: `/hub/${groupId}/moderation`,
-						icon: "shield",
-						tooltip: "Panel principal de modération Discord",
-					},
-					{
 						label: "Centre d'infos",
 						href: `/hub/${groupId}/moderation/centre-info`,
 						icon: "info",
@@ -359,18 +331,6 @@ export function Sidebar() {
 						icon: "flag",
 						tooltip: "Historique et gestion des sanctions",
 					},
-					{
-						label: "Consignes",
-						href: `/hub/${groupId}/moderation/consignes`,
-						icon: "document",
-						tooltip: "Consignes internes de modération",
-					},
-					{
-						label: "Politique",
-						href: `/hub/${groupId}/moderation/politique`,
-						icon: "lock",
-						tooltip: "Politique de modération Discord",
-					},
 				],
 			},
 			{
@@ -379,12 +339,6 @@ export function Sidebar() {
 				collapsible: true,
 				requiredModule: "moderation_twitch" as Module,
 				items: [
-					{
-						label: "Panel",
-						href: `/hub/${groupId}/mod-twitch`,
-						icon: "shield",
-						tooltip: "Panel de modération Twitch",
-					},
 					{
 						label: "Centre d'infos",
 						href: `/hub/${groupId}/mod-twitch/centre-info`,
@@ -397,18 +351,6 @@ export function Sidebar() {
 						icon: "flag",
 						tooltip: "Sanctions Twitch en cours et passées",
 					},
-					{
-						label: "Consignes",
-						href: `/hub/${groupId}/mod-twitch/consignes`,
-						icon: "document",
-						tooltip: "Consignes spécifiques au live",
-					},
-					{
-						label: "Politique",
-						href: `/hub/${groupId}/mod-twitch/politique`,
-						icon: "lock",
-						tooltip: "Politique de modération Twitch",
-					},
 				],
 			},
 			{
@@ -417,12 +359,6 @@ export function Sidebar() {
 				collapsible: true,
 				requiredModule: "moderation_youtube" as Module,
 				items: [
-					{
-						label: "Panel",
-						href: `/hub/${groupId}/mod-youtube`,
-						icon: "shield",
-						tooltip: "Panel de modération YouTube",
-					},
 					{
 						label: "Centre d'infos",
 						href: `/hub/${groupId}/mod-youtube/centre-info`,
@@ -435,18 +371,6 @@ export function Sidebar() {
 						icon: "flag",
 						tooltip: "Sanctions YouTube",
 					},
-					{
-						label: "Consignes",
-						href: `/hub/${groupId}/mod-youtube/consignes`,
-						icon: "document",
-						tooltip: "Consignes de modération",
-					},
-					{
-						label: "Politique",
-						href: `/hub/${groupId}/mod-youtube/politique`,
-						icon: "lock",
-						tooltip: "Politique de modération YouTube",
-					},
 				],
 			},
 			{
@@ -455,12 +379,6 @@ export function Sidebar() {
 				collapsible: true,
 				requiredModule: "moderation_polyvalent" as Module,
 				items: [
-					{
-						label: "Panel",
-						href: `/hub/${groupId}/mod-polyvalent`,
-						icon: "shield",
-						tooltip: "Panel polyvalent (multi-plateforme)",
-					},
 					{
 						label: "Centre d'infos",
 						href: `/hub/${groupId}/mod-polyvalent/centre-info`,
@@ -478,18 +396,6 @@ export function Sidebar() {
 						href: `/hub/${groupId}/mod-polyvalent/sanctions`,
 						icon: "flag",
 						tooltip: "Sanctions polyvalentes",
-					},
-					{
-						label: "Consignes",
-						href: `/hub/${groupId}/mod-polyvalent/consignes`,
-						icon: "document",
-						tooltip: "Consignes polyvalentes",
-					},
-					{
-						label: "Politique",
-						href: `/hub/${groupId}/mod-polyvalent/politique`,
-						icon: "lock",
-						tooltip: "Politique polyvalente",
 					},
 				],
 			},
@@ -594,7 +500,8 @@ export function Sidebar() {
 	const isItemActive = useCallback(
 		(item: NavItem): boolean => {
 			const isHubRoot = /^\/hub\/[^/]+$/.test(item.href);
-			const isSinglePageRoot = item.href === "/admin" || item.href === "/legacy";
+			const isLegacyRoot = /^\/[^/]+\/legacy$/.test(item.href);
+			const isSinglePageRoot = item.href === "/admin" || isLegacyRoot;
 			if (isHubRoot || isSinglePageRoot) {
 				return pathname === item.href;
 			}
@@ -616,12 +523,15 @@ export function Sidebar() {
 	const activeIndicator = palette.sidebarActiveIndicatorClass;
 	const badgeColor = palette.sidebarBadgeClass;
 	const modeLabel = adminMode ? "OWNER" : legacyMode ? "LEGACY" : "SQUAD";
+	const sidebarBanner = getEntitySidebarBanner(activeGroupId, adminMode);
 	const modeTagClass =
 		palette.mode === "owner"
 			? "border-red-200/80 bg-red-100/80 text-red-700 dark:border-red-800/60 dark:bg-red-900/30 dark:text-red-200"
 			: palette.mode === "legacy"
 				? "border-orange-200/80 bg-orange-100/80 text-orange-700 dark:border-orange-800/60 dark:bg-orange-900/30 dark:text-orange-200"
 				: "border-slate-200/80 bg-slate-100/80 text-slate-700 dark:border-slate-700/60 dark:bg-slate-800/60 dark:text-slate-200";
+	const dashboardHref = adminMode ? "/admin" : legacyMode ? `/${groupId}/legacy` : `/hub/${groupId}`;
+	const isDashboardActive = pathname === dashboardHref;
 
 	return (
 		<>
@@ -650,6 +560,14 @@ export function Sidebar() {
 					)}
 					style={{ maxHeight: "calc(100vh - 10px)" }}
 				>
+					{sidebarBanner && (
+						<div
+							className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.18]"
+							style={{ backgroundImage: `url('${sidebarBanner}')` }}
+						/>
+					)}
+					<div className="pointer-events-none absolute inset-0 bg-white/76 dark:bg-slate-950/74" />
+
 					{/* Collapse toggle */}
 					<button
 						onClick={toggleSidebar}
@@ -668,7 +586,7 @@ export function Sidebar() {
 
 					<div
 						className={cn(
-							"flex items-center justify-center border-b px-2.5 py-2",
+							"relative z-10 flex items-center justify-center border-b px-2.5 py-2",
 							palette.sidebarBorderClass,
 						)}
 					>
@@ -691,14 +609,17 @@ export function Sidebar() {
 					</div>
 
 					<div
-						className={cn("flex items-center justify-center gap-1.5 px-2 py-2", palette.sidebarBorderClass)}
+						className={cn(
+							"relative z-10 flex items-center justify-center gap-1.5 px-2 py-2",
+							palette.sidebarBorderClass,
+						)}
 					>
 						<Link
-							href={`/hub/${groupId}`}
+							href={dashboardHref}
 							title="Dashboards"
 							className={cn(
 								"rounded-lg p-2 transition-colors",
-								!adminMode && !legacyMode
+								isDashboardActive
 									? "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200"
 									: "text-gray-500 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800",
 							)}
@@ -713,7 +634,7 @@ export function Sidebar() {
 					{/* Navigation */}
 					<nav
 						aria-label="Navigation principale"
-						className="scrollbar-hide flex-1 overflow-y-auto px-1.5 py-1.5"
+						className="scrollbar-hide relative z-10 flex-1 overflow-y-auto px-1.5 py-1.5"
 					>
 						{filteredNav.map((section, idx) => {
 							const hasActive = sectionHasActive(section);

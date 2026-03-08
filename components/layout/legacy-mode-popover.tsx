@@ -25,7 +25,7 @@ export function LegacyModePopover() {
 
 	const handleToggle = useCallback(() => {
 		toggleLegacyMode();
-		router.push(!legacyMode ? "/legacy" : `/hub/${activeGroupId ?? "default"}`);
+		router.push(!legacyMode ? `/${activeGroupId ?? "default"}/legacy` : `/hub/${activeGroupId ?? "default"}`);
 	}, [legacyMode, toggleLegacyMode, router, activeGroupId]);
 
 	return <ModePopover config={LEGACY_CONFIG} isActive={legacyMode} onToggle={handleToggle} />;

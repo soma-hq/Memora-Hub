@@ -65,6 +65,14 @@ export function HubSwitcher() {
 	 * @returns New route path
 	 */
 	const resolveEntityPath = (entityId: string): string => {
+		if (/^\/[^/]+\/legacy(?:\/|$)/.test(pathname)) {
+			const segments = pathname.split("/");
+			if (segments.length >= 2) {
+				segments[1] = entityId;
+				return segments.join("/");
+			}
+		}
+
 		if (pathname.startsWith("/hub/")) {
 			const segments = pathname.split("/");
 			if (segments.length >= 3) {
@@ -94,7 +102,7 @@ export function HubSwitcher() {
 				<div className="animate-slide-in absolute top-full left-0 z-50 mt-1 w-56 rounded-xl border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
 					<div className="p-2">
 						<p className="px-3 py-1.5 text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-							Entites
+							Squads
 						</p>
 						{entities.map((group) => (
 							<button

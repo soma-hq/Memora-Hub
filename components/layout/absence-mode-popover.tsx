@@ -4,8 +4,8 @@ import { Icon, Popover } from "@/components/ui";
 import { useUIStore } from "@/store/ui.store";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess } from "@/lib/utils/toast";
-import { ABSENCE_MODE_OPTIONS } from "@/features/absences/absence-mode";
-import type { AbsenceMode } from "@/features/absences/absence-mode";
+import { ABSENCE_MODE_OPTIONS } from "@/features/operations/absences/absence-mode";
+import type { AbsenceMode } from "@/features/operations/absences/absence-mode";
 
 
 /**

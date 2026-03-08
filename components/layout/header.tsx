@@ -7,20 +7,20 @@ import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@/components/ui";
 import { useTheme } from "@/components/providers/theme-provider";
 import { EntityModal } from "@/components/modals/entity-modal";
-import { NotificationBell } from "@/features/notifications/components/notification-bell";
-import { PatchnoteBell } from "@/features/patchnotes/components/patchnote-bell";
+import { NotificationBell } from "@/features/communication/notifications/components/notification-bell";
+import { PatchnoteBell } from "@/features/admin/patchnotes/components/patchnote-bell";
 import { AdminModePopover } from "@/components/layout/admin-mode-popover";
 import { LegacyModePopover } from "@/components/layout/legacy-mode-popover";
 import { StreamerModePopover } from "@/components/layout/streamer-mode-popover";
-import { AssistantButton } from "@/features/assistant/components/assistant-button";
-import { AssistantModal } from "@/features/assistant/components/assistant-modal";
+import { AssistantButton } from "@/features/system/assistant/components/assistant-button";
+import { AssistantModal } from "@/features/system/assistant/components/assistant-modal";
 import { useUIStore } from "@/store/ui.store";
 import { useHubStore } from "@/store/hub.store";
 import { useDataStore } from "@/store/data.store";
 import { ROLE_LABELS } from "@/core/config/roles";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showError } from "@/lib/utils/toast";
-import { logoutAction } from "@/features/auth/actions";
+import { logoutAction } from "@/features/system/auth/actions";
 
 interface HeaderProps {
 	onMobileMenuToggle?: () => void;
@@ -247,7 +247,7 @@ export function Header({ onMobileMenuToggle, onSearchOpen }: HeaderProps) {
 					{/* Search */}
 					<button
 						onClick={onSearchOpen}
-						title="Rechercher (Ctrl+K)"
+						title="Rechercher (Ctrl+P)"
 						aria-label="Rechercher"
 						className="rounded-lg p-3 text-gray-500 transition-all duration-200 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-700"
 						data-tutorial="search"

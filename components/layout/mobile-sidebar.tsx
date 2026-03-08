@@ -7,6 +7,7 @@ import { Icon } from "@/components/ui";
 import { useUIStore } from "@/store/ui.store";
 import { useHubStore } from "@/store/hub.store";
 import { cn } from "@/lib/utils/cn";
+import { getEntitySidebarBanner } from "@/core/design/entity-banners";
 import type { IconName } from "@/core/design/icons";
 
 interface NavItem {
@@ -62,8 +63,10 @@ export function MobileSidebar() {
 	const pathname = usePathname();
 	const isOpen = useUIStore((s) => s.mobileSidebarOpen);
 	const setOpen = useUIStore((s) => s.setMobileSidebarOpen);
+	const adminMode = useUIStore((s) => s.adminMode);
 	const { activeGroupId } = useHubStore();
 	const groupId = activeGroupId ?? "default";
+	const sidebarBanner = getEntitySidebarBanner(activeGroupId, adminMode);
 	const [collapsedSections, setCollapsedSections] = useState<Record<string, boolean>>({});
 
 	useEffect(() => {
@@ -110,8 +113,8 @@ export function MobileSidebar() {
 				{ label: "Projets", href: `/hub/${groupId}/projects`, icon: "folder" },
 				{ label: "Tâches", href: `/hub/${groupId}/tasks`, icon: "tasks" },
 				{ label: "Réunions", href: `/hub/${groupId}/meetings`, icon: "calendar" },
-				{ label: "Squad", href: "/users", icon: "users" },
-				{ label: "Entités", href: "/admin/accèss", icon: "group" },
+				{ label: "Équipe", href: "/users", icon: "users" },
+				{ label: "Squads", href: "/admin/access", icon: "group" },
 				{ label: "Statistiques", href: "/stats", icon: "stats" },
 			],
 		},
@@ -200,8 +203,16 @@ export function MobileSidebar() {
 
 			{/* Panel */}
 			<aside className="fixed inset-y-0 left-0 z-10 flex w-72 flex-col overflow-y-auto border-r border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+				{sidebarBanner && (
+					<div
+						className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.16]"
+						style={{ backgroundImage: `url('${sidebarBanner}')` }}
+					/>
+				)}
+				<div className="pointer-events-none absolute inset-0 bg-white/82 dark:bg-slate-950/78" />
+
 				{/* Header */}
-				<div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-700">
+				<div className="relative z-10 flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-700">
 					<span className="text-sm font-semibold text-gray-900 dark:text-white">Menu</span>
 					<button
 						onClick={close}
@@ -212,7 +223,7 @@ export function MobileSidebar() {
 				</div>
 
 				{/* Navigation */}
-				<nav className="flex-1 px-3 py-3">
+				<nav className="relative z-10 flex-1 px-3 py-3">
 					{mainNav.map((section, idx) => {
 						const hasActive = section.items.some(
 							(item) => pathname === item.href || pathname.startsWith(item.href + "/"),

@@ -7,7 +7,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Icon } from "@/components/ui";
 import { useTheme } from "@/components/providers/theme-provider";
 import { EntityModal } from "@/components/modals/entity-modal";
-import { NotificationBell } from "@/features/notifications/components/notification-bell";
+import { NotificationBell } from "@/features/communication/notifications/components/notification-bell";
 import { useHubStore } from "@/store/hub.store";
 import { useDataStore } from "@/store/data.store";
 import { useAssistantStore } from "@/store/assistant.store";
@@ -42,6 +42,14 @@ export function RightSidebar({ onSearchOpen }: RightSidebarProps) {
 	};
 
 	const resolveEntityRoutePath = (entityId: string): string => {
+		if (/^\/[^/]+\/legacy(?:\/|$)/.test(pathname)) {
+			const segments = pathname.split("/");
+			if (segments.length >= 2) {
+				segments[1] = entityId;
+				return segments.join("/");
+			}
+		}
+
 		if (pathname.startsWith("/hub/")) {
 			const segments = pathname.split("/");
 			if (segments.length >= 3) {
@@ -100,6 +108,24 @@ export function RightSidebar({ onSearchOpen }: RightSidebarProps) {
 									<span className="mt-0.5 text-[9px] font-medium">Theme</span>
 								</button>
 
+								<button
+									onClick={() => router.push("/settings/account")}
+									title="Paramètres"
+									className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+								>
+									<Icon name="settings" size="sm" />
+									<span className="mt-0.5 text-[9px] font-medium">Settings</span>
+								</button>
+
+								<Link
+									href={`/hub/${fallbackEntityId}/patchnotes`}
+									title="Patchnotes"
+									className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+								>
+									<Icon name="news" size="sm" />
+									<span className="mt-0.5 text-[9px] font-medium">Patchnotes</span>
+								</Link>
+
 								<div className="flex w-full justify-center rounded-lg px-1.5 py-1">
 									<NotificationBell />
 								</div>
@@ -123,40 +149,40 @@ export function RightSidebar({ onSearchOpen }: RightSidebarProps) {
 
 						<div className="w-full rounded-2xl border border-gray-200/80 bg-white/90 px-1.5 py-2 dark:border-gray-700/70 dark:bg-gray-900/85">
 							<div className="flex w-full flex-col items-center gap-1.5">
-							<button
-								onClick={toggleAssistant}
-								title="Memora AI"
-								className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
-							>
-								<span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
-									<Image
-										src="/icons/memora-ai.svg"
-										alt="Memora AI"
-										width={24}
-										height={24}
-										className="h-6 w-6"
-									/>
-								</span>
-								<span className="mt-0.5 text-[9px] font-medium">Memora AI</span>
-							</button>
+								<button
+									onClick={toggleAssistant}
+									title="Memora AI"
+									className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-600 transition-colors hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-800"
+								>
+									<span className="flex h-8 w-8 items-center justify-center overflow-hidden rounded-full border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-900">
+										<Image
+											src="/icons/memora-ai.svg"
+											alt="Memora AI"
+											width={24}
+											height={24}
+											className="h-6 w-6"
+										/>
+									</span>
+									<span className="mt-0.5 text-[9px] font-medium">Memora AI</span>
+								</button>
 
-							<Link
-								href={`/hub/${fallbackEntityId}/chat`}
-								title="Chat"
-								className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-							>
-								<Icon name="chat" size="sm" />
-								<span className="mt-0.5 text-[9px] font-medium">Chat</span>
-							</Link>
+								<Link
+									href={`/hub/${fallbackEntityId}/chat`}
+									title="Chat"
+									className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+								>
+									<Icon name="chat" size="sm" />
+									<span className="mt-0.5 text-[9px] font-medium">Chat</span>
+								</Link>
 
-							<button
-								onClick={() => setEntityModalOpen(true)}
-								title="Entites"
-								className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
-							>
-								<Icon name="group" size="sm" />
-								<span className="mt-0.5 text-[9px] font-medium">Entites</span>
-							</button>
+								<button
+									onClick={() => setEntityModalOpen(true)}
+									title="Squads"
+									className="flex w-full flex-col items-center rounded-lg px-1.5 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+								>
+									<Icon name="group" size="sm" />
+									<span className="mt-0.5 text-[9px] font-medium">Squads</span>
+								</button>
 							</div>
 						</div>
 					</div>

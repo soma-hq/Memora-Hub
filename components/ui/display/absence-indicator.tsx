@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils/cn";
-import type { AbsenceMode } from "@/features/absences/absence-mode";
+import type { AbsenceMode } from "@/features/operations/absences/absence-mode";
 
 interface AbsenceIndicatorProps {
 	children: React.ReactNode;

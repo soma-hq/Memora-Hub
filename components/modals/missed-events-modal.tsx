@@ -5,12 +5,12 @@ import Image from "next/image";
 import { Button, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { useDataStore } from "@/store/data.store";
-import { PATCHNOTES, hasSeenLatestPatchnote, markPatchnoteSeen } from "@/features/patchnotes/data/patchnotes";
+import { PATCHNOTES, hasSeenLatestPatchnote, markPatchnoteSeen } from "@/features/admin/patchnotes/data/patchnotes";
 import {
 	MISSED_EVENTS_BRIEFING,
 	MISSED_EVENTS_LAST_SEEN_KEY,
 	MISSED_EVENTS_PENDING_KEY,
-} from "@/scripts/onboarding/missed-events-briefing";
+} from "@/features/academy/scripts/onboarding/missed-events-briefing";
 import type { IconName } from "@/core/design/icons";
 
 interface RecapEntry {

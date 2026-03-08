@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
+import { useHubStore } from "@/store/hub.store";
 
 interface PageContainerProps {
 	title?: string;
@@ -47,7 +48,7 @@ const ROUTE_LABELS: Record<string, string> = {
 	"marsha-bot": "Marsha Bot",
 	"mod-youtube": "Mod. YouTube",
 	users: "Utilisateurs",
-	groups: "Entités",
+	groups: "Squads",
 	stats: "Statistiques",
 	settings: "Paramètres",
 	account: "Compte",
@@ -64,6 +65,7 @@ const ROUTE_LABELS: Record<string, string> = {
 	"mod-polyvalent": "Mod. Polyvalent",
 	permissions: "Permissions",
 	legacy: "Legacy",
+	squad: "Squad",
 	access: "Accès",
 	dev: "Développeur",
 	trash: "Corbeille",
@@ -92,6 +94,7 @@ export function PageContainer({
 }: PageContainerProps) {
 	// State
 	const pathname = usePathname();
+	const activeGroupName = useHubStore((s) => s.activeGroupName);
 
 	// Computed
 	const breadcrumbItems = useMemo(() => {
@@ -100,21 +103,34 @@ export function PageContainer({
 
 		const items: { label: string; href: string }[] = [];
 		let currentPath = "";
+		const isHubPath = segments[0] === "hub";
+		const isEntityLegacyPath = segments.length >= 2 && segments[1] === "legacy";
 
-		for (const segment of segments) {
+		for (let index = 0; index < segments.length; index++) {
+			const segment = segments[index];
 			currentPath += `/${segment}`;
 
-			// Skip groupId segments
-			if (segments[0] === "hub" && segments.indexOf(segment) === 1) {
+			if (isHubPath && index === 1) {
 				continue;
 			}
 
-			const label = ROUTE_LABELS[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+			// Hide the entity slug and start breadcrumbs from "Legacy" in /{groupId}/legacy paths.
+			if (isEntityLegacyPath && index === 0) {
+				continue;
+			}
+
+			const label =
+				isHubPath && index === 0
+					? activeGroupName
+						? `${ROUTE_LABELS.squad}: ${activeGroupName}`
+						: ROUTE_LABELS[segment]
+					: ROUTE_LABELS[segment] || segment.charAt(0).toUpperCase() + segment.slice(1);
+
 			items.push({ label, href: currentPath });
 		}
 
 		return items;
-	}, [pathname]);
+	}, [activeGroupName, pathname]);
 
 	// Render
 	return (

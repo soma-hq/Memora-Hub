@@ -4,13 +4,14 @@ import { cn } from "@/lib/utils/cn";
 import { Icon } from "@/components/ui/display/icon";
 import type { IconName } from "@/core/design/icons";
 import { useModePalette } from "@/hooks/useModePalette";
+import { container } from "@/core/container";
 
 // Props for the SectionHeaderBanner component
 interface SectionHeaderBannerProps {
 	icon: IconName;
 	title: string;
 	description?: string;
-	accentColor?: "red" | "orange" | "primary" | "rose" | "gray" | "orange-pastel" | "red-pastel" | "gray-pastel";
+	accentColor?: "red" | "orange" | "primary" | "rose" | "gray" | "orange-pastel" | "red-pastel" | "rose-pastel";
 	children?: React.ReactNode;
 	className?: string;
 }
@@ -59,7 +60,7 @@ const ACCENT = {
 		title: "text-red-700 dark:text-red-300",
 		desc: "text-red-500/80 dark:text-red-400/80",
 	},
-	"gray-pastel": {
+	"rose-pastel": {
 		bg: "bg-rose-50/70 dark:bg-rose-950/20",
 		icon: "text-rose-500 dark:text-rose-300",
 		title: "text-rose-700 dark:text-rose-100",
@@ -84,9 +85,21 @@ export function SectionHeaderBanner({
 	const palette = useModePalette();
 	const resolvedAccent = palette.sectionAccent ?? accentColor;
 	const accent = ACCENT[resolvedAccent];
+	const isColoredAccent = accentColor !== "gray";
+	const headerBanner = container.config.sectionBanners[palette.mode].bannerPath;
 
 	return (
 		<div className={cn("relative w-full overflow-hidden rounded-lg", accent.bg, className)}>
+			{isColoredAccent && (
+				<>
+					<div
+						className="pointer-events-none absolute inset-0 bg-cover bg-center opacity-[0.22]"
+						style={{ backgroundImage: `url('${headerBanner}')` }}
+					/>
+					<div className="pointer-events-none absolute inset-0 bg-black/15 dark:bg-black/25" />
+				</>
+			)}
+
 			{/* Content */}
 			<div className="relative flex items-center justify-between px-4 py-2.5">
 				<div className="flex items-center gap-2.5">

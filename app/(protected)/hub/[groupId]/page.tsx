@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useParams } from "next/navigation";
-import { BriefingSection } from "@/features/dashboard/components/briefing-section";
-import { TodaySchedule } from "@/features/dashboard/components/today-schedule";
-import { PendingActions } from "@/features/dashboard/components/pending-actions";
-import { useDashboardBriefing } from "@/features/dashboard/hooks";
-import { PatchnoteWidget } from "@/features/patchnotes/components/patchnote-widget";
+import { BriefingSection } from "@/features/system/dashboard/components/briefing-section";
+import { TodaySchedule } from "@/features/system/dashboard/components/today-schedule";
+import { PendingActions } from "@/features/system/dashboard/components/pending-actions";
+import { useDashboardBriefing } from "@/features/system/dashboard/hooks";
+import { PatchnoteWidget } from "@/features/admin/patchnotes/components/patchnote-widget";
 import { PageContainer } from "@/components/layout/page-container";
 import { Button, Badge, Icon, Tag, SectionHeaderBanner, StyledEmptyState } from "@/components/ui";
-import { useHubStore } from "@/store/hub.store";
 import { useDataStore } from "@/store/data.store";
 import { cn } from "@/lib/utils/cn";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
+import { pimStatusVariantMap, dispositifVariantMap, periodVariantMap } from "@/features/academy/momentum/types";
+import type { ModerationFunction, PimStatus, PimPeriod, Dispositif } from "@/features/academy/momentum/types";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]",
@@ -20,6 +22,39 @@ const PAGE_CONFIG = definePageConfig({
 	description: "Dashboard principal du groupe.",
 	entityScoped: true,
 });
+
+// ─── Mock Momentum data — remplacer par des appels API ───────────────────────
+
+interface MomentumWidgetJunior {
+	id: string;
+	name: string;
+	function: ModerationFunction;
+	dispositif: Dispositif;
+	currentPeriod: PimPeriod;
+	pimStatus: PimStatus;
+	nextVocalDate?: string;
+}
+
+const MOCK_MOMENTUM_JUNIORS: MomentumWidgetJunior[] = [
+	{
+		id: "j1",
+		name: "Amine C.",
+		function: "Modération Discord",
+		dispositif: "ATRIA",
+		currentPeriod: "Période 1",
+		pimStatus: "En cours",
+		nextVocalDate: "14 mars",
+	},
+	{
+		id: "j2",
+		name: "Léa M.",
+		function: "Modération Twitch",
+		dispositif: "PULSE",
+		currentPeriod: "Période 2",
+		pimStatus: "En cours",
+		nextVocalDate: "10 mars",
+	},
+];
 
 // Events system types & data
 
@@ -100,7 +135,6 @@ function getTemplate(key: EventTemplateKey): EventTemplate {
 export default function DashboardPage() {
 	const params = useParams();
 	const groupId = (params.groupId as string) || "default";
-	const { activeGroupName } = useHubStore();
 	const currentUser = useDataStore((s) => s.currentUser);
 
 	// Resolve user ID from auth state, fallback for dev
@@ -167,9 +201,72 @@ export default function DashboardPage() {
 				{/* Latest update */}
 				<PatchnoteWidget />
 
+				{/* Momentum widget */}
+				{MOCK_MOMENTUM_JUNIORS.length > 0 && (
+					<div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
+						<SectionHeaderBanner
+							icon="training"
+							title="Momentum — Marsha Academy"
+							description="Juniors en PIM actifs sur cette entité"
+							accentColor="primary"
+							className="rounded-none"
+						>
+							<Link href={`/hub/${groupId}/training`}>
+								<Button variant="outline-neutral" size="sm">
+									Voir tout
+								</Button>
+							</Link>
+						</SectionHeaderBanner>
+
+						<div className="divide-y divide-gray-100 dark:divide-gray-700/50">
+							{MOCK_MOMENTUM_JUNIORS.map((junior) => (
+								<Link
+									key={junior.id}
+									href={`/hub/${groupId}/training/pim/${junior.id}`}
+									className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/30"
+								>
+									<div className="bg-primary-100 text-primary-700 dark:bg-primary-900/30 dark:text-primary-300 flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-xs font-bold">
+										{junior.name.charAt(0)}
+									</div>
+									<div className="min-w-0 flex-1">
+										<p className="text-sm font-medium text-gray-900 dark:text-white">
+											{junior.name}
+										</p>
+										<p className="text-xs text-gray-500 dark:text-gray-400">{junior.function}</p>
+									</div>
+									<div className="flex shrink-0 flex-wrap items-center gap-1.5">
+										<Badge variant={dispositifVariantMap[junior.dispositif]} showDot={false}>
+											{junior.dispositif}
+										</Badge>
+										<Badge variant={periodVariantMap[junior.currentPeriod]} showDot={false}>
+											{junior.currentPeriod}
+										</Badge>
+										{junior.nextVocalDate && (
+											<Tag color="gray">
+												<Icon name="calendar" size="xs" className="mr-1 inline-block" />
+												{junior.nextVocalDate}
+											</Tag>
+										)}
+									</div>
+									<Icon
+										name="chevronRight"
+										size="sm"
+										className="shrink-0 text-gray-400 dark:text-gray-500"
+									/>
+								</Link>
+							))}
+						</div>
+					</div>
+				)}
+
 				{/* Shared Events Section */}
 				<div className="overflow-hidden rounded-xl border border-gray-200 dark:border-gray-700">
-					<SectionHeaderBanner icon="calendar" title="Événements à venir" accentColor="gray" className="rounded-none">
+					<SectionHeaderBanner
+						icon="calendar"
+						title="Événements à venir"
+						accentColor="gray"
+						className="rounded-none"
+					>
 						{unansweredCount > 0 && (
 							<Badge variant="warning" showDot={false}>
 								{unansweredCount}

@@ -9,6 +9,7 @@ export async function GET(request: NextRequest) {
 	const { searchParams } = new URL(request.url);
 	const projectId = searchParams.get("projectId");
 	const assigneeId = searchParams.get("assigneeId");
+	const groupId = searchParams.get("groupId");
 	const status = searchParams.get("status");
 	const page = parseInt(searchParams.get("page") ?? "1", 10);
 	const pageSize = parseInt(searchParams.get("pageSize") ?? "20", 10);
@@ -17,10 +18,10 @@ export async function GET(request: NextRequest) {
 		return NextResponse.json(result);
 	}
 	if (assigneeId) {
-		const tasks = await TaskService.getByAssignee(assigneeId, status ?? undefined);
+		const tasks = await TaskService.getByAssignee(assigneeId, status ?? undefined, groupId ?? undefined);
 		return NextResponse.json({ tasks });
 	}
-	const tasks = await TaskService.getByAssignee(currentUser.id, status ?? undefined);
+	const tasks = await TaskService.getByAssignee(currentUser.id, status ?? undefined, groupId ?? undefined);
 	return NextResponse.json({ tasks });
 }
 

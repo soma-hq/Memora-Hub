@@ -4,6 +4,8 @@ import { GroupService } from "@/services/GroupService";
 import { AuthService } from "@/services/AuthService";
 import { createGroupSchema } from "@/lib/validators/schemas";
 import { getAllowedGroupIds, hasGlobalEntityAccess } from "@/lib/server/entity-scope";
+import { normalizeRoleTemplates } from "@/core/config/entity-blueprint";
+import type { Module } from "@/core/config/capabilities";
 
 /**
  * GET /api/groups - List groups paginated
@@ -30,13 +32,28 @@ export async function GET(request: NextRequest) {
 				where: { id: { in: allowedGroupIds } },
 				skip,
 				take: pageSize,
-				include: { _count: { select: { members: true, projects: true } } },
+				include: {
+					_count: { select: { members: true, projects: true } },
+					members: {
+						select: {
+							user: {
+								select: { roleId: true },
+							},
+						},
+					},
+				},
 				orderBy: { createdAt: "desc" },
 			}),
 			prisma.group.count({ where: { id: { in: allowedGroupIds } } }),
 		]);
 
-		return NextResponse.json({ groups, total, page, pageSize });
+		const normalized = groups.map((group) => ({
+			...group,
+			legacyMembersCount: group.members.filter((member) => (member.user.roleId ?? "").startsWith("legacy_"))
+				.length,
+		}));
+
+		return NextResponse.json({ groups: normalized, total, page, pageSize });
 	}
 
 	// Fetch paginated groups
@@ -70,8 +87,14 @@ export async function POST(request: NextRequest) {
 		return NextResponse.json({ error: parsed.error.issues[0]?.message ?? "Donnees invalides" }, { status: 400 });
 	}
 
-	// Create group
-	const group = await GroupService.create(parsed.data, currentUser.id);
+	const normalizedRoleTemplates = normalizeRoleTemplates(
+		(parsed.data.roleTemplates ?? []).map((template) => ({
+			key: template.key,
+			label: template.label,
+			modules: template.modules.filter(Boolean) as Module[],
+		})),
+	);
+	const group = await GroupService.create({ ...parsed.data, roleTemplates: normalizedRoleTemplates }, currentUser.id);
 
 	return NextResponse.json(group, { status: 201 });
 }

@@ -1,13 +1,13 @@
 import { create } from "zustand";
-import type { UserProfile } from "@/features/users/types";
-import type { Project } from "@/features/projects/types";
-import type { Task } from "@/features/tasks/types";
-import type { Meeting } from "@/features/meetings/types";
-import type { Absence } from "@/features/absences/types";
+import type { UserProfile } from "@/features/admin/users/types";
+import type { Project } from "@/features/operations/projects/types";
+import type { Task } from "@/features/operations/tasks/types";
+import type { Meeting } from "@/features/communication/meetings/types";
+import type { Absence } from "@/features/operations/absences/types";
 import type { RoleId } from "@/core/config/roles";
 import type { Entity } from "@/core/data/entities";
 import { ENTITIES } from "@/core/data/entities";
-import { MOCK_USERS, MOCK_PROJECTS, MOCK_TASKS, MOCK_MEETINGS, MOCK_ABSENCES } from "@/features/dashboard/mock-data";
+import { MOCK_USERS, MOCK_PROJECTS, MOCK_TASKS, MOCK_MEETINGS, MOCK_ABSENCES } from "@/features/system/dashboard/mock-data";
 
 /** Project statuses considered archived */
 const ARCHIVED_PROJECT_STATUSES = new Set(["done", "complete", "archived"]);

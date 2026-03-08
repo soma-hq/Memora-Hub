@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import type { AbsenceMode } from "@/features/absences/absence-mode";
+import type { AbsenceMode } from "@/features/operations/absences/absence-mode";
 
 /** Represents à currently open modal with optional payload */
 interface ModalState {

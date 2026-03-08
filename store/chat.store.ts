@@ -8,7 +8,7 @@ import type {
 	PrivateGroup,
 	ChatUser,
 	MentionOption,
-} from "@/features/chat/types";
+} from "@/features/communication/chat/types";
 
 // Store
 

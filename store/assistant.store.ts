@@ -6,8 +6,8 @@ import type {
 	ActiveFlow,
 	Suggestion,
 	AssistantContext,
-} from "@/features/assistant/types";
-import { WELCOME_MESSAGE, WELCOME_SUGGESTIONS, MAX_CONVERSATION_HISTORY } from "@/features/assistant/constants";
+} from "@/features/system/assistant/types";
+import { WELCOME_MESSAGE, WELCOME_SUGGESTIONS, MAX_CONVERSATION_HISTORY } from "@/features/system/assistant/constants";
 
 
 /** State shape for the assistant store */

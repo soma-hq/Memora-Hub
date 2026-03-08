@@ -1,7 +1,7 @@
 "use client";
 
 import { create } from "zustand";
-import type { PingNotification } from "@/features/ping/types";
+import type { PingNotification } from "@/features/admin/ping/types";
 
 /** Demo pings for development */
 const DEMO_PINGS: PingNotification[] = [
@@ -12,7 +12,7 @@ const DEMO_PINGS: PingNotification[] = [
 		fromUserAvatar: "/avatar/lea.webp",
 		toUserId: "user-1",
 		targetPath: "/hub/bazalthe/tasks",
-		targetLabel: "Tâches — Squad Bazalthe",
+		targetLabel: "Tâches - Entité Bazalthe",
 		message: "Peux-tu valider cette tâche ?",
 		createdAt: new Date(Date.now() - 1000 * 30),
 		read: false,
@@ -23,7 +23,7 @@ const DEMO_PINGS: PingNotification[] = [
 		fromUserName: "Hugo Leroy",
 		toUserId: "user-1",
 		targetPath: "/hub/bazalthe/projects",
-		targetLabel: "Projets — Squad Bazalthe",
+		targetLabel: "Projets - Entité Bazalthe",
 		createdAt: new Date(Date.now() - 1000 * 60 * 5),
 		read: false,
 	},
@@ -33,7 +33,7 @@ const DEMO_PINGS: PingNotification[] = [
 		fromUserName: "Camille Dupont",
 		toUserId: "user-1",
 		targetPath: "/hub/bazalthe/meetings",
-		targetLabel: "Réunions — Squad Bazalthe",
+		targetLabel: "Réunions - Entité Bazalthe",
 		message: "On attend ta confirmation",
 		createdAt: new Date(Date.now() - 1000 * 60 * 60),
 		read: true,

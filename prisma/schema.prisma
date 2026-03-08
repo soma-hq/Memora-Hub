@@ -126,6 +126,30 @@ enum LogAction {
   REJECT
 }
 
+enum ProgramEnrollmentStatus {
+  pending
+  active
+  paused
+  completed
+  cancelled
+}
+
+enum ProgramPhase {
+  onboarding
+  discovery
+  training
+  practice
+  evaluation
+  graduation
+}
+
+enum ProgramInvitationStatus {
+  pending
+  accepted
+  expired
+  cancelled
+}
+
 // ─── Models ───
 
 model User {
@@ -139,10 +163,10 @@ model User {
   status    UserStatus @default(active)
 
   // Profile — display & contact
-  pseudo    String?
-  phone     String?
-  birthdate String?
-  birthdayWish Boolean @default(false)
+  pseudo       String?
+  phone        String?
+  birthdate    String?
+  birthdayWish Boolean  @default(false)
   languages    String[]
 
   // Discord
@@ -150,11 +174,11 @@ model User {
   discordId       String?
 
   // Social links
-  socialTwitter  String?
-  socialTwitch   String?
-  socialYoutube  String?
+  socialTwitter   String?
+  socialTwitch    String?
+  socialYoutube   String?
   socialInstagram String?
-  socialReddit   String?
+  socialReddit    String?
 
   // Organisation
   entity        String?
@@ -175,19 +199,23 @@ model User {
   updatedAt DateTime @updatedAt
 
   // Relations
-  sessions             Session[]
-  groupMemberships     GroupMember[]
-  projectMemberships   ProjectMember[]
-  assignedTasks        Task[]                @relation("TaskAssignee")
-  createdTasks         Task[]                @relation("TaskCreator")
-  meetingAttendances   MeetingAttendee[]
-  absences             Absence[]             @relation("UserAbsences")
-  approvedAbsences     Absence[]             @relation("AbsenceApprover")
-  notifications        Notification[]
-  logs                 Log[]
-  candidates           Candidate[]
-  trainingEnrollments  TrainingParticipant[]
-  createdProjects      Project[]             @relation("ProjectCreator")
+  sessions               Session[]
+  groupMemberships       GroupMember[]
+  projectMemberships     ProjectMember[]
+  assignedTasks          Task[]                @relation("TaskAssignee")
+  createdTasks           Task[]                @relation("TaskCreator")
+  meetingAttendances     MeetingAttendee[]
+  absences               Absence[]             @relation("UserAbsences")
+  approvedAbsences       Absence[]             @relation("AbsenceApprover")
+  notifications          Notification[]
+  logs                   Log[]
+  candidates             Candidate[]
+  trainingEnrollments    TrainingParticipant[]
+  createdProjects        Project[]             @relation("ProjectCreator")
+  programEnrollments     ProgramEnrollment[]   @relation("ProgramEnrollmentUser")
+  mentoredPrograms       ProgramEnrollment[]   @relation("ProgramEnrollmentMentor")
+  createdProgramInvites  ProgramInvitation[]   @relation("ProgramInvitationCreator")
+  acceptedProgramInvites ProgramInvitation[]   @relation("ProgramInvitationAcceptor")
 
   @@map("users")
 }
@@ -472,7 +500,7 @@ model Training {
   updatedAt       DateTime         @updatedAt
 
   // Relations
-  group        Group                @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  group        Group                 @relation(fields: [groupId], references: [id], onDelete: Cascade)
   participants TrainingParticipant[]
 
   @@index([groupId])
@@ -491,4 +519,132 @@ model TrainingParticipant {
 
   @@unique([trainingId, userId])
   @@map("training_participants")
+}
+
+model ProgramDefinition {
+  id                  String   @id @default(cuid())
+  name                String
+  description         String
+  type                String
+  defaultDurationDays Int
+  enrollmentRoles     String[]
+  isOpen              Boolean  @default(true)
+  banner              String?
+  accentColor         String
+  prerequisites       Json?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  tracks         ProgramTrack[]
+  enrollments    ProgramEnrollment[]
+  invitations    ProgramInvitation[]
+  trainingSpaces ProgramTrainingSpace[]
+
+  @@index([isOpen])
+  @@map("program_definitions")
+}
+
+model ProgramTrack {
+  id                   String   @id @default(cuid())
+  programId            String
+  name                 String
+  description          String
+  function             String
+  requiredCompetencies String[]
+  accompanimentLevel   String
+  formationIds         String[]
+  phases               Json
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  program        ProgramDefinition      @relation(fields: [programId], references: [id], onDelete: Cascade)
+  enrollments    ProgramEnrollment[]
+  invitations    ProgramInvitation[]
+  trainingSpaces ProgramTrainingSpace[]
+
+  @@index([programId])
+  @@map("program_tracks")
+}
+
+model ProgramEnrollment {
+  id                String                  @id @default(cuid())
+  userId            String
+  programId         String
+  trackId           String
+  entityId          String
+  status            ProgramEnrollmentStatus @default(pending)
+  currentPhase      ProgramPhase            @default(onboarding)
+  startDate         DateTime
+  expectedEndDate   DateTime
+  actualEndDate     DateTime?
+  mentorId          String
+  milestoneProgress Json
+  accompanimentLog  Json
+  phaseHistory      Json
+  notes             Json
+  progressPercent   Int                     @default(0)
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  user    User              @relation("ProgramEnrollmentUser", fields: [userId], references: [id], onDelete: Cascade)
+  mentor  User              @relation("ProgramEnrollmentMentor", fields: [mentorId], references: [id])
+  program ProgramDefinition @relation(fields: [programId], references: [id], onDelete: Cascade)
+  track   ProgramTrack      @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([mentorId])
+  @@index([entityId])
+  @@index([status])
+  @@index([programId, trackId])
+  @@map("program_enrollments")
+}
+
+model ProgramInvitation {
+  id             String                  @id @default(cuid())
+  programId      String
+  trackId        String
+  entityId       String
+  inviteeEmail   String
+  inviteeName    String
+  assignedRoleId String
+  mentorId       String?
+  welcomeMessage String?
+  expiresAt      DateTime
+  status         ProgramInvitationStatus @default(pending)
+  createdBy      String
+  acceptedBy     String?
+  createdAt      DateTime                @default(now())
+  updatedAt      DateTime                @updatedAt
+
+  program        ProgramDefinition @relation(fields: [programId], references: [id], onDelete: Cascade)
+  track          ProgramTrack      @relation(fields: [trackId], references: [id], onDelete: Cascade)
+  creator        User              @relation("ProgramInvitationCreator", fields: [createdBy], references: [id])
+  acceptedByUser User?             @relation("ProgramInvitationAcceptor", fields: [acceptedBy], references: [id])
+
+  @@index([programId])
+  @@index([trackId])
+  @@index([entityId])
+  @@index([status])
+  @@index([inviteeEmail])
+  @@map("program_invitations")
+}
+
+model ProgramTrainingSpace {
+  id            String       @id @default(cuid())
+  programId     String
+  trackId       String
+  name          String
+  description   String
+  modules       Json
+  requiredPhase ProgramPhase
+  isLocked      Boolean      @default(false)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  program ProgramDefinition @relation(fields: [programId], references: [id], onDelete: Cascade)
+  track   ProgramTrack      @relation(fields: [trackId], references: [id], onDelete: Cascade)
+
+  @@index([programId])
+  @@index([trackId])
+  @@map("program_training_spaces")
 }

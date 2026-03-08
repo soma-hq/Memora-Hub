@@ -1,9 +1,9 @@
 "use client";
 
 // Features & Components
-import { Select, Button, Icon, SectionCard } from "@/components/ui";
+import { Select, Button, Icon, SectionHeaderBanner } from "@/components/ui";
 import { showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "settings/preferences",
@@ -19,7 +19,9 @@ export default function PreferencesPage() {
 	return (
 		<div className="max-w-2xl space-y-6">
 			{/* Theme */}
-			<SectionCard title="Apparence" icon="sun" color="primary" padding="lg">
+		<div className="space-y-2">
+			<SectionHeaderBanner icon="sun" title="Apparence" />
+			<div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
 				<div className="grid grid-cols-3 gap-3">
 					{[
 						{ label: "Clair", icon: "sun" as const, active: true },
@@ -39,10 +41,13 @@ export default function PreferencesPage() {
 						</button>
 					))}
 				</div>
-			</SectionCard>
+			</div>
+		</div>
 
-			{/* Language */}
-			<SectionCard title="Langue et région" icon="globe" color="primary" padding="lg">
+		{/* Language */}
+		<div className="space-y-2">
+			<SectionHeaderBanner icon="globe" title="Langue et région" />
+			<div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
 				<div className="space-y-4">
 					<Select
 						label="Langue"
@@ -70,10 +75,13 @@ export default function PreferencesPage() {
 						defaultValue="europe-paris"
 					/>
 				</div>
-			</SectionCard>
+			</div>
+		</div>
 
-			{/* Data */}
-			<SectionCard title="Données personnelles" icon="shield" color="primary" padding="lg">
+		{/* Data */}
+		<div className="space-y-2">
+			<SectionHeaderBanner icon="shield" title="Données personnelles" />
+			<div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
 				<p className="mb-4 text-sm text-gray-400">Exportez vos données conformément au RGPD.</p>
 				<div className="flex gap-3">
 					<Button variant="outline-primary" size="sm" onClick={() => showSuccess("Export lancé")}>
@@ -81,9 +89,8 @@ export default function PreferencesPage() {
 						Exporter mes données
 					</Button>
 				</div>
-			</SectionCard>
-
-			<div className="flex justify-end">
+			</div>
+		</div>
 				<Button onClick={() => showSuccess("Préférences enregistrées")}>Enregistrer</Button>
 			</div>
 		</div>

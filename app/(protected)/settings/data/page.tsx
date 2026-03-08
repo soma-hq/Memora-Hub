@@ -2,11 +2,11 @@
 
 // React
 import { useState } from "react";
-import { Button, Icon, Badge, SectionCard } from "@/components/ui";
+import { Button, Icon, Badge, SectionCard, SectionHeaderBanner } from "@/components/ui";
 import { ConfirmAction } from "@/components/feedback/confirm-action";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
 import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "settings/data",
@@ -77,6 +77,12 @@ export default function SettingsDataPage() {
 
 	return (
 		<div className="space-y-6">
+			<SectionHeaderBanner
+				icon="document"
+				title="Données personnelles"
+				description="Export et suppression de vos données conformément au RGPD."
+				className="mb-2"
+			/>
 			{/* Export section */}
 			<SectionCard title="Exporter mes données" icon="download" color="primary" padding="lg">
 				<p className="mb-6 text-sm text-gray-400">

@@ -2,9 +2,9 @@
 
 // React
 import { useState } from "react";
-import { Button, Input, Badge, Icon, SectionCard, Card } from "@/components/ui";
+import { Button, Input, Badge, Icon, SectionCard, Card, SectionHeaderBanner } from "@/components/ui";
 import { showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "settings/security",
@@ -21,6 +21,12 @@ export default function SecurityPage() {
 
 	return (
 		<div className="max-w-2xl space-y-6">
+			<SectionHeaderBanner
+				icon="shield"
+				title="Sécurité"
+				description="Gestion du mot de passe et authentification à deux facteurs."
+				className="mb-2"
+			/>
 			{/* Change password */}
 			<SectionCard title="Changer le mot de passe" icon="shield" color="primary" padding="lg">
 				<form

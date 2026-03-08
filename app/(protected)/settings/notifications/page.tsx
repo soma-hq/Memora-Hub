@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Button, SectionCard } from "@/components/ui";
+import { Button, SectionHeaderBanner } from "@/components/ui";
 import { showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "settings/notifications",
@@ -48,64 +48,69 @@ export default function NotificationsSettingsPage() {
 
 	return (
 		<div className="max-w-2xl space-y-6">
-			<SectionCard title="Préférences de notifications" icon="bell" color="primary" padding="lg">
-				<p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-					Choisissez comment vous souhaitez être notifié.
-				</p>
+			<div className="space-y-2">
+				<SectionHeaderBanner icon="bell" title="Préférences de notifications" />
+				<div className="rounded-lg border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800">
+					<p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
+						Choisissez comment vous souhaitez être notifié.
+					</p>
 
-				{/* Header */}
-				<div className="mb-4 grid grid-cols-[1fr_80px_80px] gap-4">
-					<div />
-					<span className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">Email</span>
-					<span className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">Push</span>
-				</div>
+					{/* Header */}
+					<div className="mb-4 grid grid-cols-[1fr_80px_80px] gap-4">
+						<div />
+						<span className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">Email</span>
+						<span className="text-center text-xs font-medium text-gray-500 dark:text-gray-400">Push</span>
+					</div>
 
-				{/* Rows */}
-				<div className="space-y-1">
-					{settings.map((setting, idx) => (
-						<div
-							key={setting.label}
-							className="grid grid-cols-[1fr_80px_80px] items-center gap-4 rounded-lg px-2 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
-						>
-							<div>
-								<p className="text-sm font-medium text-gray-700 dark:text-gray-300">{setting.label}</p>
-								<p className="text-xs text-gray-500 dark:text-gray-400">{setting.description}</p>
-							</div>
-							<div className="flex justify-center">
-								<button
-									onClick={() => toggleSetting(idx, "email")}
-									className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
-										setting.email ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-600"
-									}`}
-								>
-									<span
-										className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
-											setting.email ? "translate-x-5" : "translate-x-0"
+					{/* Rows */}
+					<div className="space-y-1">
+						{settings.map((setting, idx) => (
+							<div
+								key={setting.label}
+								className="grid grid-cols-[1fr_80px_80px] items-center gap-4 rounded-lg px-2 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-gray-700/50"
+							>
+								<div>
+									<p className="text-sm font-medium text-gray-700 dark:text-gray-300">
+										{setting.label}
+									</p>
+									<p className="text-xs text-gray-500 dark:text-gray-400">{setting.description}</p>
+								</div>
+								<div className="flex justify-center">
+									<button
+										onClick={() => toggleSetting(idx, "email")}
+										className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
+											setting.email ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-600"
 										}`}
-									/>
-								</button>
-							</div>
-							<div className="flex justify-center">
-								<button
-									onClick={() => toggleSetting(idx, "push")}
-									className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
-										setting.push ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-600"
-									}`}
-								>
-									<span
-										className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
-											setting.push ? "translate-x-5" : "translate-x-0"
+									>
+										<span
+											className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+												setting.email ? "translate-x-5" : "translate-x-0"
+											}`}
+										/>
+									</button>
+								</div>
+								<div className="flex justify-center">
+									<button
+										onClick={() => toggleSetting(idx, "push")}
+										className={`relative h-6 w-11 rounded-full transition-colors duration-200 ${
+											setting.push ? "bg-primary-500" : "bg-gray-300 dark:bg-gray-600"
 										}`}
-									/>
-								</button>
+									>
+										<span
+											className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform duration-200 ${
+												setting.push ? "translate-x-5" : "translate-x-0"
+											}`}
+										/>
+									</button>
+								</div>
 							</div>
-						</div>
-					))}
+						))}
+					</div>
 				</div>
-			</SectionCard>
+			</div>
 
 			<div className="flex justify-end">
-				<Button onClick={() => showSuccess("Préférences de notifications enregistrées")}>Enregistrer</Button>
+				<Button onClick={() => showSuccess("Préférences enregistrées")}>Enregistrer</Button>
 			</div>
 		</div>
 	);

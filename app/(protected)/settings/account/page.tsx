@@ -3,9 +3,9 @@
 // React
 import { useRef, useState } from "react";
 import Image from "next/image";
-import { Button, Input, SectionCard, Icon } from "@/components/ui";
+import { Button, Input, SectionHeaderBanner, Icon } from "@/components/ui";
 import { showSuccess, showWarning, showInfo, showError } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "settings/account",

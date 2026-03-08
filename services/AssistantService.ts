@@ -7,9 +7,9 @@ import type {
 	AssistantContext,
 	Suggestion,
 	FlowStep,
-} from "@/features/assistant/types";
-import { THINKING_DELAY_MS, WELCOME_SUGGESTIONS } from "@/features/assistant/constants";
-import { detectIntent, requiresFlow } from "@/features/assistant/intent-engine";
+} from "@/features/system/assistant/types";
+import { THINKING_DELAY_MS, WELCOME_SUGGESTIONS } from "@/features/system/assistant/constants";
+import { detectIntent, requiresFlow } from "@/features/system/assistant/intent-engine";
 import {
 
 	executeAction,
@@ -17,10 +17,10 @@ import {
 	initializeFlow,
 	getFlowCompletionMessage,
 	getFlowCompletionSuggestions,
-} from "@/features/assistant/action-engine";
-import { getContextualSuggestions, hasPermissionForAction } from "@/features/assistant/context-engine";
-import { getFollowUpSuggestions, getAutocompleteSuggestions } from "@/features/assistant/suggestion-engine";
-import { isSmartCommand, executeSmartCommand } from "@/features/assistant/smart-commands";
+} from "@/features/system/assistant/action-engine";
+import { getContextualSuggestions, hasPermissionForAction } from "@/features/system/assistant/context-engine";
+import { getFollowUpSuggestions, getAutocompleteSuggestions } from "@/features/system/assistant/suggestion-engine";
+import { isSmartCommand, executeSmartCommand } from "@/features/system/assistant/smart-commands";
 
 
 /** Response from the assistant service after processing à message */

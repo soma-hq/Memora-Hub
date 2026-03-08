@@ -174,6 +174,27 @@ export class ProjectService {
 	}
 
 	/**
+	 * Get user's projects scoped to a group
+	 * @param userId User ID
+	 * @param groupId Group ID
+	 * @returns Projects as creator or member within the provided group
+	 */
+
+	static async getByUserAndGroup(userId: string, groupId: string) {
+		return prisma.project.findMany({
+			where: {
+				groupId,
+				OR: [{ createdById: userId }, { members: { some: { userId } } }],
+			},
+			include: {
+				createdBy: { select: { id: true, firstName: true, lastName: true } },
+				_count: { select: { tasks: true, members: true } },
+			},
+			orderBy: { updatedAt: "desc" },
+		});
+	}
+
+	/**
 	 * Search projects by name or description within a group
 	 * @param groupId Group ID
 	 * @param query Search query

@@ -1,12 +1,48 @@
 import { prisma } from "@/lib/prisma";
 import { LogService } from "@/services/LogService";
 import { LogAction } from "@/constants";
+import {
+	DEFAULT_ENTITY_PAGES,
+	normalizeRoleTemplates,
+	type EntityRoleTemplateInput,
+} from "@/core/config/entity-blueprint";
+import type { Module } from "@/core/config/capabilities";
+import { nanoid } from "nanoid";
 
 /** Input data for creating a new group */
 interface CreateGroupInput {
 	name: string;
 	description?: string;
 	logoUrl?: string;
+	roleTemplates?: EntityRoleTemplateInput[];
+}
+
+interface GroupBlueprint {
+	pages: Array<{ slug: string; title: string; module: Module }>;
+	roles: EntityRoleTemplateInput[];
+}
+
+interface GroupInvitationInput {
+	email: string;
+	roleKey: string;
+	requireA2F?: boolean;
+	firstConnection?: boolean;
+	expiresInDays?: number;
+	invitedById?: string;
+}
+
+interface GroupInvitationRecord {
+	id: string;
+	token: string;
+	email: string;
+	roleKey: string;
+	groupId: string;
+	permissions: Module[];
+	firstConnection: boolean;
+	requireA2F: boolean;
+	expiresAt: string | null;
+	createdAt: string;
+	createdBy: string | null;
 }
 
 /** Group CRUD and membership service */
@@ -61,13 +97,32 @@ export class GroupService {
 				take: pageSize,
 				include: {
 					_count: { select: { members: true, projects: true } },
+					members: {
+						select: {
+							user: {
+								select: { roleId: true },
+							},
+						},
+					},
 				},
 				orderBy: { createdAt: "desc" },
 			}),
 			prisma.group.count(),
 		]);
 
-		return { groups, total, page, pageSize };
+		const normalized = groups.map((group) => {
+			const legacyMembersCount = group.members.filter((member) => {
+				const roleId = member.user.roleId ?? "";
+				return roleId.startsWith("legacy_");
+			}).length;
+
+			return {
+				...group,
+				legacyMembersCount,
+			};
+		});
+
+		return { groups: normalized, total, page, pageSize };
 	}
 
 	/**
@@ -78,13 +133,33 @@ export class GroupService {
 	 */
 
 	static async create(input: CreateGroupInput, performedBy?: string) {
-		// Insert the group record
-		const group = await prisma.group.create({
-			data: {
-				name: input.name,
-				description: input.description,
-				logoUrl: input.logoUrl,
-			},
+		const roleTemplates = normalizeRoleTemplates(input.roleTemplates);
+
+		const group = await prisma.$transaction(async (tx) => {
+			const createdGroup = await tx.group.create({
+				data: {
+					name: input.name,
+					description: input.description,
+					logoUrl: input.logoUrl,
+				},
+			});
+
+			const blueprint: GroupBlueprint = {
+				pages: DEFAULT_ENTITY_PAGES,
+				roles: roleTemplates,
+			};
+
+			await tx.log.create({
+				data: {
+					userId: performedBy,
+					action: LogAction.Create,
+					entityType: "group_blueprint",
+					entityId: createdGroup.id,
+					details: JSON.stringify(blueprint),
+				},
+			});
+
+			return createdGroup;
 		});
 
 		// Log the group creation
@@ -206,5 +281,112 @@ export class GroupService {
 				_count: { select: { members: true, projects: true } },
 			},
 		});
+	}
+
+	/**
+	 * Resolve the latest persisted entity blueprint from logs.
+	 * @param groupId Group ID
+	 * @returns Entity blueprint with roles/pages
+	 */
+	static async getBlueprint(groupId: string): Promise<GroupBlueprint> {
+		const blueprintLog = await prisma.log.findFirst({
+			where: {
+				entityType: "group_blueprint",
+				entityId: groupId,
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		if (!blueprintLog?.details) {
+			return {
+				pages: DEFAULT_ENTITY_PAGES,
+				roles: normalizeRoleTemplates(),
+			};
+		}
+
+		try {
+			const parsed = JSON.parse(blueprintLog.details) as GroupBlueprint;
+			return {
+				pages: parsed.pages?.length ? parsed.pages : DEFAULT_ENTITY_PAGES,
+				roles: normalizeRoleTemplates(parsed.roles),
+			};
+		} catch {
+			return {
+				pages: DEFAULT_ENTITY_PAGES,
+				roles: normalizeRoleTemplates(),
+			};
+		}
+	}
+
+	/**
+	 * Create an invitation record with permissions resolved from entity role templates.
+	 * Invitations are persisted in logs to keep DB compatibility with current schema.
+	 * @param groupId Group ID
+	 * @param input Invitation payload
+	 * @returns Created invitation record
+	 */
+	static async createInvitation(groupId: string, input: GroupInvitationInput): Promise<GroupInvitationRecord> {
+		const blueprint = await this.getBlueprint(groupId);
+		const role = blueprint.roles.find((r) => r.key === input.roleKey) ?? blueprint.roles[0];
+		const token = nanoid(32);
+		const createdAt = new Date();
+		const expiresAt =
+			typeof input.expiresInDays === "number" && input.expiresInDays > 0
+				? new Date(createdAt.getTime() + input.expiresInDays * 24 * 60 * 60 * 1000)
+				: null;
+
+		const record: GroupInvitationRecord = {
+			id: `inv-${nanoid(12)}`,
+			token,
+			email: input.email.toLowerCase().trim(),
+			roleKey: role.key,
+			groupId,
+			permissions: role.modules,
+			firstConnection: input.firstConnection ?? true,
+			requireA2F: input.requireA2F ?? true,
+			expiresAt: expiresAt ? expiresAt.toISOString() : null,
+			createdAt: createdAt.toISOString(),
+			createdBy: input.invitedById ?? null,
+		};
+
+		await prisma.log.create({
+			data: {
+				userId: input.invitedById,
+				action: LogAction.Create,
+				entityType: "group_invitation",
+				entityId: groupId,
+				details: JSON.stringify(record),
+			},
+		});
+
+		return record;
+	}
+
+	/**
+	 * List invitations associated to a group from persisted logs.
+	 * @param groupId Group ID
+	 * @returns Invitations ordered by newest first
+	 */
+	static async listInvitations(groupId: string): Promise<GroupInvitationRecord[]> {
+		const rows = await prisma.log.findMany({
+			where: {
+				entityType: "group_invitation",
+				entityId: groupId,
+			},
+			orderBy: { createdAt: "desc" },
+		});
+
+		const parsed = rows
+			.map((row) => {
+				if (!row.details) return null;
+				try {
+					return JSON.parse(row.details) as GroupInvitationRecord;
+				} catch {
+					return null;
+				}
+			})
+			.filter((item): item is GroupInvitationRecord => !!item);
+
+		return parsed;
 	}
 }

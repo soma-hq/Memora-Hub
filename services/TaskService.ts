@@ -61,15 +61,17 @@ export class TaskService {
 	 * @returns Tasks with project info
 	 */
 
-	static async getByAssignee(assigneeId: string, status?: string) {
+	static async getByAssignee(assigneeId: string, status?: string, groupId?: string) {
 		// Query tasks filtered by assignee and optional status
 		return prisma.task.findMany({
 			where: {
 				assigneeId,
 				...(status && { status: status as any }),
+				...(groupId && { project: { groupId } }),
 			},
 			include: {
 				project: { select: { id: true, name: true, groupId: true } },
+				createdBy: { select: { firstName: true, lastName: true } },
 				subtasks: true,
 			},
 			orderBy: { updatedAt: "desc" },
@@ -286,7 +288,7 @@ export class TaskService {
 		return prisma.task.findMany({
 			where: {
 				dueDate: { lt: new Date() },
-				status: { notIn: ["done", "done"] },
+				status: { not: "done" },
 				...(groupId && { project: { groupId } }),
 			},
 			include: {

@@ -5,11 +5,11 @@
  */
 
 import { prisma } from "@/lib/prisma";
-import type { UserProfile } from "@/features/users/types";
-import type { Project, ProjectMember as FrontendProjectMember, ProjectTasks } from "@/features/projects/types";
-import type { Task, TaskAssignee, Subtask } from "@/features/tasks/types";
-import type { Meeting, MeetingParticipant } from "@/features/meetings/types";
-import type { Absence } from "@/features/absences/types";
+import type { UserProfile } from "@/features/admin/users/types";
+import type { Project, ProjectMember as FrontendProjectMember, ProjectTasks } from "@/features/operations/projects/types";
+import type { Task, TaskAssignee, Subtask } from "@/features/operations/tasks/types";
+import type { Meeting, MeetingParticipant } from "@/features/communication/meetings/types";
+import type { Absence } from "@/features/operations/absences/types";
 import type { RoleId } from "@/core/config/roles";
 import { ROLE_HIERARCHY } from "@/core/config/roles";
 import type { Team } from "@/core/config/teams";

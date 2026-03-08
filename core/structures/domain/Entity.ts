@@ -3,13 +3,13 @@
  * @template T The shape of the entity data
  */
 export abstract class Entity<T extends Record<string, unknown> = Record<string, unknown>> {
-	/** Unique identifier */
+	// Unique identifier
 	readonly id: string;
 
-	/** Creation timestamp */
+	// Creation timestamp
 	readonly createdAt: Date;
 
-	/** Last update timestamp */
+	// Last update timestamp
 	updatedAt: Date;
 
 	/** Raw entity data */

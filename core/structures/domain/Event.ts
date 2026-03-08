@@ -1,10 +1,8 @@
 type EventHandler<T = unknown> = (payload: T) => void | Promise<void>;
 
-/**
- * Typed event emitter for decoupled communication between modules
- */
+// Typed event emitter for decoupled communication between modules
 export class Event {
-	/** Registered listeners indexed by event name */
+	// Registered listeners indexed by event name
 	private static listeners: Map<string, EventHandler[]> = new Map();
 
 	/**

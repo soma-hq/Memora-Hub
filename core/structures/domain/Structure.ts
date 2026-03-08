@@ -1,11 +1,9 @@
-/**
- * Base structure class providing common patterns for service-like objects
- */
+// Base structure class providing common patterns for service-like objects
 export abstract class Structure {
-	/** Structure name used for logging and identification */
+	// Structure name used for logging and identification
 	readonly name: string;
 
-	/** Whether this structure has been initialized */
+	// Whether this structure has been initialized
 	private _initialized = false;
 
 	/**
@@ -16,9 +14,7 @@ export abstract class Structure {
 		this.name = name;
 	}
 
-	/**
-	 * Initialize the structure (called once before first use)
-	 */
+	// Initialize the structure
 	async initialize(): Promise<void> {
 		if (this._initialized) return;
 
@@ -26,14 +22,10 @@ export abstract class Structure {
 		this._initialized = true;
 	}
 
-	/**
-	 * Override this method to perform initialization logic
-	 */
+	// Override this method to perform initialization logic
 	protected abstract onInitialize(): Promise<void>;
 
-	/**
-	 * Tear down the structure and release resources
-	 */
+	//Tear down the structure and release resources
 	async destroy(): Promise<void> {
 		if (!this._initialized) return;
 
@@ -41,9 +33,7 @@ export abstract class Structure {
 		this._initialized = false;
 	}
 
-	/**
-	 * Override this method to perform cleanup logic
-	 */
+	//Override this method to perform cleanup logic
 	protected abstract onDestroy(): Promise<void>;
 
 	/**

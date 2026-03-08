@@ -12,13 +12,13 @@ export class Queue<T = unknown> {
 	/** Internal item storage */
 	private items: QueueItem<T>[] = [];
 
-	/** Whether the queue is currently being processed */
+	// Whether the queue is currently being processed
 	private processing = false;
 
-	/** Maximum concurrent items to process */
+	// Maximum concurrent items to process
 	private concurrency: number;
 
-	/** Handler function for processing each item */
+	// Handler function for processing each item
 	private handler: ((item: T) => Promise<void>) | null = null;
 
 	/** Error handler function */
@@ -77,9 +77,7 @@ export class Queue<T = unknown> {
 		return this.items.shift()?.data;
 	}
 
-	/**
-	 * Run the queue processing loop
-	 */
+	// Run the queue processing loop
 	private async run(): Promise<void> {
 		if (!this.handler) return;
 
@@ -130,9 +128,7 @@ export class Queue<T = unknown> {
 		return this.processing;
 	}
 
-	/**
-	 * Clear all items from the queue
-	 */
+	//Clear all items from the queue
 	clear(): void {
 		this.items = [];
 	}

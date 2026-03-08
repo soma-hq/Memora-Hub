@@ -2,13 +2,13 @@
 
 import { useState, useMemo, useCallback } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Icon, Button, SelectMenu, Pagination } from "@/components/ui";
+import { Icon, Button, SelectMenu, Pagination, SectionHeaderBanner } from "@/components/ui";
 import type { SelectMenuOption } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-import { DEMO_LOGS } from "@/features/logs/data/demo-logs";
-import type { LogLevel, LogSource, LogEntry } from "@/features/logs/types";
+import { DEMO_LOGS } from "@/features/admin/logs/data/demo-logs";
+import type { LogLevel, LogSource, LogEntry } from "@/features/admin/logs/types";
 import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/logs",
@@ -206,6 +206,12 @@ export default function LogsPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="logs"
+				title="Logs & Activité"
+				description="Historique complet de toutes les activités."
+				className="mb-6"
+			/>
 			{/* Summary stats */}
 			<div className="mb-6 grid grid-cols-2 gap-3 md:grid-cols-4">
 				{(["info", "warning", "error", "success"] as LogLevel[]).map((level) => {

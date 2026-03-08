@@ -1,11 +1,10 @@
 "use client";
 
-// React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Tag } from "@/components/ui";
+import { Badge, Button, Icon, Modal, SectionHeaderBanner, Tag } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/moderation/sanctions",
@@ -16,9 +15,9 @@ const PAGE_CONFIG = definePageConfig({
 	entityScoped: true,
 });
 
-// Types
-
-type LiveconLevel = 3 | 2 | 1;
+// Niveau Livecon actif (Discord = fixe, défini par l'administration)
+type LiveconLevel = 3 | 2;
+const ACTIVE_LIVECON: LiveconLevel = 3;
 
 interface SanctionRow {
 	first: string;
@@ -29,29 +28,27 @@ interface SanctionRow {
 interface SanctionType {
 	id: string;
 	title: string;
-	icon: "warning" | "chat" | "eye" | "globe" | "shield" | "profile" | "flag" | "users" | "lock";
+	icon: "chat" | "warning" | "eye" | "globe" | "shield" | "profile" | "flag" | "users" | "lock";
 	color: "error" | "warning" | "info" | "success" | "primary" | "gray";
 	defaultReason: string;
 	sanctions: Record<LiveconLevel, SanctionRow>;
-	/** When true the sanction is identical across all Livecon levels */
+	/** Sanction identique quel que soit le Livecon */
 	fixed?: boolean;
-	/** Special note displayed below the table */
+	/** Note spéciale affichée dans le modal */
 	note?: string;
 }
 
-// Data
-
+// Panel de sanctions Discord
 const SANCTION_TYPES: SanctionType[] = [
 	{
 		id: "insultes",
 		title: "Insultes / Irrespect",
 		icon: "chat",
 		color: "error",
-		defaultReason: "Propos irrespectueux envers un ou plusieurs membres de la communaute",
+		defaultReason: "Propos irrespectueux envers un ou plusieurs membres",
 		sanctions: {
 			3: { first: "Warn", repeat: "Tempmute 1h", multi: "Tempban 24h" },
 			2: { first: "Tempmute 2h", repeat: "Tempban 24h", multi: "Ban" },
-			1: { first: "Tempban 24h", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
@@ -59,11 +56,10 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Spam / Flood",
 		icon: "warning",
 		color: "warning",
-		defaultReason: "Envoi massif de messages repetitifs perturbant les salons textuels",
+		defaultReason: "Envoi massif de messages répétitifs perturbant les salons",
 		sanctions: {
 			3: { first: "Warn", repeat: "Tempmute 30min", multi: "Tempmute 2h" },
 			2: { first: "Tempmute 1h", repeat: "Tempban 12h", multi: "Ban" },
-			1: { first: "Tempban 12h", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
@@ -71,47 +67,43 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Contenu NSFW",
 		icon: "eye",
 		color: "error",
-		defaultReason: "Diffusion de contenu à caractere explicite ou inapproprie",
+		defaultReason: "Diffusion de contenu à caractère explicite ou inapproprié",
 		sanctions: {
 			3: { first: "Warn", repeat: "Tempban 7d", multi: "Ban" },
 			2: { first: "Tempban 7d", repeat: "Ban", multi: "Ban" },
-			1: { first: "Ban", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
 		id: "pub",
-		title: "Publicite / Self-promo",
+		title: "Publicité / Self-promo",
 		icon: "globe",
 		color: "info",
-		defaultReason: "Promotion non-autorisee de contenu ou serveur externe",
+		defaultReason: "Promotion non autorisée de contenu ou serveur externe",
 		sanctions: {
 			3: { first: "Warn", repeat: "Tempmute 2h", multi: "Tempban 24h" },
 			2: { first: "Tempmute 2h", repeat: "Tempban 24h", multi: "Ban" },
-			1: { first: "Tempban 7d", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
 		id: "harcelement",
-		title: "Harcelement",
+		title: "Harcèlement",
 		icon: "shield",
 		color: "error",
-		defaultReason: "Comportement de harcelement repete envers un ou plusieurs membres",
+		defaultReason: "Comportement de harcèlement répété envers un ou plusieurs membres",
 		sanctions: {
 			3: { first: "Tempban 7d", repeat: "Ban", multi: "Ban" },
 			2: { first: "Ban", repeat: "Ban", multi: "Ban" },
-			1: { first: "Ban", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
 		id: "usurpation",
-		title: "Usurpation d'identite",
+		title: "Usurpation d'identité",
 		icon: "profile",
 		color: "warning",
-		defaultReason: "Utilisation frauduleuse de l'identite d'un autre membre ou du staff",
+		defaultReason: "Utilisation frauduleuse de l'identité d'un membre ou du staff",
 		sanctions: {
 			3: { first: "Warn + Rename", repeat: "Tempban 24h", multi: "Ban" },
 			2: { first: "Tempban 24h", repeat: "Ban", multi: "Ban" },
-			1: { first: "Ban", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
@@ -119,24 +111,22 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Menaces",
 		icon: "flag",
 		color: "error",
-		defaultReason: "Proferation de menaces envers un membre ou le serveur",
+		defaultReason: "Proférations de menaces envers un membre ou le serveur",
 		sanctions: {
 			3: { first: "Tempban 7d", repeat: "Ban", multi: "Ban" },
 			2: { first: "Ban", repeat: "Ban", multi: "Ban" },
-			1: { first: "Ban", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
 		id: "raid",
-		title: "Raid / Attaque coordonnee",
+		title: "Raid / Attaque coordonnée",
 		icon: "users",
 		color: "error",
-		defaultReason: "Participation à une attaque coordonnee contre le serveur",
+		defaultReason: "Participation à une attaque coordonnée contre le serveur",
 		fixed: true,
 		sanctions: {
 			3: { first: "Ban", repeat: "Ban", multi: "Ban" },
 			2: { first: "Ban", repeat: "Ban", multi: "Ban" },
-			1: { first: "Ban", repeat: "Ban", multi: "Ban" },
 		},
 	},
 	{
@@ -144,53 +134,19 @@ const SANCTION_TYPES: SanctionType[] = [
 		title: "Underaged",
 		icon: "lock",
 		color: "warning",
-		defaultReason: "Compte identifie comme mineur — procedure speciale appliquee",
+		defaultReason: "Compte identifié comme mineur — procédure spéciale appliquée",
 		fixed: true,
-		note: "Procedure speciale : Tempban 30 jours systematique, quel que soit le Livecon.",
+		note: "Procédure spéciale : Tempban 30 jours systématique, quel que soit le Livecon.",
 		sanctions: {
 			3: { first: "Tempban 30d", repeat: "Tempban 30d", multi: "Tempban 30d" },
 			2: { first: "Tempban 30d", repeat: "Tempban 30d", multi: "Tempban 30d" },
-			1: { first: "Tempban 30d", repeat: "Tempban 30d", multi: "Tempban 30d" },
 		},
 	},
 ];
 
-const LIVECON_CONFIG: Record<
-	LiveconLevel,
-	{ label: string; bg: string; bgActive: string; text: string; ring: string; dot: string }
-> = {
-	3: {
-		label: "Livecon 3",
-		bg: "bg-success-50 dark:bg-success-900/10",
-		bgActive: "bg-success-500 dark:bg-success-600",
-		text: "text-success-700 dark:text-success-300",
-		ring: "ring-success-300 dark:ring-success-700",
-		dot: "bg-success-500",
-	},
-	2: {
-		label: "Livecon 2",
-		bg: "bg-warning-50 dark:bg-warning-900/10",
-		bgActive: "bg-warning-500 dark:bg-warning-600",
-		text: "text-warning-700 dark:text-warning-300",
-		ring: "ring-warning-300 dark:ring-warning-700",
-		dot: "bg-warning-500",
-	},
-	1: {
-		label: "Livecon 1",
-		bg: "bg-error-50 dark:bg-error-900/10",
-		bgActive: "bg-error-500 dark:bg-error-600",
-		text: "text-error-700 dark:text-error-300",
-		ring: "ring-error-300 dark:ring-error-700",
-		dot: "bg-error-500",
-	},
-};
-
-// Helpers
-
 /**
- * Returns the Tag color variant for a given sanction type.
- * @param value - The sanction type string
- * @returns The Tag color variant
+ * Mappe une valeur de sanction vers une couleur de tag.
+ * @param value - La valeur de la sanction
  */
 function sanctionTagColor(value: string): "error" | "warning" | "gray" | "info" {
 	const v = value.toLowerCase();
@@ -200,202 +156,141 @@ function sanctionTagColor(value: string): "error" | "warning" | "gray" | "info" 
 	return "gray";
 }
 
-// Component
+/**
+ * Classes de couleur pour les icônes de cards selon la sévérité.
+ * @param color - La couleur associée au type de sanction
+ */
+function iconColorClasses(color: SanctionType["color"]): string {
+	return cn(
+		"flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
+		color === "error" && "bg-error-100 text-error-600 dark:bg-error-900/30 dark:text-error-400",
+		color === "warning" && "bg-warning-100 text-warning-600 dark:bg-warning-900/30 dark:text-warning-400",
+		color === "info" && "bg-info-100 text-info-600 dark:bg-info-900/30 dark:text-info-400",
+		color === "gray" && "bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400",
+	);
+}
 
 /**
- * Sanctions management page for tracking bans, mutes and moderation actions.
- * @returns The sanctions list page
+ * Panel de sanctions Discord — cards cliquables ouvrant un modal de détail.
+ * Design unifié : flush-header + grid de cards + modal par sanction.
+ * @returns Le panel de sanctions Discord
  */
-export default function SanctionsPage() {
-	const [livecon, setLivecon] = useState<LiveconLevel>(3);
-	const [expandedId, setExpandedId] = useState<string | null>(null);
-
-	const currentConfig = LIVECON_CONFIG[livecon];
-
-	function toggleCard(id: string) {
-		setExpandedId((prev) => (prev === id ? null : id));
-	}
+export default function SanctionsDiscordPage() {
+	void PAGE_CONFIG;
+	const [selected, setSelected] = useState<SanctionType | null>(null);
+	const row = selected ? selected.sanctions[ACTIVE_LIVECON] : null;
 
 	return (
-		<PageContainer
-			title="Panel de Sanctions"
-			description="Tableau de sanctions par infraction — evolue selon le Livecon"
-		>
-			{/* ----------------------------------------------------------------- */}
-			{/* Livecon selector                                                  */}
-			{/* ----------------------------------------------------------------- */}
-			<div className="mb-6">
-				<p className="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">Niveau Livecon actif</p>
-				<div className="inline-flex items-center gap-2 rounded-xl bg-gray-100 p-1 dark:bg-gray-800">
-					{([3, 2, 1] as LiveconLevel[]).map((level) => {
-						const cfg = LIVECON_CONFIG[level];
-						const isActive = livecon === level;
-						return (
-							<button
-								key={level}
-								onClick={() => setLivecon(level)}
-								className={cn(
-									"flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-all duration-200",
-									isActive
-										? cn(cfg.bgActive, "text-white shadow-sm")
-										: "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200",
-								)}
-							>
-								<span className={cn("h-2 w-2 rounded-full", isActive ? "bg-white" : cfg.dot)} />
-								{cfg.label}
-							</button>
-						);
-					})}
+		<PageContainer title="Panel de Sanctions" description="Modération Discord">
+			{/* Flush-header card — SectionHeaderBanner collée au contenu */}
+			<div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+				<SectionHeaderBanner
+					icon="shield"
+					title="Sanctions opérationnelles"
+					description="Cliquer sur une infraction pour voir le détail"
+					accentColor="red"
+					className="rounded-none"
+				/>
+
+				<div className="grid grid-cols-1 gap-3 p-4 sm:grid-cols-2 lg:grid-cols-3">
+					{SANCTION_TYPES.map((sanction) => (
+						<button
+							key={sanction.id}
+							onClick={() => setSelected(sanction)}
+							className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-gray-50 p-3 text-left transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900/40 dark:hover:border-gray-600 dark:hover:bg-gray-900/60"
+						>
+							<div className={iconColorClasses(sanction.color)}>
+								<Icon name={sanction.icon} size="md" />
+							</div>
+
+							<div className="min-w-0 flex-1">
+								<p className="text-sm font-semibold text-gray-900 dark:text-white">{sanction.title}</p>
+								<p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+									1ère fois :{" "}
+									<span className="font-medium">{sanction.sanctions[ACTIVE_LIVECON].first}</span>
+								</p>
+							</div>
+
+							{sanction.fixed && (
+								<Badge variant="warning" showDot={false}>
+									Fixe
+								</Badge>
+							)}
+						</button>
+					))}
 				</div>
 			</div>
 
-			{/* ----------------------------------------------------------------- */}
-			{/* Active Livecon badge                                              */}
-			{/* ----------------------------------------------------------------- */}
-			<div className="mb-6 flex items-center gap-3">
-				<Badge variant={livecon === 3 ? "success" : livecon === 2 ? "warning" : "error"}>
-					{currentConfig.label} actif
-				</Badge>
-				<span className="text-xs text-gray-400 dark:text-gray-500">
-					Les sanctions ci-dessous correspondent au niveau selectionne.
-				</span>
-			</div>
+			{/* Modal de détail — affiché au clic sur une sanction */}
+			<Modal isOpen={selected !== null} onClose={() => setSelected(null)} title={selected?.title ?? ""} size="sm">
+				{selected && row && (
+					<div className="space-y-4">
+						{/* Avertissement si sanction fixe */}
+						{selected.fixed && (
+							<div className="border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-900/10 flex items-start gap-2 rounded-lg border px-3 py-2">
+								<Icon name="info" size="sm" className="text-warning-500 mt-0.5 shrink-0" />
+								<span className="text-warning-700 dark:text-warning-400 text-xs">
+									Sanction identique quel que soit le Livecon actif.
+								</span>
+							</div>
+						)}
 
-			{/* ----------------------------------------------------------------- */}
-			{/* Sanction gallery                                                  */}
-			{/* ----------------------------------------------------------------- */}
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-				{SANCTION_TYPES.map((sanction) => {
-					const isExpanded = expandedId === sanction.id;
-					const row = sanction.sanctions[livecon];
-
-					return (
-						<div key={sanction.id} className={cn(isExpanded && "sm:col-span-2 lg:col-span-3")}>
-							<Card
-								hover={!isExpanded}
-								padding={isExpanded ? "lg" : "md"}
-								onClick={() => toggleCard(sanction.id)}
-								className="transition-all duration-200"
-							>
-								{/* Card header — always visible */}
-								<div className="flex items-center gap-3">
-									<div
-										className={cn(
-											"flex h-10 w-10 shrink-0 items-center justify-center rounded-lg",
-											sanction.color === "error" &&
-												"bg-error-100 text-error-600 dark:bg-error-900/30 dark:text-error-400",
-											sanction.color === "warning" &&
-												"bg-warning-100 text-warning-600 dark:bg-warning-900/30 dark:text-warning-400",
-											sanction.color === "info" &&
-												"bg-info-100 text-info-600 dark:bg-info-900/30 dark:text-info-400",
-											sanction.color === "success" &&
-												"bg-success-100 text-success-600 dark:bg-success-900/30 dark:text-success-400",
-											sanction.color === "primary" &&
-												"bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400",
-											sanction.color === "gray" &&
-												"bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-400",
-										)}
-									>
-										<Icon name={sanction.icon} size="md" />
-									</div>
-									<div className="min-w-0 flex-1">
-										<h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-											{sanction.title}
-										</h3>
-										{!isExpanded && (
-											<p className="mt-0.5 text-xs text-gray-400 dark:text-gray-500">
-												1ere : <span className="font-medium">{row.first}</span>
-											</p>
-										)}
-									</div>
-									<Icon
-										name={isExpanded ? "chevronUp" : "chevronDown"}
-										size="sm"
-										className="text-gray-400 dark:text-gray-500"
-									/>
-								</div>
-
-								{/* Expanded content — sanctions table */}
-								{isExpanded && (
-									<div className="mt-4 space-y-4">
-										{/* Fixed-level notice */}
-										{sanction.fixed && (
-											<div className="border-warning-200 bg-warning-50 dark:border-warning-800 dark:bg-warning-900/10 flex items-start gap-2 rounded-lg border px-3 py-2">
-												<Icon
-													name="info"
-													size="sm"
-													className="text-warning-500 mt-0.5 shrink-0"
-												/>
-												<span className="text-warning-700 dark:text-warning-400 text-xs">
-													Cette infraction applique la meme sanction quel que soit le Livecon.
-												</span>
-											</div>
-										)}
-
-										{/* Table */}
-										<div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
-											<table className="w-full text-sm">
-												<thead>
-													<tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
-														<th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															Infraction
-														</th>
-														<th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															1ere fois
-														</th>
-														<th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															Recidive
-														</th>
-														<th className="px-4 py-2.5 text-left text-xs font-medium tracking-wider text-gray-500 uppercase dark:text-gray-400">
-															Multi-recidive
-														</th>
-													</tr>
-												</thead>
-												<tbody>
-													<tr className="border-b border-gray-100 dark:border-gray-700/50">
-														<td className="px-4 py-3 font-medium text-gray-900 dark:text-white">
-															{sanction.title}
-														</td>
-														<td className="px-4 py-3">
-															<Tag color={sanctionTagColor(row.first)}>{row.first}</Tag>
-														</td>
-														<td className="px-4 py-3">
-															<Tag color={sanctionTagColor(row.repeat)}>{row.repeat}</Tag>
-														</td>
-														<td className="px-4 py-3">
-															<Tag color={sanctionTagColor(row.multi)}>{row.multi}</Tag>
-														</td>
-													</tr>
-												</tbody>
-											</table>
-										</div>
-
-										{/* Special note */}
-										{sanction.note && (
-											<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 flex items-start gap-2 rounded-lg border px-3 py-2">
-												<Icon name="info" size="sm" className="text-info-500 mt-0.5 shrink-0" />
-												<span className="text-info-700 dark:text-info-400 text-xs">
-													{sanction.note}
-												</span>
-											</div>
-										)}
-
-										{/* Default warn reason */}
-										<div>
-											<label className="mb-1.5 block text-xs font-medium text-gray-500 dark:text-gray-400">
-												Raison par defaut pour le systeme de warn
-											</label>
-											<div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
-												{sanction.defaultReason}
-											</div>
-										</div>
-									</div>
-								)}
-							</Card>
+						{/* Tableau des sanctions */}
+						<div className="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+							<table className="w-full text-sm">
+								<thead>
+									<tr className="border-b border-gray-200 bg-gray-50 dark:border-gray-700 dark:bg-gray-800/50">
+										<th className="px-3 py-2 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+											1ère fois
+										</th>
+										<th className="px-3 py-2 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+											Récidive
+										</th>
+										<th className="px-3 py-2 text-left text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+											Multi-récidive
+										</th>
+									</tr>
+								</thead>
+								<tbody>
+									<tr>
+										<td className="px-3 py-2.5">
+											<Tag color={sanctionTagColor(row.first)}>{row.first}</Tag>
+										</td>
+										<td className="px-3 py-2.5">
+											<Tag color={sanctionTagColor(row.repeat)}>{row.repeat}</Tag>
+										</td>
+										<td className="px-3 py-2.5">
+											<Tag color={sanctionTagColor(row.multi)}>{row.multi}</Tag>
+										</td>
+									</tr>
+								</tbody>
+							</table>
 						</div>
-					);
-				})}
-			</div>
+
+						{/* Note spéciale (ex : underaged) */}
+						{selected.note && (
+							<div className="border-info-200 bg-info-50 dark:border-info-800 dark:bg-info-900/10 flex items-start gap-2 rounded-lg border px-3 py-2">
+								<Icon name="info" size="sm" className="text-info-500 mt-0.5 shrink-0" />
+								<span className="text-info-700 dark:text-info-400 text-xs">{selected.note}</span>
+							</div>
+						)}
+
+						{/* Raison par défaut */}
+						<div>
+							<p className="mb-1.5 text-xs font-medium text-gray-500 dark:text-gray-400">
+								Raison par défaut
+							</p>
+							<div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
+								{selected.defaultReason}
+							</div>
+						</div>
+
+						<Button variant="primary" onClick={() => setSelected(null)} className="w-full">
+							Fermer
+						</Button>
+					</div>
+				)}
+			</Modal>
 		</PageContainer>
 	);
 }

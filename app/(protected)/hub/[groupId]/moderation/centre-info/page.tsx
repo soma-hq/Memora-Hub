@@ -1,13 +1,8 @@
 "use client";
 
-// Next.js
-import Link from "next/link";
-import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon } from "@/components/ui";
-import { cn } from "@/lib/utils/cn";
-import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { SectionHeaderBanner } from "@/components/ui";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/moderation/centre-info",
@@ -18,69 +13,47 @@ const PAGE_CONFIG = definePageConfig({
 	entityScoped: true,
 });
 
-interface InfoSection {
-	title: string;
-	href: string;
-	icon: IconName;
-	description: string;
-}
+// Consignes opérationnelles Discord
+const CONSIGNES = [
+	{
+		title: "Prise de contexte",
+		description: "Vérifier l'historique, l'impact et le canal avant de statuer sur une sanction.",
+	},
+	{
+		title: "Trace obligatoire",
+		description: "Chaque action de modération doit inclure une raison claire et la preuve associée.",
+	},
+	{
+		title: "Escalade interne",
+		description: "En cas de doute, appliquer l'action minimale puis escalader vers un référent.",
+	},
+];
 
 /**
- * Information center hub page with links to priority scale, tickets and tips.
- * @returns The centre-info navigation page
+ * Centre d'informations Discord — consignes opérationnelles sous forme de boxes.
+ * Suit le pattern "flush-header" (SectionHeaderBanner collée à son contenu).
+ * @returns La page Centre d'informations Modération Discord
  */
 export default function CentreInfoPage() {
-	const { groupId } = useParams<{ groupId: string }>();
-
-	const sections: InfoSection[] = [
-		{
-			title: "Échelle de priorité",
-			href: `/hub/${groupId}/moderation/centre-info/echelle`,
-			icon: "users",
-			description: "Chaîne de commandement et hiérarchie de la modération",
-		},
-		{
-			title: "Système de Tickets",
-			href: `/hub/${groupId}/moderation/centre-info/tickets`,
-			icon: "chat",
-			description: "Fonctionnement et procédures du système de tickets",
-		},
-		{
-			title: "Tips",
-			href: `/hub/${groupId}/moderation/centre-info/tips`,
-			icon: "info",
-			description: "Conseils et procédures pour les situations courantes",
-		},
-	];
+	void PAGE_CONFIG;
 
 	return (
-		<PageContainer title="Centre d'informations" description="Documentation et procédures de modération">
-			<div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-				{sections.map((section) => (
-					<Link key={section.href} href={section.href} className="block">
-						<Card hover padding="lg" className="h-full">
-							<div className="flex flex-col items-start gap-3">
-								<div
-									className={cn(
-										"flex h-10 w-10 items-center justify-center rounded-lg",
-										"bg-primary-50 text-primary-600",
-										"dark:bg-primary-900/20 dark:text-primary-400",
-									)}
-								>
-									<Icon name={section.icon} size="lg" />
-								</div>
-								<div>
-									<h3 className="text-base font-semibold text-gray-900 dark:text-white">
-										{section.title}
-									</h3>
-									<p className="mt-1 text-sm text-gray-400 dark:text-gray-400">
-										{section.description}
-									</p>
-								</div>
-							</div>
-						</Card>
-					</Link>
-				))}
+		<PageContainer title="Centre d'informations" description="Consignes et procédures de modération Discord">
+			{/* Consignes — flush-header card (pattern identique à Agenda du Jour) */}
+			<div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
+				<SectionHeaderBanner icon="flag" title="Consignes" className="rounded-none" />
+
+				<div className="grid grid-cols-1 gap-3 p-4 md:grid-cols-3">
+					{CONSIGNES.map((consigne) => (
+						<div
+							key={consigne.title}
+							className="rounded-lg border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/40"
+						>
+							<p className="text-sm font-semibold text-gray-900 dark:text-white">{consigne.title}</p>
+							<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">{consigne.description}</p>
+						</div>
+					))}
+				</div>
 			</div>
 		</PageContainer>
 	);

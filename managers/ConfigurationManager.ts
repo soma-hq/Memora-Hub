@@ -1,4 +1,4 @@
-import { Structure } from "@/core/structures/Structure";
+import { Structure } from "@/core/structures/domain/Structure";
 
 
 type ConfigCategory = "database" | "encryption" | "global" | "mails" | "redis" | "storage" | "uptime";

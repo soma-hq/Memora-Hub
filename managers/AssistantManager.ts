@@ -1,6 +1,16 @@
-import { AssistantService } from "@/services/AssistantService";
 import type { AssistantResponse } from "@/services/AssistantService";
-import type { ChatMessage, ActiveFlow, AssistantContext, Suggestion } from "@/features/assistant/types";
+import type { ChatMessage, ActiveFlow, AssistantContext, Suggestion } from "@/features/system/assistant/types";
+import type { AssistantConfig } from "@/core/config/schemas/assistant.schema";
+
+/**
+ * Contract for the assistant service. Satisfied by the wrapper in container.ts.
+ * Defined here to keep the manager decoupled from the concrete service class.
+ */
+export interface IAssistantService {
+	processMessage(content: string, context: AssistantContext, flow: ActiveFlow | null): Promise<AssistantResponse>;
+	simulateThinking(): Promise<void>;
+	getAutocompleteSuggestions(input: string, context: AssistantContext): Suggestion[];
+}
 
 // Callback for updating the conversation state
 export interface ConversationCallbacks {
@@ -26,15 +36,30 @@ export class AssistantManager {
 	// Processing lock to prevent duplicate submissions
 	private isProcessing = false;
 
+	// Injected service — never imported directly
+	private svc: IAssistantService;
+
+	// Config-driven messages
+	private cfg: AssistantConfig;
+
 	/**
-	 * Create an AssistantManager instance
+	 * Create an AssistantManager instance.
 	 * @param callbacks Functions to update conversation state
 	 * @param context Current application context
+	 * @param svc Assistant service injected from container
+	 * @param cfg Assistant config from container.config.assistant
 	 */
 
-	constructor(callbacks: ConversationCallbacks, context: AssistantContext) {
+	constructor(
+		callbacks: ConversationCallbacks,
+		context: AssistantContext,
+		svc: IAssistantService,
+		cfg: AssistantConfig,
+	) {
 		this.callbacks = callbacks;
 		this.context = context;
+		this.svc = svc;
+		this.cfg = cfg;
 	}
 
 	/**
@@ -80,13 +105,13 @@ export class AssistantManager {
 			this.callbacks.setStatus("thinking");
 
 			// Simulate thinking delay
-			await AssistantService.simulateThinking();
+			await this.svc.simulateThinking();
 
 			// Set processing status
 			this.callbacks.setStatus("processing");
 
 			// Process the message
-			const response = await AssistantService.processMessage(content, this.context, this.activeFlow);
+			const response = await this.svc.processMessage(content, this.context, this.activeFlow);
 
 			// Add the assistant response
 			this.callbacks.addMessage(response.message);
@@ -116,11 +141,11 @@ export class AssistantManager {
 
 			return response;
 		} catch (error) {
-			// Handle error
+			// Handle error — message from config, never hardcoded
 			const errorMessage: ChatMessage = {
 				id: `error-${Date.now()}`,
 				role: "assistant",
-				content: "Desole, une erreur s'est produite. Veuillez reessayer.",
+				content: this.cfg.errorMessage,
 				timestamp: new Date().toISOString(),
 				isError: true,
 			};
@@ -163,7 +188,7 @@ export class AssistantManager {
 		const cancelMessage: ChatMessage = {
 			id: `cancel-${Date.now()}`,
 			role: "assistant",
-			content: "L'action en cours à ete annulee. Comment puis-je vous aider ?",
+			content: this.cfg.flowCancelledMessage,
 			timestamp: new Date().toISOString(),
 		};
 		this.callbacks.addMessage(cancelMessage);
@@ -191,6 +216,6 @@ export class AssistantManager {
 	 */
 
 	getAutocompleteSuggestions(input: string): Suggestion[] {
-		return AssistantService.getAutocompleteSuggestions(input, this.context);
+		return this.svc.getAutocompleteSuggestions(input, this.context);
 	}
 }

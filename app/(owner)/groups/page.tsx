@@ -1,10 +1,13 @@
 "use client";
 
+import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Button, Card, Badge, Icon, Input, Modal, ModalFooter } from "@/components/ui";
+import { Button, Card, Badge, Icon, Input, Modal, ModalFooter, SectionHeaderBanner } from "@/components/ui";
 import { showError, showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
+import type { Module } from "@/core/config/capabilities";
+import { GROUP_BANNER_OPTIONS } from "@/core/design/entity-banners";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "groups",
@@ -21,9 +24,10 @@ interface OwnerGroupEntry {
 	id: string;
 	name: string;
 	description: string | null;
+	logoUrl?: string | null;
+	legacyMembersCount: number;
 	_count: {
 		members: number;
-		projects: number;
 	};
 }
 
@@ -33,6 +37,30 @@ interface GroupsApiResponse {
 	page: number;
 	pageSize: number;
 }
+
+interface RolePreset {
+	key: string;
+	label: string;
+	modules: Module[];
+}
+
+const ROLE_PRESETS: RolePreset[] = [
+	{
+		key: "owner",
+		label: "Owner",
+		modules: ["admin", "personnel", "projects", "tasks", "meetings", "logs", "groups", "notifications"],
+	},
+	{
+		key: "manager",
+		label: "Manager",
+		modules: ["personnel", "projects", "tasks", "meetings", "logs", "notifications"],
+	},
+	{
+		key: "member",
+		label: "Membre",
+		modules: ["personnel", "tasks", "notifications"],
+	},
+];
 
 /**
  * Resolve deterministic visual color from a name.
@@ -60,6 +88,8 @@ export default function GroupsPage() {
 	const [groups, setGroups] = useState<OwnerGroupEntry[]>([]);
 	const [groupName, setGroupName] = useState("");
 	const [groupDescription, setGroupDescription] = useState("");
+	const [groupBanner, setGroupBanner] = useState("");
+	const [selectedRoleKeys, setSelectedRoleKeys] = useState<string[]>(["owner", "manager", "member"]);
 
 	/**
 	 * Fetch groups from API.
@@ -91,6 +121,18 @@ export default function GroupsPage() {
 	const resetForm = useCallback(() => {
 		setGroupName("");
 		setGroupDescription("");
+		setGroupBanner("");
+		setSelectedRoleKeys(["owner", "manager", "member"]);
+	}, []);
+
+	const toggleRolePreset = useCallback((roleKey: string) => {
+		setSelectedRoleKeys((prev) => {
+			if (prev.includes(roleKey)) {
+				if (prev.length === 1) return prev;
+				return prev.filter((key) => key !== roleKey);
+			}
+			return [...prev, roleKey];
+		});
 	}, []);
 
 	/**
@@ -105,15 +147,23 @@ export default function GroupsPage() {
 				showError("Le nom de l'entité est requis.");
 				return;
 			}
+			if (!groupBanner) {
+				showError("La bannière de l'entité est requise.");
+				return;
+			}
 
 			setIsCreating(true);
 			try {
+				const selectedTemplates = ROLE_PRESETS.filter((preset) => selectedRoleKeys.includes(preset.key));
+
 				const response = await fetch("/api/groups", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
 						name: groupName.trim(),
 						description: groupDescription.trim() || undefined,
+						logoUrl: groupBanner,
+						roleTemplates: selectedTemplates,
 					}),
 				});
 
@@ -130,7 +180,7 @@ export default function GroupsPage() {
 				setIsCreating(false);
 			}
 		},
-		[groupDescription, groupName, loadGroups, resetForm],
+		[groupBanner, groupDescription, groupName, loadGroups, resetForm, selectedRoleKeys],
 	);
 
 	/**
@@ -153,6 +203,12 @@ export default function GroupsPage() {
 				</Button>
 			}
 		>
+			<SectionHeaderBanner
+				icon="group"
+				title="Groupements"
+				description="Pilotez les écosystèmes entité depuis un point unique."
+				className="mb-6"
+			/>
 			<div className="mb-4 flex items-center justify-between">
 				<p className="text-sm text-gray-500 dark:text-gray-400">{groupCounterLabel}</p>
 				{isLoading && (
@@ -166,32 +222,34 @@ export default function GroupsPage() {
 			<div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
 				{groups.map((group) => (
 					<Card key={group.id} hover padding="lg">
-						<div className="flex items-start gap-4">
+						<div className="flex items-center gap-4">
 							<div
-								className="flex h-12 w-12 items-center justify-center rounded-xl text-base font-bold text-white"
+								className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-base font-bold text-white"
 								style={{ backgroundColor: resolveColorFromName(group.name) }}
 							>
 								{group.name.charAt(0).toUpperCase()}
 							</div>
-							<div className="min-w-0 flex-1">
+							<div className="min-w-0 flex-1 space-y-2">
 								<div className="flex items-center gap-2">
 									<h3 className="font-semibold text-gray-900 dark:text-white">{group.name}</h3>
 									<Badge variant="success" showDot>
 										Actif
 									</Badge>
 								</div>
-								<p className="mt-1 text-sm text-gray-400">{group.description || "Sans description"}</p>
-							</div>
-						</div>
-
-						<div className="mt-4 flex items-center gap-4 border-t border-gray-200 pt-4 dark:border-gray-700">
-							<div className="flex items-center gap-1.5 text-sm text-gray-500">
-								<Icon name="users" size="sm" className="text-gray-400" />
-								<span>{group._count.members} membres</span>
-							</div>
-							<div className="flex items-center gap-1.5 text-sm text-gray-500">
-								<Icon name="folder" size="sm" className="text-gray-400" />
-								<span>{group._count.projects} projets</span>
+								<div className="rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 dark:border-gray-700 dark:bg-gray-800/60">
+									<div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-300">
+										<span>Legacy</span>
+										<span className="font-semibold text-gray-800 dark:text-gray-100">
+											{group.legacyMembersCount}
+										</span>
+									</div>
+									<div className="mt-1 flex items-center justify-between text-xs text-gray-500 dark:text-gray-300">
+										<span>Membres</span>
+										<span className="font-semibold text-gray-800 dark:text-gray-100">
+											{group._count.members}
+										</span>
+									</div>
+								</div>
 							</div>
 						</div>
 
@@ -246,6 +304,64 @@ export default function GroupsPage() {
 						value={groupDescription}
 						onChange={(e) => setGroupDescription(e.target.value)}
 					/>
+					<div className="space-y-2">
+						<label className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-300">
+							Bannière
+						</label>
+						<select
+							required
+							value={groupBanner}
+							onChange={(e) => setGroupBanner(e.target.value)}
+							className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 shadow-sm focus:ring-1 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-200"
+						>
+							<option value="">Choisir une bannière</option>
+							{GROUP_BANNER_OPTIONS.map((option) => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
+						</select>
+						{groupBanner && (
+							<div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700">
+								<Image
+									src={groupBanner}
+									alt="Aperçu bannière"
+									width={1200}
+									height={300}
+									className="h-20 w-full object-cover"
+								/>
+							</div>
+						)}
+					</div>
+					<div className="space-y-2">
+						<p className="text-xs font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-300">
+							Rôles par défaut (invitations + permissions)
+						</p>
+						<div className="grid grid-cols-1 gap-2 md:grid-cols-3">
+							{ROLE_PRESETS.map((preset) => {
+								const selected = selectedRoleKeys.includes(preset.key);
+								return (
+									<button
+										key={preset.key}
+										type="button"
+										onClick={() => toggleRolePreset(preset.key)}
+										className={[
+											"rounded-lg border px-3 py-2 text-left text-xs transition-colors",
+											selected
+												? "border-primary-500 bg-primary-50 text-primary-700 dark:bg-primary-900/20 dark:text-primary-300"
+												: "border-gray-200 text-gray-600 dark:border-gray-700 dark:text-gray-300",
+										].join(" ")}
+									>
+										<div className="font-semibold">{preset.label}</div>
+										<div className="mt-1 opacity-75">{preset.modules.length} modules</div>
+									</button>
+								);
+							})}
+						</div>
+						<p className="text-[11px] text-gray-500 dark:text-gray-400">
+							La catégorie Personnel est toujours ajoutée automatiquement pour chaque rôle.
+						</p>
+					</div>
 					<ModalFooter>
 						<Button
 							variant="cancel"

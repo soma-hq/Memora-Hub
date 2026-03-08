@@ -3,10 +3,10 @@
 // React
 import { useState } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button } from "@/components/ui";
+import { Card, Badge, Icon, Button, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showWarning } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin/trash",
@@ -33,7 +33,7 @@ const TRASHED_MEMBERS: TrashedMember[] = [
 	{
 		id: "t1",
 		pseudo: "Kaze",
-		team: "Squad",
+		team: "Entité",
 		reason: "archived",
 		deletedAt: "12 fév 2026",
 		deletedBy: "Jeremy Alpha",
@@ -42,7 +42,7 @@ const TRASHED_MEMBERS: TrashedMember[] = [
 	{
 		id: "t2",
 		pseudo: "Nova",
-		team: "Squad",
+		team: "Entité",
 		reason: "deleted",
 		deletedAt: "20 fév 2026",
 		deletedBy: "Witt",
@@ -90,6 +90,12 @@ export default function AdminTrashPage() {
 			title="Corbeille"
 			description="Membres supprimés, archivés ou restreints. Vidage automatique le 1er de chaque mois."
 		>
+			<SectionHeaderBanner
+				icon="delete"
+				title="Corbeille"
+				description="Membres supprimés, archivés ou restreints."
+				className="mb-6"
+			/>
 			{/* Purge countdown */}
 			<Card className="border-red-200 bg-red-50/50 dark:border-red-900/30 dark:bg-red-900/5">
 				<div className="flex items-center justify-between p-4">

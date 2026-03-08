@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
 import type { SemanticLevel } from "@/core/design";
 import { levelBorderVariant, levelIconColorVariant } from "@/core/design";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin",

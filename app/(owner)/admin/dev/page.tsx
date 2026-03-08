@@ -6,7 +6,7 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, Button, Toggle, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo, showError } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin/dev",

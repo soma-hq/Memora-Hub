@@ -11,7 +11,7 @@ import { ENTITIES, resolveEntityAccess } from "@/core/data/entities";
 import { getTeamForRole } from "@/core/config/teams";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin/access",

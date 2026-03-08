@@ -23,7 +23,7 @@ import {
 	levelTextIconVariant,
 	levelDotVariant,
 } from "@/core/design";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin/alerts",

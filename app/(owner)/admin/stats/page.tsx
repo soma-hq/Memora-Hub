@@ -5,7 +5,7 @@ import { PageContainer } from "@/components/layout/page-container";
 import { Card, Badge, Icon, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin/stats",
@@ -52,7 +52,7 @@ const teamDistribution = [
 	{ team: "Legacy", users: 3, max: 19, color: "bg-amber-500" },
 	{ team: "Talent", users: 4, max: 19, color: "bg-emerald-500" },
 	{ team: "Momentum", users: 1, max: 19, color: "bg-blue-500" },
-	{ team: "Squad", users: 8, max: 19, color: "bg-gray-400" },
+	{ team: "Entité", users: 8, max: 19, color: "bg-gray-400" },
 ];
 
 const divisionBreakdown = [

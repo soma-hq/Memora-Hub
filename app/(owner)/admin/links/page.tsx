@@ -3,10 +3,10 @@
 // React
 import { useState, useCallback } from "react";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Badge, Icon, Button, Tag } from "@/components/ui";
+import { Card, Badge, Icon, Button, Tag, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "admin/links",
@@ -239,6 +239,12 @@ export default function AdminLinksPage() {
 
 	return (
 		<PageContainer title="Générateur de liens" description="Créer et gérer les liens d'invitation et de partage">
+			<SectionHeaderBanner
+				icon="link"
+				title="Liens & Invitations"
+				description="Créez et gérez les liens d'accès et d'invitation."
+				className="mb-6"
+			/>
 			{/* Generator form */}
 			<Card padding="lg" className="mb-8 border-l-4 border-l-red-500">
 				<h2 className="mb-4 text-lg font-semibold text-gray-900 dark:text-white">

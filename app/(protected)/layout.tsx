@@ -8,9 +8,9 @@ import { MobileSidebar } from "@/components/layout/mobile-sidebar";
 import { MobileNav } from "@/components/navigation/mobile-nav";
 import { SearchModal } from "@/components/modals/search-modal";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { AlertBanner } from "@/features/alerts/components/alert-banner";
-import { TutorialOverlay } from "@/scripts/tutorial/tutorial-overlay";
-import { AssistantModal } from "@/features/assistant/components/assistant-modal";
+import { AlertBanner } from "@/features/admin/alerts/components/alert-banner";
+import { TutorialOverlay } from "@/features/academy/scripts/tutorial/tutorial-overlay";
+import { AssistantModal } from "@/features/system/assistant/components/assistant-modal";
 import { MissedEventsModal } from "@/components/modals/missed-events-modal";
 import { Icon } from "@/components/ui";
 import { useUIStore } from "@/store/ui.store";
@@ -38,18 +38,18 @@ export default function ProtectedLayout({ children }: { children: React.ReactNod
 	}, [currentUser, setCurrentUser, users]);
 
 	/**
-	 * Handles Cmd+K / Ctrl+K keyboard shortcut to toggle search.
+	 * Handles Cmd+P / Ctrl+P keyboard shortcut to open search.
 	 * @param e - The keyboard event
 	 * @returns void
 	 */
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+			if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
 				e.preventDefault();
-				setSearchOpen(!searchOpen);
+				setSearchOpen(true);
 			}
 		},
-		[searchOpen, setSearchOpen],
+		[setSearchOpen],
 	);
 
 	useEffect(() => {

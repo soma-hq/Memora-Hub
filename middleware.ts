@@ -91,7 +91,7 @@ export function middleware(request: NextRequest) {
 	// Allow public routes, redirect from login if already authenticated
 	if (PUBLIC_ROUTES.some((route) => pathname.startsWith(route))) {
 		if (hasValidSession && REDIRECT_IF_AUTH.some((route) => pathname.startsWith(route))) {
-			return clearInvalidSessionCookie(NextResponse.redirect(new URL("/hub/default", request.url)));
+			return clearInvalidSessionCookie(NextResponse.redirect(new URL("/hub", request.url)));
 		}
 		return withSecurityHeaders(clearInvalidSessionCookie(NextResponse.next()));
 	}

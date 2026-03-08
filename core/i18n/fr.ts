@@ -70,7 +70,7 @@ const fr = {
 		talentCalendar: "Calendrier",
 		talentAdmin: "Admin",
 		// Admin
-		users: "Squad",
+		users: "Équipe",
 		groups: "Permissions",
 		stats: "Statistiques",
 		settings: "Paramètres",
@@ -89,20 +89,20 @@ const fr = {
 		firstName: "Prénom",
 		lastName: "Nom",
 		role: "Rôle",
-		group: "Entité",
+		group: "Squad",
 		status: "Statut",
 		memberSince: "Membre depuis",
-		groupAccess: "Accès par entité",
-		addGroupAccess: "Ajouter un accès entité",
+		groupAccess: "Accès par squad",
+		addGroupAccess: "Ajouter un accès squad",
 		groupAccessInfo:
-			"Chaque entité à ses propres accès. Un utilisateur peut avoir un rôle différent dans chaque entité auquel il appartient.",
+			"Chaque squad a ses propres accès. Un utilisateur peut avoir un rôle différent dans chaque squad à laquelle il appartient.",
 	},
 
 	// Groups
 	groups: {
-		title: "Entités",
-		description: "Gérez les entités de votre organisation",
-		newGroup: "Nouvelle entité",
+		title: "Squads",
+		description: "Gérez les squads de votre organisation",
+		newGroup: "Nouvelle squad",
 		members: "Membres",
 		projects: "Projets",
 		permissions: "Permissions",

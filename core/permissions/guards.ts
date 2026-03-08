@@ -4,7 +4,7 @@ import type { Role } from "@/core/config/roles";
 import type { Permission, Module, Capability } from "@/core/config/capabilities";
 import { hasPermission, hasModuleAccess } from "./capabilityMap";
 
-/** Minimal user shape required for permission guards */
+// Minimal user shape required for permission guards
 export interface GuardUser {
 	id: string;
 	name: string;
@@ -14,8 +14,7 @@ export interface GuardUser {
 }
 
 /**
- * Check if a user can access a specific entity.
- * Users with ["*"] in entityAccess can access all entities.
+ * Check if a user can access a specific entity
  * @param user - User to check
  * @param entityId - Target entity ID
  * @returns True if the user can access the entity
@@ -26,7 +25,7 @@ export function canAccessEntity(user: GuardUser, entityId: string): boolean {
 }
 
 /**
- * Check if a user can access a specific module based on their role.
+ * Check if a user can access a specific module based on their role
  * @param user - User to check
  * @param module - Target module
  * @returns True if the user's role grants module access
@@ -111,13 +110,8 @@ export function isAuthorized(user: GuardUser, entityId: string, module: Module, 
 	return canAccessEntity(user, entityId) && canPerformAction(user, module, action);
 }
 
-// ---------------------------------------------------------------------------
-// Feature-level permission helpers — used by features/*/permissions.ts
-// ---------------------------------------------------------------------------
-
 /**
- * Check if a user can perform a capability within a specific group.
- * Combines entity access check with module+action permission check.
+ * Check if a user can perform a capability
  * @param user - User to check
  * @param groupId - Target group/entity ID
  * @param capability - Capability descriptor { module, action }
@@ -128,13 +122,11 @@ export function canDo(user: GuardUser, groupId: string, capability: Capability):
 }
 
 /**
- * Check if a user has at least the required generic role level within a group.
- * Uses the GENERIC_ROLE_LEVELS mapping to convert generic role names to
- * numeric thresholds, then compares against the user's actual role level.
+ * Check if a user has at least the required generic role level within a group
  * @param user - User to check
- * @param groupId - Target group/entity ID (used for entity access verification)
- * @param role - Generic role name ("Owner", "Admin", "Manager", etc.)
- * @returns True if the user's role level meets or exceeds the threshold
+ * @param groupId - Target group/entity ID
+ * @param role - Generic role name
+ * @returns True if the user's role level
  */
 export function hasMinRole(user: GuardUser, groupId: string, role: Role): boolean {
 	if (!canAccessEntity(user, groupId)) return false;
@@ -143,7 +135,7 @@ export function hasMinRole(user: GuardUser, groupId: string, role: Role): boolea
 }
 
 /**
- * Check if a user is an owner of any entity (global owner check).
+ * Check if a user is an owner of any entity
  * @param user - User to check
  * @returns True if the user holds the owner role
  */

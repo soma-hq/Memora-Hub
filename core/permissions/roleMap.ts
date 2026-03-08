@@ -11,7 +11,7 @@ export interface UserWithAccess {
 }
 
 /**
- * Get the user's role definition object.
+ * Get the user's role definition object
  * @param user - User with role data
  * @returns The role definition or undefined if invalid
  */
@@ -20,8 +20,7 @@ export function getUserRole(user: UserWithAccess) {
 }
 
 /**
- * Get all entities the user can access.
- * Returns ["*"] for users with wildcard access (e.g., Marsha Teams, Owner).
+ * Get all entities the user can access
  * @param user - User with entity access data
  * @returns Array of accessible entity IDs
  */
@@ -30,7 +29,7 @@ export function getAccessibleEntities(user: UserWithAccess): string[] {
 }
 
 /**
- * Check if user has wildcard access (all entities).
+ * Check if user has wildcard access
  * @param user - User with entity access data
  * @returns True if user has ["*"] access
  */
@@ -39,7 +38,7 @@ export function hasWildcardAccess(user: UserWithAccess): boolean {
 }
 
 /**
- * Check if user has at least the given role level.
+ * Check if user has at least the given role level
  * @param user - User with role data
  * @param minRoleId - Minimum required role ID
  * @returns True if user's role level >= min role level
@@ -49,7 +48,7 @@ export function hasMinimumRole(user: UserWithAccess, minRoleId: RoleId): boolean
 }
 
 /**
- * Compare two users by role level.
+ * Compare two users by role level
  * @param userA - First user
  * @param userB - Second user
  * @returns Positive if A > B, negative if A < B, 0 if equal
@@ -59,8 +58,7 @@ export function compareRoles(userA: UserWithAccess, userB: UserWithAccess): numb
 }
 
 /**
- * Check if a user is a member of a specific group (has entity access).
- * Users with wildcard access ["*"] are members of all groups.
+ * Check if a user is a member of a specific group
  * @param user - User with entity access data
  * @param groupId - Target group/entity ID
  * @returns True if the user can access the group

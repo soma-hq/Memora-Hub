@@ -21,13 +21,13 @@ export default function NotFound() {
 					La page que vous recherchez n\'existe pas ou à ete deplacée.
 				</p>
 				<div className="flex items-center justify-center gap-3">
-					<Link href="/hub/default">
+					<Link href="/hub">
 						<Button>
 							<Icon name="home" size="sm" />
 							Retour au dashboard
 						</Button>
 					</Link>
-					<Link href="/hub/default">
+					<Link href="/hub">
 						<Button variant="outline-neutral">
 							<Icon name="back" size="sm" />
 							Page precedente

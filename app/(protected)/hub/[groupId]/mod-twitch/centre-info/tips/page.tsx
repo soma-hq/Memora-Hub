@@ -6,7 +6,7 @@ import { Card, Badge, Icon } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { headingClasses, textClasses } from "@/core/design/typography";
 import type { IconName } from "@/core/design/icons";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/mod-twitch/centre-info/tips",

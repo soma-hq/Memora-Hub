@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback } from "react";
+import { usePathname } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { RightSidebar } from "@/components/layout/right-sidebar";
 import { MobileSidebar } from "@/components/layout/mobile-sidebar";
@@ -8,7 +9,7 @@ import { MobileNav } from "@/components/navigation/mobile-nav";
 import { SearchModal } from "@/components/modals/search-modal";
 import { MissedEventsModal } from "@/components/modals/missed-events-modal";
 import { ErrorBoundary } from "@/components/error-boundary";
-import { AssistantModal } from "@/features/assistant/components/assistant-modal";
+import { AssistantModal } from "@/features/system/assistant/components/assistant-modal";
 import { Icon } from "@/components/ui";
 import { useUIStore } from "@/store/ui.store";
 import { useHubStore } from "@/store/hub.store";
@@ -22,6 +23,7 @@ import { useDataStore } from "@/store/data.store";
  */
 
 export default function LegacyLayout({ children }: { children: React.ReactNode }) {
+	const pathname = usePathname();
 	const searchOpen = useUIStore((s) => s.searchOpen);
 	const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
 	const setSearchOpen = useUIStore((s) => s.setSearchOpen);
@@ -30,6 +32,14 @@ export default function LegacyLayout({ children }: { children: React.ReactNode }
 	const getEntitiesForCurrentUser = useDataStore((s) => s.getEntitiesForCurrentUser);
 
 	useEffect(() => {
+		const legacyPathMatch = pathname.match(/^\/([^/]+)\/legacy(?:\/|$)/);
+		if (legacyPathMatch?.[1]) {
+			const routeGroupId = legacyPathMatch[1];
+			const routeGroup = getEntitiesForCurrentUser().find((entity) => entity.id === routeGroupId);
+			setActiveGroup(routeGroupId, routeGroup?.name ?? routeGroupId);
+			return;
+		}
+
 		if (activeGroupId) return;
 
 		const accessibleEntities = getEntitiesForCurrentUser();
@@ -37,22 +47,22 @@ export default function LegacyLayout({ children }: { children: React.ReactNode }
 		if (!fallbackEntity) return;
 
 		setActiveGroup(fallbackEntity.id, fallbackEntity.name);
-	}, [activeGroupId, getEntitiesForCurrentUser, setActiveGroup]);
+	}, [activeGroupId, getEntitiesForCurrentUser, pathname, setActiveGroup]);
 
 	/**
-	 * Handles Cmd+K / Ctrl+K keyboard shortcut to toggle search
+	 * Handles Cmd+P / Ctrl+P keyboard shortcut to open search.
 	 * @param e - The keyboard event
 	 * @returns void
 	 */
 
 	const handleKeyDown = useCallback(
 		(e: KeyboardEvent) => {
-			if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+			if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "p") {
 				e.preventDefault();
-				setSearchOpen(!searchOpen);
+				setSearchOpen(true);
 			}
 		},
-		[searchOpen, setSearchOpen],
+		[setSearchOpen],
 	);
 
 	useEffect(() => {

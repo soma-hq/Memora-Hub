@@ -2,10 +2,10 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { A2FForm } from "@/features/auth";
-import { verifyA2FAction } from "@/features/auth/actions";
+import { A2FForm } from "@/features/system/auth";
+import { verifyA2FAction } from "@/features/system/auth/actions";
 import { showSuccess, showError, showInfo } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "a2f",

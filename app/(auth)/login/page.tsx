@@ -3,12 +3,12 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { LoginForm } from "@/features/auth";
-import { loginAction } from "@/features/auth/actions";
+import { LoginForm } from "@/features/system/auth";
+import { loginAction } from "@/features/system/auth/actions";
 import { showSuccess, showError } from "@/lib/utils/toast";
 import type { LoginFormData } from "@/lib/validators/schemas";
-import { definePageConfig } from "@/structures";
-import { MISSED_EVENTS_PENDING_KEY } from "@/scripts/onboarding/missed-events-briefing";
+import { definePageConfig } from "@/core/structures";
+import { MISSED_EVENTS_PENDING_KEY } from "@/features/academy/scripts/onboarding/missed-events-briefing";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "login",
@@ -45,7 +45,7 @@ export default function LoginPage() {
 				if (result.requireA2F) {
 					router.push("/a2f");
 				} else {
-					router.push("/hub/default");
+					router.push("/hub");
 				}
 			} else {
 				showError(result.error || "Email ou mot de passe incorrect");

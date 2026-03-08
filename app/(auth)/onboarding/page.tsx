@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { Button, Icon, Input, Checkbox, Toggle } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
-import { definePageConfig } from "@/structures";
-import { submitOnboardingAction } from "@/features/auth/actions";
+import { definePageConfig } from "@/core/structures";
+import { submitOnboardingAction } from "@/features/system/auth/actions";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "onboarding",
@@ -447,7 +447,7 @@ export default function OnboardingPage() {
 	const handleComplete = useCallback(() => {
 		localStorage.setItem("memora-onboarding-completed", "true");
 		localStorage.removeItem("memora-tutorial-completed");
-		router.push("/hub/default");
+		router.push("/hub");
 	}, [router]);
 
 	// Form helpers

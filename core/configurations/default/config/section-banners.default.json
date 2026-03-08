@@ -1,0 +1,14 @@
+{
+	"owner": {
+		"bannerPath": "/banners/boxes/titles/title-banner4.png",
+		"accentColor": "red-pastel"
+	},
+	"legacy": {
+		"bannerPath": "/banners/boxes/titles/title-banner2.png",
+		"accentColor": "orange-pastel"
+	},
+	"default": {
+		"bannerPath": "/banners/boxes/titles/title-banner3.png",
+		"accentColor": "rose-pastel"
+	}
+}

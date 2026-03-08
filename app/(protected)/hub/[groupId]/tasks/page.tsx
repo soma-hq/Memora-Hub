@@ -4,10 +4,10 @@
 import { useState, useRef, useEffect, useCallback, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { PageContainer } from "@/components/layout/page-container";
-import { Card, Icon, Badge, Tabs, StyledEmptyState } from "@/components/ui";
+import { Card, Icon, Badge, Tabs, StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo } from "@/lib/utils/toast";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/tasks",
@@ -330,6 +330,12 @@ export default function TasksPage() {
 
 	return (
 		<PageContainer title="Tâches" description="Gérez et suivez les tâches de votre équipe">
+			<SectionHeaderBanner
+				icon="tasks"
+				title="Tâches"
+				description="Tableau kanban et suivi des tâches de l'équipe."
+				className="mb-6"
+			/>
 			{/* Tab navigation */}
 			<Tabs
 				tabs={tabDefs}

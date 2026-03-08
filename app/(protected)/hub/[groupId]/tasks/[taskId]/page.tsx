@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils/cn";
 import { showSuccess, showWarning, showInfo } from "@/lib/utils/toast";
 import type { IconName } from "@/core/design/icons";
 import type { BadgeVariant } from "@/core/design/states";
-import { definePageConfig } from "@/structures";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/tasks/[taskId]",

@@ -7,8 +7,8 @@ import { Icon, Avatar, Badge, Button } from "@/components/ui";
 import { useChatStore } from "@/store/chat.store";
 import { cn } from "@/lib/utils/cn";
 import { showSuccess, showInfo, showWarning } from "@/lib/utils/toast";
-import type { ChatMessage, ContextMenuPosition, MentionOption } from "@/features/chat/types";
-import { definePageConfig } from "@/structures";
+import type { ChatMessage, ContextMenuPosition, MentionOption } from "@/features/communication/chat/types";
+import { definePageConfig } from "@/core/structures";
 
 const PAGE_CONFIG = definePageConfig({
 	name: "hub/[groupId]/chat",

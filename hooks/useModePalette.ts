@@ -6,7 +6,7 @@ import { useUIStore } from "@/store/ui.store";
 /** Mode-aware UI palette used across dashboard and layout surfaces */
 interface ModePalette {
 	mode: "owner" | "legacy" | "default";
-	sectionAccent: "red-pastel" | "orange-pastel" | "gray-pastel";
+	sectionAccent: "red-pastel" | "orange-pastel" | "rose-pastel";
 	linkClass: string;
 	chipClass: string;
 	sidebarShellClass: string;
@@ -73,7 +73,7 @@ export function useModePalette(): ModePalette {
 
 		return {
 			mode: "default",
-			sectionAccent: "gray-pastel",
+			sectionAccent: "rose-pastel",
 			linkClass: "text-slate-500 hover:text-slate-700 dark:text-slate-300",
 			chipClass: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
 			sidebarShellClass: "bg-slate-50/85 dark:bg-slate-900/65",

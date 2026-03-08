@@ -3,12 +3,10 @@
 import { useMemo } from "react";
 import { useDataStore } from "@/store/data.store";
 
-
 /**
  * Convenience hook that returns all user-scoped relations from the data store.
  * @param userId - The user identifier to query
- * @returns User profile, projects (active/archived), tasks (active/archived),
- *          meetings (upcoming/past), and absences for the given user
+ * @returns User profile, projects (active/archived), tasks
  */
 export function useUserRelations(userId: string) {
 	const getUserById = useDataStore((s) => s.getUserById);

@@ -1,9 +1,9 @@
 "use client";
 
 import { useMediaQuery } from "react-responsive";
+import { BREAKPOINTS } from "@/constants";
 
-
-/** Responsive breakpoint flags based on viewport width */
+// Responsive breakpoint flags based on viewport width
 export interface ResponsiveBreakpoints {
 	isXs: boolean;
 	isSm: boolean;
@@ -17,22 +17,22 @@ export interface ResponsiveBreakpoints {
 }
 
 /**
- * Provides responsive breakpoint flags using media queries.
+ * Provides responsive breakpoint flags using media queries
  * @returns {ResponsiveBreakpoints} Boolean flags for each breakpoint
  */
 export function useResponsive(): ResponsiveBreakpoints {
 	// Granular breakpoints
-	const isXs = useMediaQuery({ maxWidth: 375 });
-	const isSm = useMediaQuery({ maxWidth: 640 });
-	const isMd = useMediaQuery({ maxWidth: 768 });
-	const isLg = useMediaQuery({ maxWidth: 1024 });
-	const isXl = useMediaQuery({ maxWidth: 1280 });
-	const is2xl = useMediaQuery({ minWidth: 1281 });
+	const isXs = useMediaQuery({ maxWidth: BREAKPOINTS.XS });
+	const isSm = useMediaQuery({ maxWidth: BREAKPOINTS.SM });
+	const isMd = useMediaQuery({ maxWidth: BREAKPOINTS.MD });
+	const isLg = useMediaQuery({ maxWidth: BREAKPOINTS.LG });
+	const isXl = useMediaQuery({ maxWidth: BREAKPOINTS.XL });
+	const is2xl = useMediaQuery({ minWidth: BREAKPOINTS.XL + 1 });
 
 	// Device category breakpoints
-	const isMobile = useMediaQuery({ maxWidth: 768 });
-	const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1024 });
-	const isDesktop = useMediaQuery({ minWidth: 1025 });
+	const isMobile = useMediaQuery({ maxWidth: BREAKPOINTS.MD });
+	const isTablet = useMediaQuery({ minWidth: BREAKPOINTS.MD + 1, maxWidth: BREAKPOINTS.LG });
+	const isDesktop = useMediaQuery({ minWidth: BREAKPOINTS.LG + 1 });
 
 	return { isXs, isSm, isMd, isLg, isXl, is2xl, isMobile, isTablet, isDesktop };
 }

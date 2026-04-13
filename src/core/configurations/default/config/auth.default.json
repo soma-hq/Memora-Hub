@@ -1,0 +1,8 @@
+{
+	"sessionDurationDays": 7,
+	"maxLoginAttempts": 5,
+	"lockoutDurationMinutes": 15,
+	"tokenExpiryHours": 24,
+	"a2fEnabled": false,
+	"passwordMinLength": 8
+}

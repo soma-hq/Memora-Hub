@@ -1,0 +1,6 @@
+{
+	"minQueryLength": 2,
+	"maxResults": 10,
+	"debounceMs": 300,
+	"enableFuzzy": true
+}

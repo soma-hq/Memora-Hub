@@ -1,0 +1,12 @@
+{
+	"enabled": true,
+	"intervalSeconds": 30,
+	"endpoints": [
+		{ "name": "API Health", "url": "${APP_BASE_URL}/api/health" },
+		{ "name": "Database", "url": "${APP_BASE_URL}/api/health/db" }
+	],
+	"alertOnFailure": true,
+	"alertWebhook": "${UPTIME_ALERT_WEBHOOK}",
+	"retries": 3,
+	"timeoutMs": 10000
+}

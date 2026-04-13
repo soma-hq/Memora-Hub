@@ -1,0 +1,8 @@
+{
+	"algorithm": "aes-256-gcm",
+	"keyLength": 32,
+	"ivLength": 16,
+	"saltRounds": 14,
+	"secretKey": "${ENCRYPTION_SECRET_KEY}",
+	"tokenSecret": "${JWT_SECRET}"
+}

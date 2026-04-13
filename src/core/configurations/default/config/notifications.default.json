@@ -1,0 +1,6 @@
+{
+	"inAppEnabled": true,
+	"emailEnabled": false,
+	"autoMarkReadAfterDays": 30,
+	"maxUnreadDisplay": 99
+}

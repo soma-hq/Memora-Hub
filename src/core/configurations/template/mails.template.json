@@ -1,0 +1,12 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"host": "",
+	"port": 587,
+	"secure": true,
+	"username": "",
+	"password": "",
+	"from": "",
+	"fromName": "Memora Hub",
+	"templateDir": "core/configurations/default/mail-templates",
+	"previewEnabled": false
+}

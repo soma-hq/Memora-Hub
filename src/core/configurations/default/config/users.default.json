@@ -1,0 +1,7 @@
+{
+	"requireA2F": false,
+	"defaultRole": "Collaborator",
+	"passwordMinLength": 8,
+	"sessionTimeoutHours": 24,
+	"maxLoginAttempts": 5
+}

@@ -1,0 +1,5 @@
+{
+	"errorMessage": "Désolé, une erreur s'est produite. Veuillez réessayer.",
+	"flowCancelledMessage": "L'action en cours a été annulée. Comment puis-je vous aider ?",
+	"maxConversationHistory": 50
+}

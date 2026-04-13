@@ -1,0 +1,13 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"appName": "Memora Hub",
+	"appVersion": "1.0.0",
+	"environment": "",
+	"debug": false,
+	"logLevel": "info",
+	"baseUrl": "",
+	"apiPrefix": "/api",
+	"corsOrigins": [],
+	"timezone": "Europe/Paris",
+	"locale": "fr-FR"
+}

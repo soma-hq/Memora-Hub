@@ -1,0 +1,46 @@
+{
+	"_meta": {
+		"version": "1.0.0",
+		"description": "Définitions des rôles Memora Hub — hiérarchie et descriptions"
+	},
+	"roles": [
+		{ "id": "owner", "label": "Owner", "level": 5, "description": "Accès total, gestion de toute l'organisation" },
+		{
+			"id": "marsha_teams",
+			"label": "Marsha Teams",
+			"level": 4,
+			"description": "Administration des équipes et processus"
+		},
+		{
+			"id": "legacy_resp_discord",
+			"label": "Resp. Discord",
+			"level": 3,
+			"description": "Responsable modération Discord"
+		},
+		{
+			"id": "legacy_resp_polyvalent",
+			"label": "Resp. Polyvalent",
+			"level": 3,
+			"description": "Responsable modération polyvalente"
+		},
+		{
+			"id": "legacy_resp_live",
+			"label": "Resp. Live",
+			"level": 3,
+			"description": "Responsable modération Live/Twitch"
+		},
+		{
+			"id": "momentum_talent",
+			"label": "Momentum & Talent",
+			"level": 2,
+			"description": "Recrutement, sessions momentum, repérage de talents"
+		},
+		{ "id": "standard", "label": "Standard", "level": 1, "description": "Accès standard aux pages assignées" },
+		{
+			"id": "academy",
+			"label": "Academy",
+			"level": 0,
+			"description": "Nouvelles recrues en période d'intégration (PIM)"
+		}
+	]
+}

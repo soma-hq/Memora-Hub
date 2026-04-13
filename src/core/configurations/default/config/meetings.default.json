@@ -1,0 +1,7 @@
+{
+	"defaultDurationMinutes": 60,
+	"reminderBeforeMinutes": 15,
+	"maxParticipants": 30,
+	"enableRecurring": false,
+	"defaultLocation": "Google Meet"
+}

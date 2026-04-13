@@ -1,0 +1,6 @@
+{
+	"defaultCapacity": 20,
+	"defaultStatus": "upcoming",
+	"enableCertificates": false,
+	"minEnrollmentDays": 1
+}

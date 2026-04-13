@@ -1,0 +1,10 @@
+{
+	"_comment": "Template configuration file. Copy and fill values for your environment.",
+	"enabled": false,
+	"intervalSeconds": 60,
+	"endpoints": [],
+	"alertOnFailure": false,
+	"alertWebhook": "",
+	"retries": 3,
+	"timeoutMs": 10000
+}

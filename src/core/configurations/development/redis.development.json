@@ -1,0 +1,10 @@
+{
+	"host": "localhost",
+	"port": 6379,
+	"password": "",
+	"database": 0,
+	"keyPrefix": "memora:dev:",
+	"ttl": 3600,
+	"maxRetries": 3,
+	"retryDelay": 1000
+}

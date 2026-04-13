@@ -1,0 +1,873 @@
+"use client";
+
+import { useState, useMemo, useCallback, useEffect } from "react";
+import { useParams } from "next/navigation";
+import { PageContainer } from "@/components/layout/page-container";
+import { Icon, Button, Badge, WizardModal, StyledEmptyState, SectionHeaderBanner } from "@/components/ui";
+import type { WizardStep } from "@/components/ui";
+import { cn } from "@/lib/utils/cn";
+import { showSuccess, showError } from "@/lib/utils/toast";
+import { useUIStore } from "@/store/ui.store";
+import { definePageConfig } from "@/core/structures";
+
+const PAGE_CONFIG = definePageConfig({
+	name: "hub/[groupId]/personnel/absences",
+	section: "protected",
+	module: "personnel",
+	description: "Gestion des absences du personnel.",
+	requiredPermissions: [{ module: "personnel", action: "view" }],
+	entityScoped: true,
+});
+
+/** Extended absence entry for the timeline display */
+interface TimelineAbsence {
+	id: string;
+	startDate: string;
+	endDate: string;
+	reason: string;
+	mode: "partial" | "complete";
+	status: "active" | "upcoming" | "past";
+}
+
+interface ApiAbsence {
+	id: string;
+	startDate: string;
+	endDate: string;
+	reason: string;
+	type?: string;
+	status: "pending" | "approved" | "rejected";
+}
+
+/** Month names in French */
+const MONTH_NAMES = [
+	"Janvier",
+	"Fevrier",
+	"Mars",
+	"Avril",
+	"Mai",
+	"Juin",
+	"Juillet",
+	"Aout",
+	"Septembre",
+	"Octobre",
+	"Novembre",
+	"Decembre",
+];
+
+/** Wizard steps definition for absence declaration */
+const ABSENCE_STEPS: WizardStep[] = [
+	{
+		id: "type",
+		title: "Type d'absence",
+		description: "Choisis le type d'absence que tu souhaites déclarer.",
+		icon: "absence",
+	},
+	{
+		id: "dates",
+		title: "Période",
+		description: "Indique les dates de début et de fin de ton absence.",
+		icon: "calendar",
+	},
+	{
+		id: "reason",
+		title: "Motif",
+		description: "Explique brièvement la raison de ton absence.",
+		icon: "document",
+	},
+];
+
+/**
+ * Calculates inclusive day count between two ISO date strings.
+ * @param {string} start - Start ISO date
+ * @param {string} end - End ISO date
+ * @returns {number} Number of days (inclusive)
+ */
+
+function daysBetween(start: string, end: string): number {
+	const ms = new Date(end).getTime() - new Date(start).getTime();
+	return Math.max(1, Math.ceil(ms / 86400000) + 1);
+}
+
+/**
+ * Formats an ISO date to a French readable string.
+ * @param {string} iso - ISO date string
+ * @returns {string} Formatted date string (e.g. "27 Fevrier 2026")
+ */
+
+function formatDate(iso: string): string {
+	const d = new Date(iso);
+	return `${d.getDate()} ${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+}
+
+/**
+ * Formats an ISO date to short form.
+ * @param {string} iso - ISO date string
+ * @returns {string} Short date (e.g. "27 Fev")
+ */
+
+function formatShort(iso: string): string {
+	const d = new Date(iso);
+	return `${d.getDate()} ${MONTH_NAMES[d.getMonth()].slice(0, 3)}`;
+}
+
+/**
+ * Groups absences by month-year key.
+ * @param {TimelineAbsence[]} abs - List of absences
+ * @returns {Map<string, TimelineAbsence[]>} Grouped absences
+ */
+
+function groupByMonth(abs: TimelineAbsence[]): Map<string, TimelineAbsence[]> {
+	const map = new Map<string, TimelineAbsence[]>();
+	for (const a of abs) {
+		const d = new Date(a.startDate);
+		const key = `${MONTH_NAMES[d.getMonth()]} ${d.getFullYear()}`;
+		if (!map.has(key)) map.set(key, []);
+		map.get(key)!.push(a);
+	}
+	return map;
+}
+
+/**
+ * Absence management page with timeline chronology and multi-step declaration wizard.
+ * Features status banners, active absence card with progress, expandable past absences,
+ * and a wizard modal for declaring new absences step by step.
+ * @returns {JSX.Element} Absence page
+ */
+
+export default function AbsencesPage() {
+	const params = useParams();
+	const groupId = (params.groupId as string) ?? "";
+
+	// Store
+	const absenceMode = useUIStore((s) => s.absenceMode);
+	const setAbsenceMode = useUIStore((s) => s.setAbsenceMode);
+
+	// State
+	const [absences, setAbsences] = useState<TimelineAbsence[]>([]);
+	const [isLoading, setIsLoading] = useState(true);
+	const [wizardOpen, setWizardOpen] = useState(false);
+	const [wizardStep, setWizardStep] = useState(0);
+	const [selectedMode, setSelectedMode] = useState<"partial" | "complete">("partial");
+	const [formStart, setFormStart] = useState("");
+	const [formEnd, setFormEnd] = useState("");
+	const [formReason, setFormReason] = useState("");
+	const [expandedMonths, setExpandedMonths] = useState<Set<string>>(new Set());
+	const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+
+	useEffect(() => {
+		let isMounted = true;
+
+		function deriveStatus(
+			startDate: string,
+			endDate: string,
+			status: ApiAbsence["status"],
+		): TimelineAbsence["status"] {
+			if (status === "rejected") return "past";
+			const today = new Date();
+			today.setHours(0, 0, 0, 0);
+			const start = new Date(startDate);
+			start.setHours(0, 0, 0, 0);
+			const end = new Date(endDate);
+			end.setHours(0, 0, 0, 0);
+
+			if (today < start) return "upcoming";
+			if (today > end) return "past";
+			return "active";
+		}
+
+		async function loadAbsences() {
+			try {
+				const meRes = await fetch("/api/users/me", { cache: "no-store" });
+				if (!meRes.ok) throw new Error("Utilisateur introuvable");
+				const mePayload = (await meRes.json()) as { user?: { id?: string } };
+				const userId = mePayload.user?.id;
+				if (!userId) throw new Error("Utilisateur non authentifie");
+
+				const query = new URLSearchParams({ userId, entityId: groupId });
+				const absRes = await fetch(`/api/absences?${query.toString()}`, { cache: "no-store" });
+				if (!absRes.ok) throw new Error("Impossible de charger les absences");
+				const absPayload = (await absRes.json()) as { absences?: ApiAbsence[] };
+
+				const mapped: TimelineAbsence[] = (absPayload.absences ?? []).map((absence) => {
+					const rawReason = (absence.reason ?? "").trim();
+					const reason = rawReason.replace(/^\[(TOTAL|PARTIAL)\]\s*/i, "");
+					const mode: TimelineAbsence["mode"] = /^\[TOTAL\]/i.test(rawReason) ? "complete" : "partial";
+					return {
+						id: absence.id,
+						startDate: absence.startDate.slice(0, 10),
+						endDate: absence.endDate.slice(0, 10),
+						reason: reason || "Aucun motif fourni.",
+						mode,
+						status: deriveStatus(absence.startDate, absence.endDate, absence.status),
+					};
+				});
+
+				if (!isMounted) return;
+				setAbsences(mapped);
+				const active = mapped.find((item) => item.status === "active");
+				setAbsenceMode(active ? active.mode : "none");
+			} catch {
+				if (!isMounted) return;
+				setAbsences([]);
+				setAbsenceMode("none");
+			} finally {
+				if (isMounted) setIsLoading(false);
+			}
+		}
+
+		void loadAbsences();
+
+		return () => {
+			isMounted = false;
+		};
+	}, [groupId, setAbsenceMode]);
+
+	// Derived data
+	const activeAbsence = useMemo(() => absences.find((a) => a.status === "active"), [absences]);
+	const upcomingAbsences = useMemo(
+		() =>
+			absences
+				.filter((a) => a.status === "upcoming")
+				.sort((a, b) => new Date(a.startDate).getTime() - new Date(b.startDate).getTime()),
+		[absences],
+	);
+	const pastAbsences = useMemo(
+		() =>
+			absences
+				.filter((a) => a.status === "past")
+				.sort((a, b) => new Date(b.startDate).getTime() - new Date(a.startDate).getTime()),
+		[absences],
+	);
+	const pastGrouped = useMemo(() => groupByMonth(pastAbsences), [pastAbsences]);
+
+	/**
+	 * Toggles a month group open/closed in the timeline.
+	 * @param {string} key - Month-year key
+	 * @returns {void}
+	 */
+
+	const toggleMonth = useCallback((key: string) => {
+		setExpandedMonths((prev) => {
+			const next = new Set(prev);
+			if (next.has(key)) next.delete(key);
+			else next.add(key);
+			return next;
+		});
+	}, []);
+
+	/**
+	 * Toggles an individual absence detail expanded/collapsed.
+	 * @param {string} id - Absence ID
+	 * @returns {void}
+	 */
+
+	const toggleDetail = useCallback((id: string) => {
+		setExpandedIds((prev) => {
+			const next = new Set(prev);
+			if (next.has(id)) next.delete(id);
+			else next.add(id);
+			return next;
+		});
+	}, []);
+
+	/**
+	 * Cancels the active absence and resets absence mode.
+	 * @returns {void}
+	 */
+
+	const cancelAbsence = useCallback(
+		async (absenceId: string) => {
+			const targetAbsence = absences.find((a) => a.id === absenceId);
+			if (!targetAbsence) return;
+			const previousAbsences = absences;
+			const nextAbsences = previousAbsences.filter((a) => a.id !== absenceId);
+			const nextActive = nextAbsences.find((a) => a.status === "active");
+
+			setAbsences(nextAbsences);
+			setAbsenceMode(nextActive ? nextActive.mode : "none");
+
+			try {
+				const response = await fetch(`/api/absences/${encodeURIComponent(absenceId)}`, {
+					method: "DELETE",
+					headers: { "Content-Type": "application/json" },
+				});
+
+				if (!response.ok) throw new Error("Suppression impossible");
+				showSuccess(
+					targetAbsence.status === "upcoming"
+						? "Absence à venir annulée avec succès."
+						: "Absence annulée avec succès.",
+				);
+			} catch {
+				setAbsences(previousAbsences);
+				const previousActive = previousAbsences.find((a) => a.status === "active");
+				setAbsenceMode(previousActive ? previousActive.mode : "none");
+				showError("Impossible d'annuler l'absence pour le moment.");
+			}
+		},
+		[absences, setAbsenceMode],
+	);
+
+	/**
+	 * Resets the wizard form fields back to defaults.
+	 * @returns {void}
+	 */
+
+	const resetForm = useCallback(() => {
+		setSelectedMode("partial");
+		setFormStart("");
+		setFormEnd("");
+		setFormReason("");
+		setWizardStep(0);
+	}, []);
+
+	/**
+	 * Closes the wizard and resets form.
+	 * @returns {void}
+	 */
+
+	const closeWizard = useCallback(() => {
+		setWizardOpen(false);
+		resetForm();
+	}, [resetForm]);
+
+	/**
+	 * Submits a new absence declaration from the wizard.
+	 * @returns {void}
+	 */
+
+	const handleSubmit = useCallback(async () => {
+		if (!formStart || !formEnd || !formReason.trim()) {
+			showError("Remplis tous les champs.");
+			return;
+		}
+		if (new Date(formEnd) <= new Date(formStart)) {
+			showError("La date de fin doit être après la date de début.");
+			return;
+		}
+		const days = daysBetween(formStart, formEnd);
+		if (days < 5) {
+			showError("La durée minimale est de 5 jours.");
+			return;
+		}
+
+		const today = new Date();
+		today.setHours(0, 0, 0, 0);
+		const startDate = new Date(formStart);
+		startDate.setHours(0, 0, 0, 0);
+
+		const status: TimelineAbsence["status"] = startDate > today ? "upcoming" : "active";
+
+		const newAbsence: TimelineAbsence = {
+			id: `tl-${Date.now()}`,
+			startDate: formStart,
+			endDate: formEnd,
+			reason: formReason.trim(),
+			mode: selectedMode,
+			status,
+		};
+		const previousAbsences = absences;
+
+		setAbsences((prev) => [newAbsence, ...prev.filter((a) => a.status !== "active")]);
+		setAbsenceMode(status === "active" ? (selectedMode === "complete" ? "complete" : "partial") : "none");
+
+		try {
+			const response = await fetch("/api/absences", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					type: selectedMode === "complete" ? "maladie" : "autre",
+					startDate: formStart,
+					endDate: formEnd,
+					reason: `${selectedMode === "complete" ? "[TOTAL]" : "[PARTIAL]"} ${formReason.trim()}`,
+				}),
+			});
+
+			if (!response.ok) throw new Error("Creation impossible");
+
+			const created = (await response.json()) as { id?: string };
+			if (created.id) {
+				setAbsences((prev) =>
+					prev.map((absence) => (absence.id === newAbsence.id ? { ...absence, id: created.id! } : absence)),
+				);
+			}
+
+			closeWizard();
+			showSuccess("Absence déclarée avec succès.");
+		} catch {
+			setAbsences(previousAbsences);
+			const previousActive = previousAbsences.find((absence) => absence.status === "active");
+			setAbsenceMode(previousActive ? previousActive.mode : "none");
+			showError("Impossible d'enregistrer l'absence pour le moment.");
+		}
+	}, [absences, formStart, formEnd, formReason, selectedMode, setAbsenceMode, closeWizard]);
+
+	// Progress calculation for active absence
+	const progress = useMemo(() => {
+		if (!activeAbsence) return { elapsed: 0, total: 0, pct: 0 };
+		const now = new Date();
+		const start = new Date(activeAbsence.startDate);
+		const total = daysBetween(activeAbsence.startDate, activeAbsence.endDate);
+		const elapsed = Math.max(0, Math.ceil((now.getTime() - start.getTime()) / 86400000) + 1);
+		return { elapsed: Math.min(elapsed, total), total, pct: Math.min(100, Math.round((elapsed / total) * 100)) };
+	}, [activeAbsence]);
+
+	// Form day count for step 2 validation feedback
+	const formDays =
+		formStart && formEnd && new Date(formEnd) > new Date(formStart) ? daysBetween(formStart, formEnd) : 0;
+
+	/**
+	 * Renders the content for the current wizard step.
+	 * @returns {JSX.Element | null} Step content
+	 */
+
+	const renderWizardContent = () => {
+		switch (wizardStep) {
+			// Step 1: Type selection
+			case 0:
+				return (
+					<div className="grid grid-cols-2 gap-3">
+						{/* Partial */}
+						<button
+							type="button"
+							onClick={() => setSelectedMode("partial")}
+							className={cn(
+								"rounded-xl border-2 p-4 text-left transition-all duration-200",
+								selectedMode === "partial"
+									? "border-amber-400 bg-amber-50 dark:border-amber-600 dark:bg-amber-900/20"
+									: "border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600",
+							)}
+						>
+							<div className="mb-2 flex items-center gap-2">
+								<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 dark:bg-amber-900/30">
+									<Icon name="absence" size="sm" className="text-amber-600 dark:text-amber-400" />
+								</div>
+								<span className="text-sm font-bold text-gray-900 dark:text-white">Partielle</span>
+							</div>
+							<p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+								Tu gardes tes accès mais ne reçois aucune notification.
+							</p>
+						</button>
+
+						{/* Complete */}
+						<button
+							type="button"
+							onClick={() => setSelectedMode("complete")}
+							className={cn(
+								"rounded-xl border-2 p-4 text-left transition-all duration-200",
+								selectedMode === "complete"
+									? "border-red-400 bg-red-50 dark:border-red-600 dark:bg-red-900/20"
+									: "border-gray-200 bg-white hover:border-gray-300 dark:border-gray-700 dark:bg-gray-800 dark:hover:border-gray-600",
+							)}
+						>
+							<div className="mb-2 flex items-center gap-2">
+								<div className="flex h-8 w-8 items-center justify-center rounded-lg bg-red-100 dark:bg-red-900/30">
+									<Icon name="absence" size="sm" className="text-red-600 dark:text-red-400" />
+								</div>
+								<span className="text-sm font-bold text-gray-900 dark:text-white">Totale</span>
+							</div>
+							<p className="text-[11px] leading-relaxed text-gray-500 dark:text-gray-400">
+								Accès restreints : pas de projets, tâches ni mentions.
+							</p>
+						</button>
+					</div>
+				);
+
+			// Step 2: Date range
+			case 1:
+				return (
+					<div className="space-y-4">
+						<div className="grid grid-cols-2 gap-3">
+							<div>
+								<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+									Date de début
+								</label>
+								<input
+									type="date"
+									value={formStart}
+									onChange={(e) => setFormStart(e.target.value)}
+									className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 transition-all duration-200 focus:ring-1 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+								/>
+							</div>
+							<div>
+								<label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+									Date de fin
+								</label>
+								<input
+									type="date"
+									value={formEnd}
+									onChange={(e) => setFormEnd(e.target.value)}
+									className="focus:border-primary-500 focus:ring-primary-500 w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 transition-all duration-200 focus:ring-1 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+								/>
+							</div>
+						</div>
+
+						{/* Duration indicator */}
+						{formDays > 0 && (
+							<div
+								className={cn(
+									"flex items-center gap-2 rounded-lg px-3 py-2 text-xs",
+									formDays < 5
+										? "bg-red-50 text-red-600 dark:bg-red-900/20 dark:text-red-400"
+										: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
+								)}
+							>
+								<Icon name={formDays < 5 ? "warning" : "clock"} size="xs" />
+								{formDays < 5
+									? `Durée de ${formDays} jour${formDays > 1 ? "s" : ""} — minimum requis : 5 jours`
+									: `Durée totale : ${formDays} jours`}
+							</div>
+						)}
+					</div>
+				);
+
+			// Step 3: Reason
+			case 2:
+				return (
+					<div>
+						<textarea
+							value={formReason}
+							onChange={(e) => setFormReason(e.target.value)}
+							rows={4}
+							placeholder="Décris brièvement la raison de ton absence..."
+							className="focus:border-primary-500 focus:ring-primary-500 w-full resize-none rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 transition-all duration-200 focus:ring-1 focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+						/>
+					</div>
+				);
+
+			default:
+				return null;
+		}
+	};
+
+	// Render
+	return (
+		<PageContainer
+			title="Absences"
+			description={`${isLoading ? "Chargement..." : `${absences.length} absence${absences.length > 1 ? "s" : ""} enregistrée${absences.length > 1 ? "s" : ""}`}`}
+			actions={
+				<Button variant="primary" onClick={() => setWizardOpen(true)} className="gap-2">
+					<Icon name="plus" size="sm" />
+					Déclarer une absence
+				</Button>
+			}
+		>
+			<SectionHeaderBanner icon="absence" title="Absences" description="Déclarez et suivez les absences du personnel." className="mb-6" />
+			<div className="space-y-6">
+				{/* Status Banner */}}
+				{absenceMode !== "none" && (
+					<div
+						className={cn(
+							"flex items-center justify-between rounded-xl border px-5 py-4 transition-all duration-200",
+							absenceMode === "partial"
+								? "border-amber-200 bg-amber-50 dark:border-amber-800/40 dark:bg-amber-900/10"
+								: "border-red-200 bg-red-50 dark:border-red-800/40 dark:bg-red-900/10",
+						)}
+					>
+						<div className="flex items-center gap-3">
+							<div
+								className={cn(
+									"flex h-10 w-10 items-center justify-center rounded-lg",
+									absenceMode === "partial"
+										? "bg-amber-100 dark:bg-amber-900/30"
+										: "bg-red-100 dark:bg-red-900/30",
+								)}
+							>
+								<Icon
+									name="absence"
+									size="md"
+									className={
+										absenceMode === "partial"
+											? "text-amber-600 dark:text-amber-400"
+											: "text-red-600 dark:text-red-400"
+									}
+								/>
+							</div>
+							<div>
+								<p
+									className={cn(
+										"text-sm font-semibold",
+										absenceMode === "partial"
+											? "text-amber-800 dark:text-amber-200"
+											: "text-red-800 dark:text-red-200",
+									)}
+								>
+									{absenceMode === "partial"
+										? "Absence partielle en cours"
+										: "Absence totale en cours"}
+								</p>
+								<p
+									className={cn(
+										"text-xs",
+										absenceMode === "partial"
+											? "text-amber-600 dark:text-amber-400"
+											: "text-red-600 dark:text-red-400",
+									)}
+								>
+									{absenceMode === "partial"
+										? "Tu conserves tes accès mais tes notifications sont désactivées."
+										: "Aucune mention ni notification ne te seront adressées. Tes accès sont restreints."}
+								</p>
+							</div>
+						</div>
+						<Button
+							variant="ghost"
+							size="sm"
+							onClick={() => activeAbsence && cancelAbsence(activeAbsence.id)}
+						>
+							Annuler l&apos;absence
+						</Button>
+					</div>
+				)}
+
+				{/* Active Absence Card */}
+				{activeAbsence && (
+					<div
+						className={cn(
+							"rounded-xl border-2 p-6 transition-all duration-200",
+							activeAbsence.mode === "partial"
+								? "border-amber-300 bg-white dark:border-amber-700 dark:bg-gray-800"
+								: "border-red-300 bg-white dark:border-red-700 dark:bg-gray-800",
+						)}
+					>
+						<div className="mb-4 flex items-start justify-between">
+							<div className="flex items-center gap-3">
+								<div
+									className={cn(
+										"flex h-12 w-12 items-center justify-center rounded-xl",
+										activeAbsence.mode === "partial"
+											? "bg-amber-100 dark:bg-amber-900/30"
+											: "bg-red-100 dark:bg-red-900/30",
+									)}
+								>
+									<Icon
+										name="absence"
+										size="lg"
+										className={
+											activeAbsence.mode === "partial"
+												? "text-amber-600 dark:text-amber-400"
+												: "text-red-600 dark:text-red-400"
+										}
+									/>
+								</div>
+								<div>
+									<div className="flex items-center gap-2">
+										<h3 className="text-lg font-bold text-gray-900 dark:text-white">
+											Absence en cours
+										</h3>
+										<Badge variant={activeAbsence.mode === "partial" ? "warning" : "error"}>
+											{activeAbsence.mode === "partial" ? "Partielle" : "Totale"}
+										</Badge>
+									</div>
+									<p className="text-sm text-gray-500 dark:text-gray-400">
+										{formatDate(activeAbsence.startDate)} — {formatDate(activeAbsence.endDate)}
+									</p>
+								</div>
+							</div>
+							<Button variant="cancel" size="sm" onClick={() => cancelAbsence(activeAbsence.id)}>
+								Annuler
+							</Button>
+						</div>
+
+						{/* Reason */}
+						<p className="mb-4 text-sm text-gray-600 dark:text-gray-300">{activeAbsence.reason}</p>
+
+						{/* Progress bar */}
+						<div className="space-y-2">
+							<div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+								<span>
+									Jour {progress.elapsed} sur {progress.total}
+								</span>
+								<span>{progress.pct}%</span>
+							</div>
+							<div className="h-2 overflow-hidden rounded-full bg-gray-200 dark:bg-gray-700">
+								<div
+									className={cn(
+										"h-full rounded-full transition-all duration-500",
+										activeAbsence.mode === "partial" ? "bg-amber-500" : "bg-red-500",
+									)}
+									style={{ width: `${progress.pct}%` }}
+								/>
+							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Upcoming absences */}
+				{upcomingAbsences.length > 0 && (
+					<div>
+						<h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+							À venir
+						</h3>
+
+						<div className="space-y-3">
+							{upcomingAbsences.map((absence) => (
+								<div
+									key={absence.id}
+									className="rounded-xl border border-gray-200 bg-white px-4 py-3 dark:border-gray-700 dark:bg-gray-800"
+								>
+									<div className="flex items-start justify-between gap-4">
+										<div>
+											<div className="flex items-center gap-2">
+												<Badge variant={absence.mode === "partial" ? "warning" : "error"}>
+													{absence.mode === "partial" ? "Partielle" : "Totale"}
+												</Badge>
+												<Badge variant="info">Planifiée</Badge>
+											</div>
+											<p className="mt-2 text-sm font-medium text-gray-800 dark:text-gray-100">
+												{formatDate(absence.startDate)} — {formatDate(absence.endDate)}
+											</p>
+											<p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+												{absence.reason}
+											</p>
+										</div>
+
+										<Button variant="ghost" size="sm" onClick={() => cancelAbsence(absence.id)}>
+											Annuler
+										</Button>
+									</div>
+								</div>
+							))}
+						</div>
+					</div>
+				)}
+
+				{/* Timeline Chronology */}
+				{pastAbsences.length > 0 && (
+					<div>
+						<h3 className="mb-4 text-sm font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+							Historique
+						</h3>
+
+						<div className="relative">
+							{/* Vertical line */}
+							<div className="absolute top-0 bottom-0 left-3 w-px bg-gray-200 dark:bg-gray-700" />
+
+							<div className="space-y-1">
+								{Array.from(pastGrouped.entries()).map(([monthKey, monthAbsences]) => (
+									<div key={monthKey}>
+										{/* Month header */}
+										<button
+											onClick={() => toggleMonth(monthKey)}
+											className="group relative mb-1 flex w-full items-center gap-3 py-2 text-left"
+										>
+											<div className="relative z-10 flex h-6 w-6 items-center justify-center rounded-full border-2 border-gray-300 bg-white dark:border-gray-600 dark:bg-gray-800">
+												<div className="h-2 w-2 rounded-full bg-gray-400 dark:bg-gray-500" />
+											</div>
+											<span className="text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
+												{monthKey}
+											</span>
+											<span className="ml-1 text-[10px] text-gray-400 dark:text-gray-600">
+												({monthAbsences.length})
+											</span>
+											<Icon
+												name="chevronDown"
+												size="xs"
+												className={cn(
+													"ml-auto text-gray-400 transition-transform duration-200",
+													expandedMonths.has(monthKey) && "rotate-180",
+												)}
+											/>
+										</button>
+
+										{/* Month entries */}
+										{expandedMonths.has(monthKey) && (
+											<div className="space-y-1 pb-2">
+												{monthAbsences.map((absence) => (
+													<div
+														key={absence.id}
+														className="relative flex items-start gap-3 pl-0"
+													>
+														{/* Timeline dot */}
+														<div className="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center">
+															<div
+																className={cn(
+																	"h-3 w-3 rounded-full",
+																	absence.mode === "partial"
+																		? "bg-amber-400/60 dark:bg-amber-500/40"
+																		: "bg-red-400/60 dark:bg-red-500/40",
+																)}
+															/>
+														</div>
+
+														{/* Content */}
+														<button
+															onClick={() => toggleDetail(absence.id)}
+															className={cn(
+																"flex-1 rounded-lg border border-gray-100 bg-gray-50 p-3 text-left transition-all duration-200",
+																"hover:border-gray-200 hover:bg-white",
+																"dark:border-gray-700/50 dark:bg-gray-800/50 dark:hover:border-gray-600 dark:hover:bg-gray-800",
+															)}
+														>
+															<div className="flex items-center justify-between">
+																<div className="flex items-center gap-2">
+																	<span className="text-xs font-medium text-gray-700 dark:text-gray-300">
+																		{formatShort(absence.startDate)} —{" "}
+																		{formatShort(absence.endDate)}
+																	</span>
+																	<Badge
+																		variant={
+																			absence.mode === "partial"
+																				? "warning"
+																				: "error"
+																		}
+																	>
+																		{absence.mode === "partial"
+																			? "Partielle"
+																			: "Totale"}
+																	</Badge>
+																</div>
+																<span className="text-[10px] text-gray-400 dark:text-gray-500">
+																	{daysBetween(absence.startDate, absence.endDate)}j
+																</span>
+															</div>
+
+															{/* Expanded detail */}
+															{expandedIds.has(absence.id) && (
+																<div className="mt-2 border-t border-gray-200 pt-2 dark:border-gray-700">
+																	<p className="text-xs text-gray-500 dark:text-gray-400">
+																		{absence.reason}
+																	</p>
+																	<p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
+																		{formatDate(absence.startDate)} —{" "}
+																		{formatDate(absence.endDate)}
+																	</p>
+																</div>
+															)}
+														</button>
+													</div>
+												))}
+											</div>
+										)}
+									</div>
+								))}
+							</div>
+						</div>
+					</div>
+				)}
+
+				{/* Empty state */}
+				{absences.length === 0 && (
+					<StyledEmptyState
+						icon="absence"
+						title="Aucune absence déclarée"
+						description="Déclare ta prochaine absence pour prévenir ton équipe."
+					/>
+				)}
+			</div>
+
+			{/* Multi-step Declaration Wizard */}
+			<WizardModal
+				isOpen={wizardOpen}
+				onClose={closeWizard}
+				steps={ABSENCE_STEPS}
+				currentStep={wizardStep}
+				onStepChange={setWizardStep}
+				onSubmit={handleSubmit}
+				submitLabel="Déclarer"
+			>
+				{renderWizardContent()}
+			</WizardModal>
+		</PageContainer>
+	);
+}
